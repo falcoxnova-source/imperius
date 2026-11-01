@@ -1,0 +1,414 @@
+﻿st|1|small_cargo|Nave Pequena de Carga|civil|2000|2000|0|5000|5000|10|2800|8|7|/Imagenes/Naves/Fragatas Peque├▒as.webp
+st|2|large_cargo|Nave Grande de Carga|civil|6000|6000|0|7500|25000|50|8400|21|7|/Imagenes/Naves/Fragatas Medianas.webp
+st|3|colony_ship|Nave Colonizadora|civil|10000|20000|10000|2500|7500|1000|21000|85|75|/Imagenes/Naves/Colonizadores.webp
+st|4|recycler|Reciclador|civil|10000|6000|2000|2000|20000|300|11200|8|1|/Imagenes/Naves/Recicladores.webp
+st|5|espionage_probe|Sonda de Espionaje|civil|0|1000|0|100000000|5|1|1000|0|0|/Imagenes/Naves/Sondas de espionaje.webp
+st|6|solar_satellite|Satelite Solar|civil|0|2000|500|0|0|0|2000|1|1|/Imagenes/Naves/Satelites solares.webp
+st|7|light_fighter|Cazador Ligero|combat|3000|1000|0|12500|50|20|1600|10|50|/Imagenes/Naves/Cazadores ligeros.webp
+st|8|heavy_fighter|Cazador Pesado|combat|6000|4000|0|10000|100|75|4000|25|150|/Imagenes/Naves/Cazadores pesados.webp
+st|9|cruiser|Crucero|combat|20000|7000|2000|15000|800|300|10800|50|400|/Imagenes/Naves/Crucerors Ligeros.webp
+st|10|battleship|Nave de Batalla|combat|45000|15000|0|10000|1500|500|24000|200|1000|/Imagenes/Naves/Cruceros Pesados.webp
+st|11|battlecruiser|Acorazado|combat|30000|40000|15000|10000|750|250|28000|400|700|/Imagenes/Naves/Acorazados.webp
+st|12|bomber|Bombardero|combat|50000|25000|15000|4000|500|1000|30000|500|1000|/Imagenes/Naves/Bombarderos.webp
+st|13|destroyer|Destructor|combat|60000|50000|15000|5000|2000|1000|44000|500|2000|/Imagenes/Naves/Destructores.webp
+st|14|deathstar|Estrella de la Muerte|special|5000000|4000000|1000000|100|1000000|1|3600000|50000|200000|/Imagenes/Naves/Estrellas de la muerte.png
+st|17|falco_x_clasica|Falco-X Clasica|special|5500000|4500000|1500000|2500|7000000|2200|4000000|60000|175000|/Imagenes/Naves/falcox_class.png
+st|18|nova|Nova|special|6000000|5000000|2000000|900|15000000|250|4400000|70000|150000|/Imagenes/Naves/Novas.png
+st|19|large_frigate|Fragata Grande|civil|80000|80000|30000|6000|400000000|90|66500|102|75|/Imagenes/Naves/Fragatas Grandes.webp
+st|20|destruccion_masiva|Destruccion Masiva|special|350000000|280000000|120000000|10|50000000|10000|252000000|20000000|35000000|https://photos.pinksale.finance/file/pinksale-logo-upload/1772161947553-d10a478403f32771c3d8c726509e978e.png
+st|21|mega_recycler|Mega Reciclador|civil|500000|300000|100000|1500|20000000|1200|80000|100|5|/Imagenes/Naves/Recicladores Grandes.webp
+st|22|dark_matter_collector|Recolectores de Materia Oscura|civil|200000|100000|20000|100|6000000|100000|2600|25|5|/Imagenes/Naves/Recolectores_de_Materia_Oscura.webp
+dt {"id": 1, "code": "rocket_launcher", "name": "Lanzamisiles", "image_url": "/Imagenes/defensa/lanza%20misiles%20.webp", "metal_cost": 2000, "description": "Defensa basica y economica contra invasores.", "crystal_cost": 0, "shield_power": 20, "weapon_power": 80, "deuterium_cost": 0, "max_per_planet": null, "build_time_seconds": 480, "structural_integrity": 800}
+dt {"id": 2, "code": "light_laser", "name": "Laser Ligero", "image_url": "/Imagenes/defensa/laser%20peque%C3%B1o.webp", "metal_cost": 1500, "description": "Torreta laser basica con buen poder de fuego.", "crystal_cost": 500, "shield_power": 25, "weapon_power": 100, "deuterium_cost": 0, "max_per_planet": null, "build_time_seconds": 600, "structural_integrity": 800}
+dt {"id": 3, "code": "heavy_laser", "name": "Laser Pesado", "image_url": "/Imagenes/defensa/L%C3%A1sers%20grandes.webp", "metal_cost": 6000, "description": "Torreta laser mejorada con mayor alcance y poder.", "crystal_cost": 2000, "shield_power": 100, "weapon_power": 250, "deuterium_cost": 0, "max_per_planet": null, "build_time_seconds": 2400, "structural_integrity": 3200}
+dt {"id": 4, "code": "gauss_cannon", "name": "Canon de Gauss", "image_url": "/Imagenes/defensa/Ca%C3%B1ones%20Gauss.webp", "metal_cost": 20000, "description": "Proyectiles de alta velocidad con gran penetracion.", "crystal_cost": 15000, "shield_power": 200, "weapon_power": 1100, "deuterium_cost": 2000, "max_per_planet": null, "build_time_seconds": 10800, "structural_integrity": 14000}
+dt {"id": 5, "code": "ion_cannon", "name": "Canon Ionico", "image_url": "/Imagenes/defensa/Ca├▒ones i├│nicos.webp", "metal_cost": 5000, "description": "Desactiva sistemas electronicos enemigos.", "crystal_cost": 3000, "shield_power": 500, "weapon_power": 150, "deuterium_cost": 0, "max_per_planet": null, "build_time_seconds": 3600, "structural_integrity": 3200}
+dt {"id": 6, "code": "plasma_turret", "name": "Torreta de Plasma", "image_url": "/Imagenes/defensa/Ca%C3%B1ones%20de%20plasma.webp", "metal_cost": 50000, "description": "La defensa mas poderosa. Devastadora contra flotas.", "crystal_cost": 50000, "shield_power": 300, "weapon_power": 3000, "deuterium_cost": 30000, "max_per_planet": null, "build_time_seconds": 28800, "structural_integrity": 40000}
+dt {"id": 7, "code": "small_shield_dome", "name": "Cupula Pequena de Escudo", "image_url": "https://photos.pinksale.finance/file/pinksale-logo-upload/1773846095217-5353927895c2bdac39271080f143f555.png", "metal_cost": 10000, "description": "Genera un campo de escudo sobre el planeta.", "crystal_cost": 10000, "shield_power": 2000, "weapon_power": 0, "deuterium_cost": 0, "max_per_planet": 1, "build_time_seconds": 7200, "structural_integrity": 8000}
+dt {"id": 8, "code": "large_shield_dome", "name": "Cupula Grande de Escudo", "image_url": "https://photos.pinksale.finance/file/pinksale-logo-upload/1773846155115-a056cb04d7940e362015b7741cef9d51.png", "metal_cost": 50000, "description": "Campo de escudo avanzado con mayor cobertura.", "crystal_cost": 50000, "shield_power": 10000, "weapon_power": 0, "deuterium_cost": 0, "max_per_planet": 1, "build_time_seconds": 21600, "structural_integrity": 40000}
+dt {"id": 9, "code": "anti_ballistic_missile", "name": "Misil de Intercepcion", "image_url": "/Imagenes/defensa/Misil de intercepci├│n.webp", "metal_cost": 8000, "description": "Intercepta misiles interplanetarios enemigos.", "crystal_cost": 0, "shield_power": 1, "weapon_power": 1, "deuterium_cost": 2000, "max_per_planet": null, "build_time_seconds": 1800, "structural_integrity": 8000}
+dt {"id": 10, "code": "interplanetary_missile", "name": "Misil Interplanetario", "image_url": "/Imagenes/defensa/Misil interplanetario.webp", "metal_cost": 12500, "description": "Destruye defensas enemigas a distancia.", "crystal_cost": 2500, "shield_power": 1, "weapon_power": 12000, "deuterium_cost": 10000, "max_per_planet": null, "build_time_seconds": 3600, "structural_integrity": 15000}
+dt {"id": 11, "code": "outer_protection_dome", "name": "Cupula externa de proteccion", "image_url": "/Imagenes/defensa/C%C3%BApula%20externas.webp", "metal_cost": 5000000, "description": "Barrera que cubre todo el planeta. Activa sus escudos cuando hay un ataque e intenta proteger en lo posible las defensas planetarias.", "crystal_cost": 4000000, "shield_power": 1000000, "weapon_power": 1, "deuterium_cost": 2000000, "max_per_planet": 1, "build_time_seconds": 172800, "structural_integrity": 15000000}
+dt {"id": 13, "code": "orbital_defense_platform", "name": "Plataforma de Defensa Orbital", "image_url": "/Imagenes/defensa/Plataforma_Defensa_Orbital.webp", "metal_cost": 5000000000, "description": "La fortaleza defensiva definitiva. Colosal plataforma orbital con enorme integridad estructural y potencia de fuego. Solo puedes tener una por planeta.", "crystal_cost": 2000000000, "shield_power": 2000000000, "weapon_power": 400000000, "deuterium_cost": 800000000, "max_per_planet": 1, "build_time_seconds": 604800, "structural_integrity": 7800000000}
+dt {"id": 15, "code": "graviton_cannon", "name": "Ca├▒├│n de Gravit├│n", "image_url": "/Imagenes/defensa/Ca├▒ones de Gravit├│n.webp", "metal_cost": 3000000, "description": "Tras a├▒os de investigaci├│n sobre la fuerza gravitatoria, los ingenieros lograron concentrar un campo de gravit├│n y dispararlo contra las flotas enemigas. Su descomunal estructura y potencia de fuego lo convierten en una de las defensas m├ís devastadoras del universo.", "crystal_cost": 1500000, "shield_power": 80000, "weapon_power": 500000, "deuterium_cost": 800000, "max_per_planet": null, "build_time_seconds": 14400, "structural_integrity": 30000000}
+bp {"id": 11, "code": "bp_destroyer", "name": "Plano Destructor", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 52.5000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Destructor. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 13, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 1}
+bp {"id": 12, "code": "bp_deathstar", "name": "Plano Estrella de la Muerte", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 105.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Estrella de la Muerte. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 14, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 9, "code": "bp_nova", "name": "Plano Nova", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 1050.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Nova. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 18, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 13, "code": "bp_destruccion_masiva", "name": "Plano Destruccion Masiva", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 2100.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Destruccion Masiva. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 20, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 17, "code": "bp_heavy_fighter", "name": "Plano Cazador Pesado", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 1.4000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Cazador Pesado. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": true, "last_drop_at": null, "ship_type_id": 8, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 10}
+bp {"id": 19, "code": "bp_battleship", "name": "Plano Nave de Batalla", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 28.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Nave de Batalla. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": true, "last_drop_at": null, "ship_type_id": 10, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 1}
+bp {"id": 20, "code": "bp_battlecruiser", "name": "Plano Acorazado", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 52.5000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Acorazado. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 11, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 1}
+bp {"id": 10, "code": "bp_bomber", "name": "Plano Bombardero", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 56.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Bombardero. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 12, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 1}
+bp {"id": 18, "code": "bp_cruiser", "name": "Plano Crucero", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 14.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Crucero. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 9, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 1, "code": "bp_falco_x_clasica", "name": "Plano Falco-X Clasica", "image_url": "https://falcox.net/assets/blueprints/bp_falco_x_clasica.png", "is_active": true, "price_fxu": 100000, "price_usd": 175.0000, "created_at": "2026-06-14T22:57:26.377126+00:00", "description": "Plano permanente de ensamblaje de la Falco-X Clasica. Transferible en mercado P2P.", "is_for_sale": false, "is_droppable": false, "last_drop_at": null, "ship_type_id": 17, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 25, "code": "bp_heavy_laser", "name": "Plano Laser Pesado", "image_url": null, "is_active": true, "price_fxu": 50000, "price_usd": 5.6000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Laser Pesado. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 3, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 26, "code": "bp_ion_cannon", "name": "Plano Canon Ionico", "image_url": null, "is_active": true, "price_fxu": 60000, "price_usd": 8.4000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Canon Ionico. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 5, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 27, "code": "bp_gauss_cannon", "name": "Plano Canon de Gauss", "image_url": null, "is_active": true, "price_fxu": 80000, "price_usd": 12.6000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Canon de Gauss. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 4, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 22, "code": "bp_interplanetary_missile", "name": "Plano Misil Interplanetario", "image_url": null, "is_active": true, "price_fxu": 90000, "price_usd": 17.5000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Misil Interplanetario. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 10, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 29, "code": "bp_small_shield_dome", "name": "Plano Cupula Pequena de Escudo", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 24.5000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Cupula Pequena de Escudo. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 7, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 28, "code": "bp_plasma_turret", "name": "Plano Torreta de Plasma", "image_url": null, "is_active": true, "price_fxu": 120000, "price_usd": 31.5000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Torreta de Plasma. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 6, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 30, "code": "bp_large_shield_dome", "name": "Plano Cupula Grande de Escudo", "image_url": null, "is_active": true, "price_fxu": 180000, "price_usd": 45.5000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Cupula Grande de Escudo. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 8, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 33, "code": "bp_orbital_defense_platform", "name": "Plano: Plataforma de Defensa Orbital", "image_url": "/Imagenes/defensa/Plataforma_Defensa_Orbital.webp", "is_active": true, "price_fxu": 100000, "price_usd": 4200.0000, "created_at": "2026-07-12T15:53:07.841357+00:00", "description": "Plano necesario para poder construir la Plataforma de Defensa Orbital.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 13, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 14, "code": "bp_solar_satellite", "name": "Plano Satelite Solar", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 0.0700, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Satelite Solar. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 6, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 5}
+bp {"id": 34, "code": "bp_graviton_cannon", "name": "Plano Ca├▒├│n de Gravit├│n", "image_url": "/Imagenes/defensa/Ca├▒ones de Gravit├│n.webp", "is_active": true, "price_fxu": 500000, "price_usd": 350.0000, "created_at": "2026-07-13T15:52:42.641223+00:00", "description": "Plano del arma defensiva m├ís poderosa. Permite construir el Ca├▒├│n de Gravit├│n.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 15, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 6, "code": "bp_colony_ship", "name": "Plano Nave Colonizadora", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 14.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Nave Colonizadora. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 3, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 3}
+bp {"id": 15, "code": "bp_espionage_probe", "name": "Plano Sonda de Espionaje", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 7.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Sonda de Espionaje. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": true, "last_drop_at": null, "ship_type_id": 5, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 1}
+bp {"id": 2, "code": "bp_mega_recycler", "name": "Plano Mega Reciclador", "image_url": "https://falcox.net/assets/blueprints/bp_mega_recycler.png", "is_active": true, "price_fxu": 50000, "price_usd": 105.0000, "created_at": "2026-06-14T22:57:26.377126+00:00", "description": "Plano permanente de ensamblaje del Mega Reciclador. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 21, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 4, "code": "bp_small_cargo", "name": "Plano Nave Pequena de Carga", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 0.7000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Nave Pequena de Carga. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 1, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 5, "code": "bp_large_cargo", "name": "Plano Nave Grande de Carga", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 21.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Nave Grande de Carga. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 2, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 5}
+bp {"id": 8, "code": "bp_large_frigate", "name": "Plano Fragata Grande", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 70.0000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Fragata Grande. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 19, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0.5}
+bp {"id": 23, "code": "bp_rocket_launcher", "name": "Plano Lanzamisiles", "image_url": null, "is_active": true, "price_fxu": 25000, "price_usd": 0.7000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Lanzamisiles. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 1, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 24, "code": "bp_light_laser", "name": "Plano Laser Ligero", "image_url": null, "is_active": true, "price_fxu": 30000, "price_usd": 2.1000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Laser Ligero. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 2, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 21, "code": "bp_anti_ballistic_missile", "name": "Plano Misil de Intercepcion", "image_url": null, "is_active": true, "price_fxu": 40000, "price_usd": 3.5000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Misil de Intercepcion. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 9, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 16, "code": "bp_light_fighter", "name": "Plano Cazador Ligero", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 10.5000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Cazador Ligero. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": true, "last_drop_at": null, "ship_type_id": 7, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 20}
+bp {"id": 31, "code": "bp_outer_protection_dome", "name": "Plano Cupula externa de proteccion", "image_url": null, "is_active": true, "price_fxu": 300000, "price_usd": 210.0000, "created_at": "2026-07-11T00:11:46.934896+00:00", "description": "Plano consumible de Cupula externa de proteccion. 1 plano = 1 unidad. Transferible en mercado P2P.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": null, "defense_type_id": 11, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+bp {"id": 7, "code": "bp_recycler", "name": "Plano Reciclador", "image_url": null, "is_active": true, "price_fxu": 100000, "price_usd": 10.5000, "created_at": "2026-07-10T05:19:42.126004+00:00", "description": "Plano permanente de Reciclador. Al comprarlo desbloqueas su construccion para siempre: solo necesitas Hangar nivel 1 y los recursos para fabricarla.", "is_for_sale": true, "is_droppable": false, "last_drop_at": null, "ship_type_id": 4, "defense_type_id": null, "drop_cooldown_seconds": 86400, "expedition_drop_chance": 0}
+dreq 1 b11@1 t0@0
+dreq 10 b0@0 t7@1
+dreq 10 b13@4 t0@0
+dreq 11 b0@0 t10@16
+dreq 11 b10@1 t0@0
+dreq 11 b11@14 t0@0
+dreq 13 b0@0 t11@25
+dreq 13 b0@0 t13@15
+dreq 13 b0@0 t15@10
+dreq 13 b0@0 t1@20
+dreq 13 b0@0 t5@20
+dreq 13 b0@0 t9@22
+dreq 13 b11@20 t0@0
+dreq 15 b0@0 t15@7
+dreq 15 b0@0 t9@20
+dreq 15 b11@18 t0@0
+dreq 2 b0@0 t1@1
+dreq 2 b0@0 t2@3
+dreq 2 b11@2 t0@0
+dreq 3 b0@0 t1@3
+dreq 3 b0@0 t2@6
+dreq 3 b11@4 t0@0
+dreq 4 b0@0 t10@1
+dreq 4 b0@0 t1@6
+dreq 4 b0@0 t9@3
+dreq 4 b11@6 t0@0
+dreq 5 b0@0 t3@4
+dreq 5 b11@4 t0@0
+dreq 6 b0@0 t5@7
+dreq 6 b11@8 t0@0
+dreq 7 b0@0 t10@2
+dreq 7 b11@1 t0@0
+dreq 8 b0@0 t10@6
+dreq 8 b11@6 t0@0
+dreq 9 b13@2 t0@0
+sreq 1 b0@0 t6@2
+sreq 1 b11@2 t0@0
+sreq 10 b0@0 t8@4
+sreq 10 b11@7 t0@0
+sreq 11 b0@0 t2@12
+sreq 11 b0@0 t4@5
+sreq 11 b0@0 t8@5
+sreq 11 b11@8 t0@0
+sreq 12 b0@0 t5@5
+sreq 12 b0@0 t7@6
+sreq 12 b11@8 t0@0
+sreq 13 b0@0 t4@5
+sreq 13 b0@0 t8@6
+sreq 13 b11@9 t0@0
+sreq 14 b0@0 t15@1
+sreq 14 b0@0 t4@6
+sreq 14 b0@0 t8@7
+sreq 14 b11@12 t0@0
+sreq 17 b0@0 t11@12
+sreq 17 b0@0 t15@2
+sreq 17 b0@0 t2@12
+sreq 17 b0@0 t3@8
+sreq 17 b0@0 t4@9
+sreq 17 b0@0 t5@8
+sreq 17 b0@0 t7@10
+sreq 17 b0@0 t8@11
+sreq 17 b0@0 t9@12
+sreq 17 b11@14 t0@0
+sreq 18 b0@0 t11@14
+sreq 18 b0@0 t15@3
+sreq 18 b0@0 t2@14
+sreq 18 b0@0 t4@12
+sreq 18 b0@0 t5@12
+sreq 18 b0@0 t8@15
+sreq 18 b0@0 t9@14
+sreq 18 b11@15 t0@0
+sreq 19 b0@0 t4@10
+sreq 19 b0@0 t7@15
+sreq 19 b11@14 t0@0
+sreq 2 b0@0 t6@6
+sreq 2 b11@4 t0@0
+sreq 20 b0@0 t10@20
+sreq 20 b0@0 t11@20
+sreq 20 b0@0 t15@8
+sreq 20 b0@0 t2@25
+sreq 20 b0@0 t4@15
+sreq 20 b0@0 t8@20
+sreq 20 b0@0 t9@20
+sreq 20 b11@18 t0@0
+sreq 22 b0@0 t25@5
+sreq 22 b0@0 t4@5
+sreq 22 b0@0 t8@6
+sreq 22 b11@9 t0@0
+sreq 3 b0@0 t7@3
+sreq 3 b11@4 t0@0
+sreq 4 b0@0 t10@2
+sreq 4 b0@0 t6@6
+sreq 4 b11@4 t0@0
+sreq 5 b0@0 t12@2
+sreq 5 b0@0 t6@3
+sreq 5 b11@3 t0@0
+sreq 6 b11@1 t0@0
+sreq 7 b11@1 t0@0
+sreq 8 b0@0 t11@2
+sreq 8 b0@0 t7@2
+sreq 8 b11@3 t0@0
+sreq 9 b0@0 t3@2
+sreq 9 b0@0 t7@4
+sreq 9 b11@5 t0@0
+
+
+
+
+iuo {"id": 2, "code": "iu_destroyer", "name": "Destructor", "image_url": null, "is_active": true, "item_type": "ship", "price_usd": 75, "created_at": "2026-10-01T19:05:57.393652+00:00", "sort_order": 13, "updated_at": "2026-10-02T16:10:39.610296+00:00", "description": "", "ship_type_id": 13, "max_per_order": 1000, "defense_type_id": null}
+iuo {"id": 8, "code": "iu_falco_x_clasica", "name": "Falco-X Clasica", "image_url": "/Imagenes/Naves/falcox_class.png", "is_active": false, "item_type": "ship", "price_usd": 250, "created_at": "2026-10-01T19:05:57.393652+00:00", "sort_order": 17, "updated_at": "2026-10-02T16:10:39.610296+00:00", "description": "", "ship_type_id": 17, "max_per_order": 1000, "defense_type_id": null}
+iuo {"id": 14, "code": "iu_deathstar", "name": "Estrella de la Muerte", "image_url": null, "is_active": true, "item_type": "ship", "price_usd": 150, "created_at": "2026-10-01T19:05:57.393652+00:00", "sort_order": 14, "updated_at": "2026-10-02T16:10:39.610296+00:00", "description": "", "ship_type_id": 14, "max_per_order": 1000, "defense_type_id": null}
+fn apply_vip_time_bonus(uuid,integer) => integer
+fn check_noob_protection(uuid,uuid) => jsonb
+fn fleet_calc_distance(integer,integer,integer,integer,integer,integer) => integer
+fn fleet_calc_flight_time(integer,integer,integer) => integer
+fn fleet_calc_flight_time(integer,integer,integer,numeric) => integer
+fn fleet_calc_fuel(jsonb,integer,integer) => bigint
+fn fleet_calc_slowest_speed(jsonb,uuid) => integer
+fn get_fleet_speed() => integer
+grants simulate true
+CREATE OR REPLACE FUNCTION public.fleet_calc_fuel(p_fleet_ships jsonb, p_distance integer, p_speed_percent integer)
+ RETURNS bigint
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_ship record;
+  v_ship_type record;
+  v_total_fuel bigint := 0;
+  v_ship_fuel numeric;
+  v_distance_factor numeric;
+  v_speed_factor numeric;
+BEGIN
+  v_distance_factor := p_distance::numeric / 35000;
+  v_speed_factor := (p_speed_percent::numeric / 100) + 1;
+  
+  FOR v_ship IN SELECT * FROM jsonb_to_recordset(p_fleet_ships) AS x(ship_type_id int, quantity int)
+  LOOP
+    IF v_ship.quantity > 0 THEN
+      SELECT * INTO v_ship_type FROM ship_types WHERE id = v_ship.ship_type_id;
+      
+      IF v_ship_type IS NOT NULL THEN
+        v_ship_fuel := v_ship_type.fuel_consumption * v_ship.quantity * v_distance_factor * v_speed_factor;
+        v_total_fuel := v_total_fuel + CEIL(v_ship_fuel);
+      END IF;
+    END IF;
+  END LOOP;
+  
+  RETURN v_total_fuel;
+END;
+$function$
+
+CREATE OR REPLACE FUNCTION public.fleet_calc_slowest_speed(p_fleet_ships jsonb, p_user_id uuid)
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_ship record;
+  v_ship_type record;
+  v_tech_combustion int := 0;
+  v_tech_impulse int := 0;
+  v_tech_hyperspace int := 0;
+  v_speed int;
+  v_slowest int := 999999999;
+BEGIN
+  SELECT COALESCE(
+    (SELECT level FROM user_technologies ut 
+     JOIN technology_types tt ON ut.technology_type_id = tt.id 
+     WHERE ut.user_id = p_user_id AND tt.code = 'combustion_drive'), 0
+  ) INTO v_tech_combustion;
+  
+  SELECT COALESCE(
+    (SELECT level FROM user_technologies ut 
+     JOIN technology_types tt ON ut.technology_type_id = tt.id 
+     WHERE ut.user_id = p_user_id AND tt.code = 'impulse_drive'), 0
+  ) INTO v_tech_impulse;
+  
+  SELECT COALESCE(
+    (SELECT level FROM user_technologies ut 
+     JOIN technology_types tt ON ut.technology_type_id = tt.id 
+     WHERE ut.user_id = p_user_id AND tt.code = 'hyperspace_drive'), 0
+  ) INTO v_tech_hyperspace;
+
+  FOR v_ship IN SELECT * FROM jsonb_to_recordset(p_fleet_ships) AS x(ship_type_id int, quantity int)
+  LOOP
+    IF v_ship.quantity > 0 THEN
+      SELECT * INTO v_ship_type FROM ship_types WHERE id = v_ship.ship_type_id;
+      
+      IF v_ship_type.base_speed > 0 THEN
+        v_speed := fleet_calc_ship_speed(
+          v_ship_type.code,
+          v_ship_type.base_speed,
+          v_tech_combustion,
+          v_tech_impulse,
+          v_tech_hyperspace
+        );
+        
+        IF v_speed < v_slowest THEN
+          v_slowest := v_speed;
+        END IF;
+      END IF;
+    END IF;
+  END LOOP;
+  
+  IF v_slowest = 999999999 THEN
+    RETURN 0;
+  END IF;
+  
+  RETURN v_slowest;
+END;
+$function$
+
+CREATE OR REPLACE FUNCTION public.fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer, p_admiral_bonus numeric DEFAULT 0)
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_fleet_speed numeric;
+  v_effective_speed numeric;
+  v_flight_time int;
+BEGIN
+  IF p_slowest_speed <= 0 THEN
+    RETURN 0;
+  END IF;
+  
+  v_fleet_speed := get_fleet_speed();
+  v_effective_speed := p_slowest_speed * (p_speed_percent::numeric / 100);
+  
+  v_flight_time := GREATEST(
+    10,
+    ROUND(
+      (35000::numeric / (p_speed_percent::numeric / 100) * 
+       SQRT(p_distance::numeric * 10 / v_effective_speed) + 10) / v_fleet_speed
+    )
+  );
+  
+  -- Apply admiral bonus: reduce flight time by the bonus percentage
+  -- e.g. p_admiral_bonus = 0.2 means 20% faster ??? divide by 1.2
+  IF p_admiral_bonus > 0 THEN
+    v_flight_time := GREATEST(10, ROUND(v_flight_time::numeric / (1 + p_admiral_bonus)));
+  END IF;
+  
+  RETURN v_flight_time;
+END;
+$function$
+
+CREATE OR REPLACE FUNCTION public.fleet_calc_distance(p_origin_galaxy integer, p_origin_system integer, p_origin_position integer, p_target_galaxy integer, p_target_system integer, p_target_position integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+  IF p_origin_galaxy != p_target_galaxy THEN
+    RETURN ABS(p_origin_galaxy - p_target_galaxy) * 20000;
+  END IF;
+  
+  IF p_origin_system != p_target_system THEN
+    RETURN ABS(p_origin_system - p_target_system) * 95 + 2700;
+  END IF;
+  
+  IF p_origin_position != p_target_position THEN
+    RETURN ABS(p_origin_position - p_target_position) * 5 + 1000;
+  END IF;
+  
+  RETURN 5;
+END;
+$function$
+
+CREATE OR REPLACE FUNCTION public.apply_vip_time_bonus(p_user_id uuid, p_seconds integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_mult numeric;
+BEGIN
+  IF p_seconds IS NULL OR p_user_id IS NULL THEN
+    RETURN p_seconds;
+  END IF;
+  IF NOT public.is_user_plus(p_user_id) THEN
+    RETURN p_seconds;
+  END IF;
+  v_mult := public.get_vip_time_speed_multiplier();
+  IF v_mult IS NULL OR v_mult <= 1 THEN
+    RETURN p_seconds;
+  END IF;
+  RETURN GREATEST(1, FLOOR(p_seconds::numeric / v_mult))::integer;
+END;
+$function$
+
+CREATE OR REPLACE FUNCTION public._trg_colony_sale_lock_queue()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+  -- [COLMKT5] colas de edificios / hangar / investigacion
+  IF NEW.planet_id IS NOT NULL AND public._colony_listed_since(NEW.planet_id) IS NOT NULL THEN
+    RAISE EXCEPTION 'Esta colonia esta en venta en el mercado. Cancela la venta para poder usarla.';
+  END IF;
+  RETURN NEW;
+END
+$function$
+
+CREATE OR REPLACE FUNCTION public.enforce_shield_dome_per_account()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_total_acct integer;
+  v_user_id uuid;
+  v_def_name text;
+BEGIN
+  IF NEW.defense_type_id NOT IN (7, 8) THEN
+    RETURN NEW;
+  END IF;
+
+  IF NEW.quantity <= 0 THEN
+    RETURN NEW;
+  END IF;
+
+  SELECT user_id INTO v_user_id FROM planets WHERE id = NEW.planet_id;
+
+  SELECT COALESCE(SUM(pd.quantity), 0) INTO v_total_acct
+  FROM planet_defenses pd
+  JOIN planets pl ON pl.id = pd.planet_id
+  WHERE pl.user_id = v_user_id
+    AND pd.defense_type_id = NEW.defense_type_id
+    AND pd.id IS DISTINCT FROM NEW.id;
+
+  IF v_total_acct + NEW.quantity > 1 THEN
+    SELECT name INTO v_def_name FROM defense_types WHERE id = NEW.defense_type_id;
+    RAISE EXCEPTION 'L??mite: solo 1 % por cuenta permitido. Ya tienes %.', v_def_name, v_total_acct;
+  END IF;
+
+  RETURN NEW;
+END;
+$function$
+

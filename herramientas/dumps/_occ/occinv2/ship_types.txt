@@ -1,0 +1,20 @@
+1|small_cargo|Nave Pequena de Carga|civil|2000|2000|0|2800|8|7|5000|5000|10|/Imagenes/Naves/Fragatas Pequeñas.webp
+2|large_cargo|Nave Grande de Carga|civil|6000|6000|0|8400|21|7|25000|7500|50|/Imagenes/Naves/Fragatas Medianas.webp
+3|colony_ship|Nave Colonizadora|civil|10000|20000|10000|21000|85|75|7500|2500|1000|/Imagenes/Naves/Colonizadores.webp
+4|recycler|Reciclador|civil|10000|6000|2000|11200|8|1|20000|2000|300|/Imagenes/Naves/Recicladores.webp
+5|espionage_probe|Sonda de Espionaje|civil|0|1000|0|1000|0|0|5|100000000|1|/Imagenes/Naves/Sondas de espionaje.webp
+6|solar_satellite|Satelite Solar|civil|0|2000|500|2000|1|1|0|0|0|/Imagenes/Naves/Satelites solares.webp
+7|light_fighter|Cazador Ligero|combat|3000|1000|0|1600|10|50|50|12500|20|/Imagenes/Naves/Cazadores ligeros.webp
+8|heavy_fighter|Cazador Pesado|combat|6000|4000|0|4000|25|150|100|10000|75|/Imagenes/Naves/Cazadores pesados.webp
+9|cruiser|Crucero|combat|20000|7000|2000|10800|50|400|800|15000|300|/Imagenes/Naves/Crucerors Ligeros.webp
+10|battleship|Nave de Batalla|combat|45000|15000|0|24000|200|1000|1500|10000|500|/Imagenes/Naves/Cruceros Pesados.webp
+11|battlecruiser|Acorazado|combat|30000|40000|15000|28000|400|700|750|10000|250|/Imagenes/Naves/Acorazados.webp
+12|bomber|Bombardero|combat|50000|25000|15000|30000|500|1000|500|4000|1000|/Imagenes/Naves/Bombarderos.webp
+13|destroyer|Destructor|combat|60000|50000|15000|44000|500|2000|2000|5000|1000|/Imagenes/Naves/Destructores.webp
+14|deathstar|Estrella de la Muerte|special|5000000|4000000|1000000|3600000|50000|200000|1000000|100|1|/Imagenes/Naves/Estrellas de la muerte.png
+17|falco_x_clasica|Falco-X Clasica|special|5500000|4500000|1500000|4000000|60000|175000|7000000|2500|2200|/Imagenes/Naves/falcox_class.png
+18|nova|Nova|special|6000000|5000000|2000000|4400000|70000|150000|15000000|900|250|/Imagenes/Naves/Novas.png
+19|large_frigate|Fragata Grande|civil|80000|80000|30000|66500|102|75|400000000|6000|90|/Imagenes/Naves/Fragatas Grandes.webp
+20|destruccion_masiva|Destruccion Masiva|special|350000000|280000000|120000000|252000000|20000000|35000000|50000000|10|10000|https://photos.pinksale.finance/file/pinksale-logo-upload/1772161947553-d10a478403f32771c3d8c726509e978e.png
+21|mega_recycler|Mega Reciclador|civil|500000|300000|100000|80000|100|5|20000000|1500|1200|/Imagenes/Naves/Recicladores Grandes.webp
+22|dark_matter_collector|Recolectores de Materia Oscura|civil|200000|100000|20000|2600|25|5|6000000|100|100000|/Imagenes/Naves/Recolectores_de_Materia_Oscura.webp

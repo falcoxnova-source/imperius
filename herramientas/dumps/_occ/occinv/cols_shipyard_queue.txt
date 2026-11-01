@@ -1,0 +1,17 @@
+id uuid gen_random_uuid()
+planet_id uuid 
+item_type text 
+ship_type_id integer 
+defense_type_id integer 
+quantity integer 
+quantity_completed integer 0
+metal_cost bigint 0
+crystal_cost bigint 0
+deuterium_cost bigint 0
+build_time_per_unit integer 0
+queue_position integer 1
+start_time timestamp with time zone 
+current_unit_end_time timestamp with time zone 
+created_at timestamp with time zone now()
+status text 'building'::text
+blueprints_used integer 0

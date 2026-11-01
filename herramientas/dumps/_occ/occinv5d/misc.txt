@@ -1,0 +1,120 @@
+sq cols: id:uuid:gen_random_uuid() | planet_id:uuid: | item_type:text: | ship_type_id:integer: | defense_type_id:integer: | quantity:integer: | quantity_completed:integer:0 | metal_cost:bigint:0 | crystal_cost:bigint:0 | deuterium_cost:bigint:0 | build_time_per_unit:integer:0 | queue_position:integer:1 | start_time:timestamp with time zone: | current_unit_end_time:timestamp with time zone: | created_at:timestamp with time zone:now() | status:text:'building'::text | blueprints_used:integer:0
+ps cols: id:uuid | planet_id:uuid | ship_type_id:integer | quantity:integer | in_construction:integer | construction_end_time:timestamp with time zone | created_at:timestamp with time zone
+pd cols: id:uuid | planet_id:uuid | defense_type_id:integer | quantity:integer | in_construction:integer | construction_end_time:timestamp with time zone | created_at:timestamp with time zone | anti_ballistic_missiles:integer | interplanetary_missiles:integer
+st cols: id:integer:nextval('ship_types_id_seq'::regclass) | code:text: | name:text: | description:text: | category:text: | metal_cost:integer:0 | crystal_cost:integer:0 | deuterium_cost:integer:0 | build_time_seconds:integer:60 | structural_integrity:integer:100 | shield_power:integer:0 | weapon_power:integer:0 | cargo_capacity:integer:0 | base_speed:integer:0 | fuel_consumption:integer:0 | rapid_fire:jsonb:'{}'::jsonb | image_url:text:
+profiles cols: id:uuid | username:text | email:text | avatar_url:text | dark_matter:integer | points_total:integer | points_buildings:integer | points_research:integer | points_fleet:integer | points_defense:integer | rank_position:integer | is_admin:boolean | is_banned:boolean | vacation_mode:boolean | last_activity:timestamp with time zone | created_at:timestamp with time zone | updated_at:timestamp with time zone | notify_attacks:boolean | notify_buildings:boolean | notify_research:boolean | notify_messages:boolean | battles_won:integer | battles_draw:integer | battles_lost:integer | units_destroyed:bigint | units_lost:bigint | debris_metal_total:bigint | debris_crystal_total:bigint | rank_buildings:integer | rank_research:integer | rank_fleet:integer | rank_defense:integer | fxu_balance:numeric | referred_by:uuid | referral_code:text | is_hidden:boolean | vacation_mode_enabled_at:timestamp with time zone | points_expedition:integer | rank_expedition:integer | email_verified:boolean | usdt_balance:numeric | vacation_remaining_research_seconds:integer | is_bot:boolean | autopilot_eligible:boolean | autopilot_active:boolean | last_manual_action:timestamp with time zone | autopilot_vip_boost:boolean | autopilot_vip_boost_expires_at:timestamp with time zone | has_created_alliance:boolean | active_title:text | active_title_icon:text | active_badge:text | active_planet_effect:text | active_hero_skin:text | hide_records:boolean | daily_streak:integer | last_daily_claim:timestamp with time zone | tung_balance:numeric | can_view_financials:boolean | kyc_status:text | two_factor_login_enabled:boolean | tutorial_step:smallint | tutorial_completed:boolean | telegram_alerts_enabled:boolean
+con admin_revenue: admin_revenue_related_user_id_fkey FOREIGN KEY (related_user_id) REFERENCES profiles(id) ON DELETE SET NULL
+con battle_reports: battle_reports_attacker_id_fkey FOREIGN KEY (attacker_id) REFERENCES profiles(id) ON DELETE SET NULL
+con battle_reports: battle_reports_defender_id_fkey FOREIGN KEY (defender_id) REFERENCES profiles(id) ON DELETE SET NULL
+con battle_reports: battle_reports_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE SET NULL
+con building_queue: building_queue_building_type_id_fkey FOREIGN KEY (building_type_id) REFERENCES building_types(id)
+con building_queue: building_queue_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+con fleet_ships: fleet_ships_fleet_id_fkey FOREIGN KEY (fleet_id) REFERENCES fleets(id) ON DELETE CASCADE
+con fleet_ships: fleet_ships_ship_type_id_fkey FOREIGN KEY (ship_type_id) REFERENCES ship_types(id) ON DELETE CASCADE
+con planet_defenses: planet_defenses_defense_type_id_fkey FOREIGN KEY (defense_type_id) REFERENCES defense_types(id) ON DELETE CASCADE
+con planet_defenses: planet_defenses_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+con planet_ships: planet_ships_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+con planet_ships: planet_ships_ship_type_id_fkey FOREIGN KEY (ship_type_id) REFERENCES ship_types(id) ON DELETE CASCADE
+con shipyard_queue: shipyard_queue_defense_type_id_fkey FOREIGN KEY (defense_type_id) REFERENCES defense_types(id)
+con shipyard_queue: shipyard_queue_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+con shipyard_queue: shipyard_queue_ship_type_id_fkey FOREIGN KEY (ship_type_id) REFERENCES ship_types(id)
+con fleet_ships: fleet_ships_fleet_id_ship_type_id_key UNIQUE (fleet_id, ship_type_id)
+con fleet_ships: fleet_ships_pkey PRIMARY KEY (id)
+con admin_revenue: admin_revenue_revenue_type_check CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+con fleet_ships: fleet_ships_quantity_check CHECK ((quantity > 0))
+con planet_defenses: planet_defenses_pkey PRIMARY KEY (id)
+con planet_defenses: planet_defenses_planet_id_defense_type_id_key UNIQUE (planet_id, defense_type_id)
+con planet_ships: planet_ships_pkey PRIMARY KEY (id)
+con planet_ships: planet_ships_planet_id_ship_type_id_key UNIQUE (planet_id, ship_type_id)
+con ship_types: ship_types_code_key UNIQUE (code)
+con ship_types: ship_types_pkey PRIMARY KEY (id)
+con shipyard_queue: shipyard_queue_pkey PRIMARY KEY (id)
+con admin_revenue: admin_revenue_amount_check CHECK ((amount >= (0)::numeric))
+con admin_revenue: admin_revenue_currency_check CHECK ((currency = ANY (ARRAY['FXU'::text, 'USDT'::text])))
+con battle_reports: battle_reports_result_check CHECK ((result = ANY (ARRAY['attacker_won'::text, 'defender_won'::text, 'draw'::text])))
+con planet_ships: planet_ships_quantity_non_negative CHECK ((quantity >= 0))
+con ship_types: ship_types_category_check CHECK ((category = ANY (ARRAY['civil'::text, 'combat'::text, 'special'::text])))
+con shipyard_queue: shipyard_queue_item_type_check CHECK ((item_type = ANY (ARRAY['ship'::text, 'defense'::text])))
+con shipyard_queue: shipyard_queue_quantity_check CHECK ((quantity > 0))
+con shipyard_queue: valid_item_type CHECK ((((item_type = 'ship'::text) AND (ship_type_id IS NOT NULL) AND (defense_type_id IS NULL)) OR ((item_type = 'defense'::text) AND (defense_type_id IS NOT NULL) AND (ship_type_id IS NULL))))
+con battle_reports: battle_reports_pkey PRIMARY KEY (id)
+con building_queue: building_queue_pkey PRIMARY KEY (id)
+con admin_revenue: admin_revenue_pkey PRIMARY KEY (id)
+trg ut: CREATE TRIGGER enforce_single_research BEFORE INSERT OR UPDATE ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION check_single_research()
+trg ut: CREATE TRIGGER protect_user_technologies_trigger BEFORE UPDATE ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg ut: CREATE TRIGGER trg_research_completed_daily_mission AFTER UPDATE OF level, is_researching ON public.user_technologies FOR EACH ROW WHEN (((new.level > old.level) AND (new.is_researching = false))) EXECUTE FUNCTION trg_research_completed_daily_mission()
+trg ut: CREATE TRIGGER trigger_research_points AFTER INSERT OR DELETE OR UPDATE ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_user_table()
+trg ut: CREATE TRIGGER trg_research_promote_next AFTER UPDATE ON public.user_technologies FOR EACH ROW WHEN (((old.is_researching = true) AND (COALESCE(new.is_researching, false) = false))) EXECUTE FUNCTION trg_promote_research_queue()
+trg ut: CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT OR UPDATE OF is_researching, research_planet_id ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_research()
+fns calling process_fleet_arrival: process_user_pending_fleets
+fns calling process_fleet_arrival: accelerate_fleet
+fns calling process_fleet_arrival: cancel_fleet
+fns calling process_fleet_arrival: _settle_stronghold_fleets
+fns calling process_fleet_arrival: process_all_pending_fleets
+fns calling process_fleet_arrival: process_user_fleets
+fns calling process_fleet_arrival: admin_process_stuck_fleets
+fns calling process_fleet_arrival: accelerate_acs
+fns update fleets stationed: process_user_pending_fleets
+fns update fleets stationed: secure_send_fleet
+fns update fleets stationed: generate_espionage_report
+fns update fleets stationed: process_fleet_arrival
+fns update fleets stationed: cancel_fleet
+fns update fleets stationed: process_all_pending_fleets
+fns update fleets stationed: validate_fleet_mission
+fns update fleets stationed: perform_combat
+fns update fleets stationed: perform_acs_combat
+fns update fleets stationed: process_acs_fleet_arrival
+admin profile: 9a331e92-f8e5-4087-ad65-290f00186b92 King
+revtype check: CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+gs sample: colony_min_price_usd=50
+gs sample: daily_streak_cost_usd=0.3
+gs sample: depletion_refill_price_usdt=10
+gs sample: deposit_gas_buffer_usdt=0.05
+gs sample: fxu_abandon_colony_fee=0
+gs sample: fxu_cost_ratio_building_usd=35000
+gs sample: fxu_cost_ratio_defense_usd=30000
+gs sample: fxu_cost_ratio_fleet_usd=0.01
+gs sample: fxu_cost_ratio_research_usd=20000
+gs sample: fxu_cost_ratio_ships_usd=25000
+gs sample: fxu_create_alliance_cost_usd=1
+gs sample: fxu_rename_alliance_cost_usd=0.5
+gs sample: fxu_rename_planet_cost_usd=0.1
+gs sample: fxu_usd_rate=0.0001
+gs sample: hero_repair_cost_usd=1
+gs sample: hero_repair_kit_price_100=10000
+gs sample: hero_repair_kit_price_25=500
+gs sample: hero_repair_kit_price_50=1500
+gs sample: hero_repair_kit_price_75=4000
+gs sample: lottery_2match_prize_usd=0.6
+gs sample: lottery_3match_prize_usd=1
+gs sample: lottery_ticket_cost_usd=0.3
+gs sample: p2p_usdt_fxu_peg=10000
+gs sample: tung_price_usd=0.007167
+gs sample: usdt_withdrawal_fee_flat=1
+gs sample: withdrawal_fee_usd=1
+cron jobs: auto-cancel-insufficient-listings | */3 * * * *
+cron jobs: battleship-daily-pool | 1 0 * * *
+cron jobs: battleship-tick | 10 seconds
+cron jobs: bot_tick_worker | 10 seconds
+cron jobs: clean_expired_cosmetics_every_5min | */5 * * * *
+cron jobs: cleanup-cron-run-details | 30 4 * * *
+cron jobs: cleanup-http-response | 0 4 * * *
+cron jobs: cleanup-old-completed-fleets | 0 5 * * 0
+cron jobs: cleanup-old-game-messages | 30 3 * * *
+cron jobs: cleanup_old_broadcast_messages | 0 3 * * *
+cron jobs: distribute-top50-pool | 15 0 * * *
+cron jobs: distribute-treasure-pool | 5 0 * * *
+cron jobs: enforce-alliance-member-limits | */10 * * * *
+cron jobs: expire-market-offers-24h | */5 * * * *
+cron jobs: fetch-twitter-missions | */5 * * * *
+cron jobs: hero-duel-resolve | * * * * *
+cron jobs: lottery-auto-draw | 10 0 * * *
+cron jobs: p2p_expire_offers_every_15min | */15 * * * *
+cron jobs: raffle-auto-draw | * * * * *
+cron jobs: research-orphan-tick | * * * * *
+cron jobs: sports-football-tick | * * * * *
+cron jobs: update-player-rankings | */5 * * * *
+jackpot sig: p_revenue_id uuid, p_revenue_type text, p_amount numeric, p_currency text, p_related_user_id uuid
+jackpot sig: p_revenue_type text, p_amount numeric, p_description text, p_related_user_id uuid, p_related_tx_id uuid, p_currency text
+jackpot sig: p_amount numeric, p_source text, p_user_id uuid
+jackpot sig: 

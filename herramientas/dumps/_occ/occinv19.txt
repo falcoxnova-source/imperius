@@ -1,0 +1,288 @@
+== version
+PostgreSQL 15.1 (Ubuntu 15.1-1.pgdg20.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, 64-bit
+== guarded fn args
+_internal_set_fxu_context()||t
+check_moon_creation(integer,integer,integer,numeric,numeric)|p_galaxy integer, p_system integer, p_position integer, p_debris_metal numeric, p_debris_crystal numeric|t
+contribute_to_jackpot(numeric,text,uuid)|p_amount numeric, p_source text, p_user_id uuid|t
+create_market_listing(text,text,bigint,numeric,uuid)|p_listing_type text, p_item_code text, p_quantity bigint, p_price_per_unit numeric, p_planet_id uuid|t
+deploy_to_fortress(integer,uuid,jsonb)|p_galaxy integer, p_planet_id uuid, p_ships jsonb|t
+enforce_ship_blueprint_requirement()||t
+fleet_calc_distance(integer,integer,integer,integer,integer,integer)|p_origin_galaxy integer, p_origin_system integer, p_origin_position integer, p_target_galaxy integer, p_target_system integer, p_target_position integer|t
+fleet_calc_flight_time(integer,integer,integer)|p_distance integer, p_slowest_speed integer, p_speed_percent integer|t
+fleet_calc_flight_time(integer,integer,integer,numeric)|p_distance integer, p_slowest_speed integer, p_speed_percent integer, p_admiral_bonus numeric|t
+fleet_calc_fuel(jsonb,integer,integer)|p_fleet_ships jsonb, p_distance integer, p_speed_percent integer|t
+fleet_calc_slowest_speed(jsonb,uuid)|p_fleet_ships jsonb, p_user_id uuid|t
+format_unit_report(jsonb,jsonb,text)|p_initial_units jsonb, p_remaining_units jsonb, p_side text|f
+fulfill_buy_offer(uuid,bigint,uuid)|p_offer_id uuid, p_quantity bigint, p_planet_id uuid|t
+galaxy_navigate(uuid,integer,integer)|p_planet_id uuid, p_target_galaxy integer, p_target_system integer|t
+get_game_speed()||t
+get_user_daily_mission_speed_bonus(uuid)|p_user_id uuid|t
+is_user_plus(uuid)|p_user_id uuid|t
+join_acs_with_fleet(uuid,uuid,jsonb,integer)|p_acs_id uuid, p_origin_planet_id uuid, p_fleet_ships jsonb, p_speed_percent integer|t
+launch_missiles(uuid,integer,integer,integer,integer,text)|p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_missile_count integer, p_primary_target text|t
+perform_acs_combat(uuid,uuid)|p_acs_id uuid, p_target_planet_id uuid|t
+perform_combat(uuid,uuid)|p_attacker_fleet_id uuid, p_target_planet_id uuid|t
+process_acs_fleet_arrival(uuid)|p_acs_id uuid|t
+process_fleet_arrival(uuid)|p_fleet_id uuid|t
+purchase_market_listing(uuid,integer)|p_listing_id uuid, p_quantity integer|f
+purchase_market_listing(uuid,uuid)|p_listing_id uuid, p_buyer_planet_id uuid|t
+purchase_market_listing(uuid,integer,uuid)|p_listing_id uuid, p_quantity integer, p_buyer_planet_id uuid|t
+purchase_supply_box(text,uuid)|p_box_code text, p_planet_id uuid|t
+record_admin_revenue(text,numeric,text,uuid,uuid,text)|p_revenue_type text, p_amount numeric, p_description text, p_related_user_id uuid, p_related_tx_id uuid, p_currency text|t
+secure_abandon_colony(uuid)|p_planet_id uuid|t
+secure_activate_building_queue(uuid)|p_planet_id uuid|t
+secure_add_to_building_queue(uuid,integer)|p_planet_id uuid, p_building_type_id integer|t
+secure_add_to_shipyard_queue(uuid,integer,integer)|p_planet_id uuid, p_ship_id integer, p_quantity integer|t
+secure_add_to_shipyard_queue(uuid,text,integer,integer)|p_planet_id uuid, p_item_type text, p_type_id integer, p_quantity integer|t
+secure_demolish_building(uuid,integer)|p_planet_id uuid, p_building_type_id integer|t
+secure_send_fleet(uuid,integer,integer,integer,text,jsonb,bigint,bigint,bigint,integer,text,uuid)|p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_mission_type text, p_fleet_ships jsonb, p_cargo_metal bigint, p_cargo_crystal bigint, p_cargo_deuterium bigint, p_speed_percent integer, p_target_type text, p_override_user_id uuid|t
+secure_start_research(uuid,integer)|p_planet_id uuid, p_tech_type_id integer|t
+simulate_xnova_combat(jsonb,jsonb)|p_attackers jsonb, p_defenders jsonb|t
+sync_planet_resources(uuid)|p_planet_id uuid|t
+update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint)|p_planet_id uuid, p_metal_mine_percent smallint, p_crystal_mine_percent smallint, p_deuterium_synth_percent smallint, p_solar_plant_percent smallint, p_fusion_reactor_percent smallint, p_solar_satellite_percent smallint|t
+use_jump_gate(uuid,uuid,jsonb)|p_origin_moon_id uuid, p_target_moon_id uuid, p_ships jsonb|t
+user_can_build_ship(uuid,integer)|p_user_id uuid, p_ship_type_id integer|t
+validate_defense_requirements(uuid,integer)|p_planet_id uuid, p_defense_type_id integer|t
+validate_fleet_mission(uuid,uuid,integer,integer,integer,text,text)|p_user_id uuid, p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_mission_type text, p_target_type text|t
+validate_ship_requirements(uuid,integer)|p_planet_id uuid, p_ship_type_id integer|t
+get_live_tung_price_usd()||t
+refill_colony_resources(uuid)|p_planet_id uuid|t
+set_planet_autopilot_enabled(uuid,boolean)|p_planet_id uuid, p_enabled boolean|t
+apply_vip_time_bonus(uuid,integer)|p_user_id uuid, p_seconds integer|t
+battle_units_diff(jsonb,jsonb,text)|p_initial jsonb, p_remaining jsonb, p_filter text|f
+purchase_ship_blueprint(text,uuid)|p_blueprint_code text, p_planet_id uuid|t
+purchase_instant_unit(text,uuid,integer)|p_code text, p_planet_id uuid, p_quantity integer|t
+create_colony_listing(uuid,numeric)|p_planet_id uuid, p_price numeric|t
+purchase_colony_listing(uuid)|p_listing_id uuid|t
+_colony_listed_since(uuid)|p_planet_id uuid|t
+== first BEGIN check (text before first BEGIN in body)
+create_colony_listing(uuid,numeric) |  DECLARE   v_user_id uuid := auth.uid();   v_planet planets%ROWTYPE;   v_moon_id uuid;   v_price numeric;   v_block text;   v_listing_id uuid;   v_telegram_id bigint;   v_is_member boolean; BEGIN 
+create_market_listing(text,text,bigint,numeric,uuid) |  DECLARE   v_user_id uuid;   v_total_price numeric;   v_current_amount numeric;   v_ship_quantity int;   v_user_dm int;   v_listing_id uuid;   v_telegram_id bigint;   v_is_member boolean;   v_username text;   v_limits RECORD;   v_year_week text;   v_current_sold bigint;   v_active_listed bigint;   v_weekly_limit bigint;   v_min_price numeric;   v_remaining bigint;   v_ship_value bigint;   v_ship_total_value bigint;   v_current_ships_value_sold bigint;   v_active_ships_value bigint;   v_ships_value_remaining bigint;   v_fxu_limit numeric;   v_fxu_value_this_listing numeric;   v_fxu_value_sold numeric;   v_fxu_value_active numeric;   v_fxu_remaining numeric;   v_fxu_ok boolean := false;   v_unit_ok boolean := false; BEGIN 
+deploy_to_fortress(integer,uuid,jsonb) |  DECLARE   v_user_id uuid;   v_alliance_id uuid;   v_fortress record;   v_ship record;   v_existing integer;   v_total bigint := 0; BEGIN 
+fulfill_buy_offer(uuid,bigint,uuid) |  DECLARE   v_user_id uuid;   v_offer RECORD;   v_fill_qty bigint;   v_fill_price numeric;   v_fee numeric;   v_jackpot_contribution_rate numeric;   v_jackpot_amount numeric;   v_admin_fee numeric;   v_seller_amount numeric;   v_admin_id uuid;   v_market_fee_percent numeric;   v_ship_type_id integer;   v_seller_ship_qty integer;   v_seller_resources RECORD;   v_seller_dm integer;   v_telegram_id bigint;   v_is_member boolean;   v_referrer_id uuid;   v_referral_commission_percent numeric;   v_referral_commission numeric;   v_referral_resource_amount bigint;   v_referrer_planet_id uuid;   v_transaction_id uuid;   v_vacation boolean;   v_buyer_planet_id uuid; BEGIN 
+galaxy_navigate(uuid,integer,integer) |  DECLARE   v_user_id uuid;   v_planet record;   v_resources record;   v_cost numeric;   v_cost_setting text; BEGIN
+launch_missiles(uuid,integer,integer,integer,integer,text) |  DECLARE   v_origin_planet record;   v_target_planet record;   v_target_owner record;   v_attacker_id uuid;   v_attacker_profile record;   v_available_missiles integer;   v_abm_count integer;   v_effective_missiles integer;   v_silo_level integer;   v_impulse_level integer;   v_max_range integer;   v_actual_distance integer;   v_destroyed_defenses jsonb := '[]'::jsonb;   v_defense_record record;   v_remaining_damage integer;   v_defense_destroyed integer;   v_ipm_damage_per_missile CONSTANT integer := 12000;   v_protection_check jsonb;   v_bashing_check jsonb;   v_attacker_weapons_level integer;   v_defender_armour_level integer;   v_actual_damage_per_missile numeric;   v_effective_integrity numeric; BEGIN 
+purchase_colony_listing(uuid) |  DECLARE   v_buyer uuid := auth.uid();   v_listing market_listings%ROWTYPE;   v_planet planets%ROWTYPE;   v_moon_id uuid;   v_main_id uuid;   v_ids uuid[];   v_block text;   v_coords text;   v_total numeric;   v_buyer_fxu numeric;   v_pct numeric;   v_fee numeric;   v_seller_amount numeric;   v_jackpot numeric;   v_referral numeric;   v_admin_fee numeric;   v_referrer uuid;   v_admin_id uuid;   v_tx uuid;   v_metal numeric := 0;   v_crystal numeric := 0;   v_deuterium numeric := 0;   v_ships_moved bigint := 0;   v_defenses_destroyed bigint := 0;   v_fleets_redirected integer := 0;   v_buyer_planets integer;   v_astro integer;   v_max_planets integer; BEGIN 
+purchase_instant_unit(text,uuid,integer) |  DECLARE   v_user_id    uuid;   v_offer      instant_unit_offers%ROWTYPE;   v_qty        integer;   v_planet_id  uuid;   v_planet_name text;   v_tung_usd   numeric;   v_total_usd  numeric;   v_cost       numeric;   v_balance    numeric;   v_max_planet integer;   v_owned      bigint;   v_unit_name  text; BEGIN 
+purchase_market_listing(uuid,integer) |  DECLARE   v_user_id uuid;   v_listing RECORD;   v_buyer_planet_id uuid;   v_purchase_qty integer;   v_total_price numeric;   v_buyer_fxu numeric;   v_admin_id uuid;   v_fee numeric;   v_jackpot_amount numeric;   v_admin_fee numeric;   v_referral_fee numeric;   v_seller_amount numeric;   v_ship_type_id integer;   v_market_fee_percent numeric;   v_referrer_id uuid;   v_transaction_id uuid;   v_seller_resources RECORD;   v_seller_ship_qty integer;   v_telegram_id bigint;   v_is_member boolean;   v_year_week text;   v_ship_value bigint;   -- Configurable share percentages   v_admin_share numeric;   v_pool_share numeric;   v_referral_share numeric; BEGIN
+purchase_market_listing(uuid,integer,uuid) |  DECLARE   v_user_id uuid;   v_listing RECORD;   v_buyer_planet_id uuid;   v_purchase_qty integer;   v_total_price numeric;   v_buyer_fxu numeric;   v_admin_id uuid;   v_fee numeric;   v_jackpot_amount numeric;   v_admin_fee numeric;   v_referral_fee numeric;   v_seller_amount numeric;   v_ship_type_id integer;   v_market_fee_percent numeric;   v_referrer_id uuid;   v_transaction_id uuid;   v_seller_resources RECORD;   v_seller_ship_qty integer;   v_telegram_id bigint;   v_is_member boolean;   v_year_week text;   v_ship_value bigint; BEGIN 
+purchase_market_listing(uuid,uuid) |  BEGIN
+purchase_ship_blueprint(text,uuid) |  DECLARE   v_user_id     uuid;   v_bp          ship_blueprints%ROWTYPE;   v_balance     numeric;   v_tung_usd    numeric;   v_cost        numeric;   v_owned       integer;   v_usb_id      uuid;    -- entrega de recursos   v_grant_on    boolean := true;   v_target      uuid;   v_planet_name text;   v_metal       numeric := 0;   v_crystal     numeric := 0;   v_deuterium   numeric := 0;   v_calc        jsonb;   v_granted     boolean := false;   v_grant_note  text := NULL; BEGIN 
+purchase_supply_box(text,uuid) |  DECLARE   v_user_id uuid;   v_box supply_boxes%ROWTYPE;   v_planet planets%ROWTYPE;   v_current_fxu numeric;   v_price numeric;   v_live_price numeric;   v_calculated jsonb;   v_synced_metal numeric;   v_synced_crystal numeric;   v_synced_deuterium numeric; BEGIN
+refill_colony_resources(uuid) |  DECLARE   v_user_id uuid;   v_planet planets%ROWTYPE;   v_price_usdt numeric;   v_live_price numeric;   v_current_fxu numeric;   v_metal_init numeric; v_crystal_init numeric; v_deut_init numeric;   v_metal_cur numeric; v_crystal_cur numeric; v_deut_cur numeric;   v_total_init numeric; v_total_cur numeric;   v_deficit numeric;   v_cost_usdt numeric;   v_cost_tung numeric; BEGIN 
+secure_abandon_colony(uuid) |   DECLARE   v_planet planets%ROWTYPE;   v_fxu_fee numeric;   v_user_fxu numeric;   v_admin_id uuid;   v_active_fleet_count integer;   v_building_queue_count integer;   v_shipyard_queue_count integer;   v_research_on_planet boolean;   v_regeneration_days integer; BEGIN 
+secure_demolish_building(uuid,integer) |  DECLARE   v_planet planets%ROWTYPE; v_building planet_buildings%ROWTYPE; v_building_type building_types%ROWTYPE;   v_queue_count integer; v_current_level integer;   v_refund_metal bigint; v_refund_crystal bigint; v_refund_deuterium bigint;   v_fields_decrease integer := 0; BEGIN 
+update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint) |  DECLARE   v_planet RECORD;   v_result jsonb; BEGIN
+== funcs selecting random ship types
+bot_ai_tick
+process_expedition
+process_fleet_arrival
+== funcs iterating all ship_types (no where code)
+admin_raffle_catalog
+== shipyard_queue cols
+id:uuid, planet_id:uuid, item_type:text, ship_type_id:integer, defense_type_id:integer, quantity:integer, quantity_completed:integer, metal_cost:bigint, crystal_cost:bigint, deuterium_cost:bigint, build_time_per_unit:integer, queue_position:integer, start_time:timestamp with time zone, current_unit_end_time:timestamp with time zone, created_at:timestamp with time zone, status:text, blueprints_used:integer
+== building_queue cols
+id:uuid, planet_id:uuid, building_type_id:integer, target_level:integer, metal_cost:bigint, crystal_cost:bigint, deuterium_cost:bigint, build_time:integer, queue_position:integer, start_time:timestamp with time zone, end_time:timestamp with time zone, created_at:timestamp with time zone, status:text
+== fleets cols
+id:uuid:gen_random_uuid(), user_id:uuid:, origin_planet_id:uuid:, target_galaxy:integer:, target_system:integer:, target_position:integer:, target_type:text:'planet'::text, mission_type:text:, cargo_metal:numeric:0, cargo_crystal:numeric:0, cargo_deuterium:numeric:0, departure_time:timestamp with time zone:, arrival_time:timestamp with time zone:, return_time:timestamp with time zone:, is_returning:boolean:false, is_completed:boolean:false, created_at:timestamp with time zone:now(), arrival_notified:boolean:false, acs_id:uuid:, is_acs:boolean:false, accel_out:boolean:false, accel_ret:boolean:false, pending_dark_matter:numeric:0, pending_fxu:numeric:0
+== referral_commissions cols
+id:uuid:NO, referrer_id:uuid:NO, seller_id:uuid:NO, transaction_id:uuid:YES, commission_type:text:NO, resource_type:text:YES, amount:bigint:NO, created_at:timestamp with time zone:YES, fxu_amount:numeric:YES
+== triggers building/shipyard/research/user_technologies
+building_queue enforce_building_queue_limit CREATE TRIGGER enforce_building_queue_limit BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION check_building_queue_limit()
+building_queue protect_building_queue_trigger CREATE TRIGGER protect_building_queue_trigger BEFORE UPDATE ON public.building_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+building_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+planet_buildings protect_planet_buildings_trigger CREATE TRIGGER protect_planet_buildings_trigger BEFORE UPDATE ON public.planet_buildings FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+planet_buildings trg_building_completed_daily_mission CREATE TRIGGER trg_building_completed_daily_mission AFTER UPDATE OF level ON public.planet_buildings FOR EACH ROW WHEN ((new.level > old.level)) EXECUTE FUNCTION trg_building_completed_daily_mission()
+planet_buildings trg_building_inserted_daily_mission CREATE TRIGGER trg_building_inserted_daily_mission AFTER INSERT ON public.planet_buildings FOR EACH ROW EXECUTE FUNCTION trg_building_inserted_daily_mission()
+planet_buildings trigger_building_points CREATE TRIGGER trigger_building_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_buildings FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+planet_buildings trigger_enforce_lunar_base_fields_max CREATE TRIGGER trigger_enforce_lunar_base_fields_max AFTER INSERT OR UPDATE OF level ON public.planet_buildings FOR EACH ROW EXECUTE FUNCTION enforce_lunar_base_fields_max()
+planet_buildings trigger_update_fields_on_terraformer CREATE TRIGGER trigger_update_fields_on_terraformer AFTER INSERT OR UPDATE OF level ON public.planet_buildings FOR EACH ROW EXECUTE FUNCTION update_planet_fields_on_terraformer()
+research_queue protect_research_queue_trigger CREATE TRIGGER protect_research_queue_trigger BEFORE UPDATE ON public.research_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+research_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.research_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+shipyard_queue protect_shipyard_queue_trigger CREATE TRIGGER protect_shipyard_queue_trigger BEFORE UPDATE ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+shipyard_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+shipyard_queue trg_enforce_ship_blueprint_requirement CREATE TRIGGER trg_enforce_ship_blueprint_requirement BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION enforce_ship_blueprint_requirement()
+user_technologies enforce_single_research CREATE TRIGGER enforce_single_research BEFORE INSERT OR UPDATE ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION check_single_research()
+user_technologies protect_user_technologies_trigger CREATE TRIGGER protect_user_technologies_trigger BEFORE UPDATE ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+user_technologies trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT OR UPDATE OF is_researching, research_planet_id ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_research()
+user_technologies trg_research_completed_daily_mission CREATE TRIGGER trg_research_completed_daily_mission AFTER UPDATE OF level, is_researching ON public.user_technologies FOR EACH ROW WHEN (((new.level > old.level) AND (new.is_researching = false))) EXECUTE FUNCTION trg_research_completed_daily_mission()
+user_technologies trg_research_promote_next CREATE TRIGGER trg_research_promote_next AFTER UPDATE ON public.user_technologies FOR EACH ROW WHEN (((old.is_researching = true) AND (COALESCE(new.is_researching, false) = false))) EXECUTE FUNCTION trg_promote_research_queue()
+user_technologies trigger_research_points CREATE TRIGGER trigger_research_points AFTER INSERT OR DELETE OR UPDATE ON public.user_technologies FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_user_table()
+== tables like research
+research_queue
+== cancel listings fn
+
+DECLARE
+  v_owner uuid;
+  v_count integer;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    v_owner := OLD.user_id;
+  ELSE
+    -- UPDATE: solo actuar cuando el planeta pierde/cambia de dueno.
+    IF OLD.user_id IS NULL OR (NEW.user_id IS NOT DISTINCT FROM OLD.user_id) THEN
+      RETURN NEW;
+    END IF;
+    v_owner := OLD.user_id;
+  END IF;
+
+  UPDATE market_listings
+     SET status = 'cancelled', updated_at = now()
+   WHERE planet_id = OLD.id
+     AND status = 'active';
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+
+  IF v_count > 0 AND v_owner IS NOT NULL
+     AND EXISTS (SELECT 1 FROM profiles WHERE id = v_owner) THEN
+    INSERT INTO messages (recipient_id, sender_id, subject, body, message_type)
+    VALUES (
+      v_owner, v_owner,
+      'Ventas canceladas automaticamente',
+      'Se cancelaron ' || v_count || ' oferta(s) de venta en el mercado porque perdiste el planeta asociado y ya no dispones de los recursos o naves para entregarlas.',
+      'system'
+    );
+  END IF;
+
+  IF TG_OP = 'DELETE' THEN
+    RETURN OLD;
+  END IF;
+  RETURN NEW;
+END;
+
+== _bs_settle
+
+DECLARE
+  c_pool_rate  constant numeric := 0.05;
+  c_daily_rate constant numeric := 0.05;
+  c_ref_rate   constant numeric := 0.20;
+  m             public.battleship_matches%ROWTYPE;
+  v_cfg         public.battleship_config%ROWTYPE;
+  v_loser       uuid;
+  v_fee         numeric;
+  v_pool        numeric;
+  v_daily       numeric;
+  v_company     numeric;
+  v_referrer    uuid;
+  v_ref_share   numeric := 0;
+  v_admin_share numeric;
+  v_admin_id    uuid;
+  v_pending     numeric;
+  v_flush       numeric;
+BEGIN
+  SELECT * INTO m FROM public.battleship_matches WHERE id = p_match_id FOR UPDATE;
+  IF NOT FOUND OR m.status NOT IN ('placing', 'battle') OR p_winner NOT IN (m.player1, m.player2) THEN
+    RETURN;
+  END IF;
+  PERFORM public._internal_set_fxu_context();
+  UPDATE public.profiles SET fxu_balance = fxu_balance + m.pot WHERE id = p_winner;
+  UPDATE public.battleship_entries
+     SET payout = CASE WHEN user_id = p_winner THEN m.pot ELSE 0 END
+   WHERE match_id = p_match_id;
+  UPDATE public.battleship_matches
+     SET status = 'finished', winner = p_winner, end_reason = p_reason, payout = m.pot,
+         turn = NULL, deadline = NULL, finished_at = now(), version = version + 1, updated_at = now()
+   WHERE id = p_match_id;
+
+  IF NOT m.loser_fee THEN
+    -- Partidas antiguas: la comision ya se cobro al unirse
+    UPDATE public.battleship_config SET total_paid = total_paid + m.pot, updated_at = now() WHERE id = 1;
+    RETURN;
+  END IF;
+
+  v_loser   := CASE WHEN p_winner = m.player1 THEN m.player2 ELSE m.player1 END;
+  v_fee     := m.stake * 2 - m.pot;                -- 20% de la apuesta del perdedor
+  v_pool    := round(m.stake * c_pool_rate, 8);    -- 5%  pools normales
+  v_daily   := round(m.stake * c_daily_rate, 8);   -- 5%  pool diario Batalla de Naves
+  v_company := v_fee - v_pool - v_daily;           -- 10% empresa
+
+  SELECT p.referred_by INTO v_referrer FROM public.profiles p WHERE p.id = v_loser;
+  IF v_referrer IS NOT NULL AND v_referrer <> v_loser
+     AND EXISTS (SELECT 1 FROM public.profiles WHERE id = v_referrer) THEN
+    v_ref_share := round(v_company * c_ref_rate, 8);
+  ELSE
+    v_referrer := NULL;
+    v_ref_share := 0;
+  END IF;
+  v_admin_share := v_company - v_ref_share;
+
+  SELECT id INTO v_admin_id FROM public.profiles WHERE is_admin = true ORDER BY created_at ASC LIMIT 1;
+  IF v_admin_share > 0 AND v_admin_id IS NOT NULL THEN
+    UPDATE public.profiles SET fxu_balance = fxu_balance + v_admin_share WHERE id = v_admin_id;
+  END IF;
+
+  IF v_referrer IS NOT NULL AND v_ref_share > 0 THEN
+    UPDATE public.profiles SET fxu_balance = fxu_balance + v_ref_share WHERE id = v_referrer;
+    INSERT INTO public.referral_commissions (referrer_id, seller_id, transaction_id, commission_type, fxu_amount)
+    VALUES (v_referrer, v_loser, NULL, 'casino_battleship_referral', v_ref_share);
+  END IF;
+
+  UPDATE public.battleship_entries
+     SET fee = v_fee, pool_share = v_pool, daily_pool_share = v_daily, company_share = v_admin_share,
+         referrer_id = v_referrer, referrer_share = v_ref_share
+   WHERE match_id = p_match_id AND user_id = v_loser;
+
+  IF v_admin_share > 0 THEN
+    -- record_admin_revenue reparte la parte de los accionistas
+    PERFORM public.record_admin_revenue('casino_battleship', v_admin_share,
+      'Batalla de Naves: comision del perdedor', v_loser, p_match_id);
+  END IF;
+
+  -- Pools normales: se acumula y se envia en multiplos de 10
+  SELECT * INTO v_cfg FROM public.battleship_config WHERE id = 1 FOR UPDATE;
+  v_pending := v_cfg.pool_pending + v_pool;
+  v_flush := floor(v_pending / 10) * 10;
+  IF v_flush > 0 THEN
+    PERFORM public.contribute_to_jackpot(v_flush, 'casino_battleship', v_loser);
+    v_pending := v_pending - v_flush;
+  END IF;
+  UPDATE public.battleship_config
+     SET pool_pending        = v_pending,
+         daily_pool          = daily_pool + v_daily,
+         daily_pool_total_in = daily_pool_total_in + v_daily,
+         total_fees          = total_fees + v_fee,
+         total_paid          = total_paid + m.pot,
+         updated_at          = now()
+   WHERE id = 1;
+END;
+
+== cron
+auto-cancel-insufficient-listings|*/3 * * * *|SELECT public.auto_cancel_insufficient_market_listings();
+battleship-daily-pool|1 0 * * *|SELECT public.battleship_daily_pool_payout()
+battleship-tick|10 seconds|SELECT public.battleship_tick()
+bot_tick_worker|10 seconds|SELECT public.bot_tick_worker();
+clean_expired_cosmetics_every_5min|*/5 * * * *|SELECT public.clean_all_expired_cosmetics();
+cleanup-cron-run-details|30 4 * * *|DELETE FROM cron.job_run_details WHERE end_time < now() - interval '7 days'
+cleanup-http-response|0 4 * * *|DELETE FROM net._http_response WHERE created < now() - interval '24 hours'
+cleanup-old-completed-fleets|0 5 * * 0|DELETE FROM fleets WHERE is_completed = true AND arrival_time < now() - interval '30 days'
+cleanup-old-game-messages|30 3 * * *|DELETE FROM public.messages 
+    WHERE (
+      (message_type IN ('expedition', 'espionage') AND created_at < now() - interval '7 days')
+      OR (message_type = 'system' AND created_at < now() - interval '7 days')
+      OR (message_type = 'combat' AND created_at < now() - interval '7 days')
+    )
+cleanup_old_broadcast_messages|0 3 * * *|DELETE FROM public.messages WHERE message_type = 'broadcast' AND created_at < NOW() - INTERVAL '7 days'
+distribute-top50-pool|15 0 * * *|SELECT public.admin_distribute_monthly_pool()
+distribute-treasure-pool|5 0 * * *|SELECT admin_distribute_treasure_pool()
+enforce-alliance-member-limits|*/10 * * * *|SELECT public.cron_enforce_alliance_member_limits();
+expire-market-offers-24h|*/5 * * * *|SELECT public.cron_expire_market_offers();
+fetch-twitter-missions|*/5 * * * *|
+  SELECT net.http_post(
+    url := c.supabase_project_url || '/functions/v1/fetch-twitter-missions',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer ' || c.supabase_anon_key
+    ),
+    body := '{}'::jsonb
+  )
+  FROM twitter_social_config c
+  WHERE c.supabase_project_url IS NOT NULL
+    AND c.supabase_anon_key IS NOT NULL
+  LIMIT 1;
+  
+hero-duel-resolve|* * * * *|SELECT public.resolve_hero_duel(id) FROM public.hero_duels WHERE status = 'accepted' AND resolves_at <= now()
+lottery-auto-draw|10 0 * * *|SELECT public.cron_execute_lottery_draw();
+p2p_expire_offers_every_15min|*/15 * * * *|SELECT public.p2p_expire_stale_offers();
+raffle-auto-draw|* * * * *|SELECT public.cron_execute_raffle_draws();
+research-orphan-tick|* * * * *|SELECT public.cron_promote_orphan_research();
+sports-football-tick|* * * * *|SELECT public._sports_cron_tick()
+update-player-rankings|*/5 * * * *|SELECT public.update_all_rankings();

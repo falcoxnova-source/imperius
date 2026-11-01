@@ -1,0 +1,31 @@
+_distribute_shareholder_share|p_revenue_id uuid, p_revenue_type text, p_amount numeric, p_currency text, p_related_user_id uuid
+_log_stronghold_owner_change|
+_settle_stronghold_fleets|p_position integer
+abandon_stronghold|p_kind text, p_galaxy integer
+admin_add_shareholder|p_email text, p_percentage numeric, p_can_view boolean
+admin_list_shareholders|
+admin_remove_shareholder|p_id uuid
+admin_set_stronghold_limit|p_enabled boolean
+admin_shareholder_referral_stats|
+admin_shareholder_referrals|p_shareholder_id uuid
+admin_update_shareholder|p_id uuid, p_percentage numeric, p_is_active boolean, p_can_view boolean
+alliance_stronghold_block|p_alliance_id uuid, p_kind text, p_galaxy integer
+calculate_initial_deposits|p_fields integer, p_position integer, p_base_metal_per_field numeric
+confirm_deposit|p_tx_hash text, p_user_id uuid, p_amount numeric, p_block_number bigint, p_confirmations integer
+confirm_deposit|p_tx_hash text, p_user_id uuid, p_amount numeric, p_block_number bigint, p_confirmations integer, p_token_type text
+confirm_deposit_usdt|p_tx_hash text, p_user_id uuid, p_amount numeric, p_block_number bigint, p_confirmations integer
+credit_auto_deposit|p_tx_hash text, p_user_id uuid, p_amount numeric, p_token_type text, p_block_number bigint, p_child_address text
+get_ally_depot_planet_ids|p_planet_ids uuid[]
+get_deposit_position_factors|p_position integer
+get_planet_deposits|p_planet_id uuid
+get_stronghold_limit|
+hero_casino_recall|
+my_shareholder_earnings|
+process_acs_stronghold_arrival|p_acs_id uuid
+recall_deployed_fleet|p_fleet_id uuid
+recall_from_fortress|p_galaxy integer, p_ships jsonb
+recall_from_treasure_planet|p_galaxy integer, p_ships jsonb
+register_deposit_address|p_user_id uuid, p_address text, p_index bigint
+set_initial_deposits|
+stronghold_limit_enabled|
+stronghold_release|p_kind text, p_galaxy integer, p_subject text, p_body text

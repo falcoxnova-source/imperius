@@ -1,0 +1,274 @@
+== funcs using is_upgrading
+process_building_queue_internal
+global_process_all_expired_queues
+complete_building_queue_item
+optimized_global_queue_processor
+secure_demolish_building
+process_completed_building_queue
+process_all_user_building_queues
+admin_get_planet_inventory
+admin_set_planet_building
+admin_process_stuck_building_queues
+apply_attack_building_damage
+== contribute_to_jackpot
+
+DECLARE
+  v_expedition_amount numeric;
+  v_monthly_amount numeric;
+  v_plus_amount numeric;
+  v_destruction_amount numeric;
+  v_expedition_percent int;
+  v_monthly_percent int;
+  v_plus_percent int;
+  v_destruction_percent int;
+  v_new_total numeric;
+BEGIN
+  IF p_amount <= 0 THEN
+    RETURN 0;
+  END IF;
+
+  SELECT expedition_percent, monthly_percent, plus_percent, destruction_percent
+  INTO v_expedition_percent, v_monthly_percent, v_plus_percent, v_destruction_percent
+  FROM jackpot_pools WHERE id = 1;
+
+  IF v_expedition_percent IS NULL THEN
+    v_expedition_percent := 10;
+    v_monthly_percent := 10;
+    v_plus_percent := 50;
+    v_destruction_percent := 30;
+  END IF;
+  IF v_destruction_percent IS NULL THEN
+    v_destruction_percent := 40;
+  END IF;
+
+  v_expedition_amount := FLOOR(p_amount * v_expedition_percent / 100);
+  v_monthly_amount := FLOOR(p_amount * v_monthly_percent / 100);
+  v_plus_amount := FLOOR(p_amount * v_plus_percent / 100);
+  v_destruction_amount := FLOOR(p_amount * v_destruction_percent / 100);
+
+  UPDATE jackpot_pools
+  SET 
+    expedition_balance = expedition_balance + v_expedition_amount,
+    expedition_total = expedition_total + v_expedition_amount,
+    monthly_balance = monthly_balance + v_monthly_amount,
+    monthly_total = monthly_total + v_monthly_amount,
+    plus_balance = plus_balance + v_plus_amount,
+    plus_total = plus_total + v_plus_amount,
+    destruction_balance = destruction_balance + v_destruction_amount,
+    destruction_total = destruction_total + v_destruction_amount,
+    updated_at = now()
+  WHERE id = 1;
+
+  UPDATE jackpot
+  SET balance = balance + p_amount, total_contributed = total_contributed + p_amount, updated_at = now()
+  WHERE id = 1;
+
+  SELECT expedition_balance + monthly_balance + plus_balance + destruction_balance 
+  INTO v_new_total
+  FROM jackpot_pools WHERE id = 1;
+
+  INSERT INTO jackpot_history (user_id, type, amount, source, jackpot_balance_after)
+  VALUES (p_user_id, 'contribution', p_amount, p_source, v_new_total);
+
+  RETURN v_new_total;
+END;
+
+== record_admin_revenue
+
+DECLARE
+  v_revenue_id uuid;
+  v_currency   text;
+BEGIN
+  IF p_amount <= 0 THEN
+    RETURN NULL;
+  END IF;
+
+  v_currency := UPPER(COALESCE(p_currency, 'FXU'));
+  IF v_currency NOT IN ('FXU', 'USDT') THEN
+    RAISE EXCEPTION 'Invalid currency for admin_revenue: %', v_currency;
+  END IF;
+
+  INSERT INTO public.admin_revenue (revenue_type, amount, currency, description, related_user_id, related_tx_id)
+  VALUES (p_revenue_type, p_amount, v_currency, p_description, p_related_user_id, p_related_tx_id)
+  RETURNING id INTO v_revenue_id;
+
+  -- Reparto a accionistas (no-op si no hay accionistas activos)
+  PERFORM public._distribute_shareholder_share(v_revenue_id, p_revenue_type, p_amount, v_currency, p_related_user_id);
+
+  RETURN v_revenue_id;
+END;
+
+== _internal_set_fxu_context
+
+BEGIN
+  PERFORM set_config('app.fxu_update_allowed', 'shipyard_instant_complete', true);
+  PERFORM set_config('fxu.allow_update_9x7k2m', 'true', true);
+END;
+
+== funcs with item_code param
+create_market_listing(text,text,bigint,numeric,uuid)
+send_market_telegram_notification(uuid,text,text,text,bigint,numeric,numeric)
+create_buy_offer(text,text,bigint,numeric)
+get_market_price_reference(text,text)
+== create_market_listing ship handling
+6:  v_ship_quantity int;
+19:  v_ship_value bigint;
+20:  v_ship_total_value bigint;
+21:  v_current_ships_value_sold bigint;
+22:  v_active_ships_value bigint;
+23:  v_ships_value_remaining bigint;
+31:BEGIN
+85:  IF p_listing_type NOT IN ('resource', 'ship') THEN
+89:  -- Only VIP Plus users can sell ships (mientras el limite semanal esta activo)
+91:  IF p_listing_type = 'ship' AND NOT is_user_plus(v_user_id)
+108:  IF p_listing_type IN ('resource','ship') THEN
+113:    BEGIN
+114:      v_pref := get_market_price_reference(p_listing_type, p_item_code);
+119:          'error', 'El precio minimo para ' || p_item_code || ' es ' || v_dyn_min || ' FXU (20% por debajo del promedio del mercado).',
+128:          'error', 'El precio maximo para ' || p_item_code || ' es ' || v_dyn_max || ' FXU (20% por encima del promedio del mercado).',
+139:  IF v_limits.monthly_limit_enabled AND p_listing_type IN ('resource', 'ship') THEN
+144:      IF p_item_code = 'metal' THEN v_min_price := v_limits.min_price_metal;
+145:      ELSIF p_item_code = 'crystal' THEN v_min_price := v_limits.min_price_crystal;
+146:      ELSIF p_item_code = 'deuterium' THEN v_min_price := v_limits.min_price_deuterium;
+152:          'error', 'Precio minimo por unidad de ' || p_item_code || ' es ' || v_min_price || ' FXU',
+177:        AND ml.listing_type IN ('resource', 'ship')
+191:      SELECT CASE p_item_code
+201:      WHERE seller_id = v_user_id AND listing_type = 'resource' AND item_code = p_item_code
+208:    IF p_listing_type = 'ship' THEN
+210:      INTO v_ship_value FROM ship_types WHERE code = p_item_code;
+211:      v_ship_value := COALESCE(v_ship_value, 0);
+213:      IF v_ship_value > 0 THEN
+214:        v_ship_total_value := p_quantity * v_ship_value;
+217:        SELECT COALESCE(ships_value_sold, 0) INTO v_current_ships_value_sold
+219:        v_current_ships_value_sold := COALESCE(v_current_ships_value_sold, 0);
+== buy offers funcs
+expire_old_market_buy_offers()
+p2p_expire_stale_offers()
+get_p2p_fee_settings()
+get_p2p_health_metrics()
+p2p_expire_order(uuid)
+cancel_buy_offer(uuid)
+fulfill_buy_offer(uuid,bigint,uuid)
+get_p2p_economy_stats()
+p2p_offer_after_insert_notify()
+p2p_accept_offer(uuid,numeric,integer,jsonb)
+p2p_admin_resolve_dispute(uuid,boolean,text)
+p2p_notify_on_status_change()
+p2p_notify_on_order_create()
+get_p2p_admin_disputes(text)
+get_p2p_user_reputation(uuid)
+p2p_admin_list_disputes(text)
+p2p_autoban_on_dispute()
+p2p_cancel_offer(uuid)
+p2p_cleanup_old_dispute_evidence(integer)
+p2p_mark_paid(uuid)
+p2p_open_dispute(uuid,text,jsonb)
+p2p_rate_order(uuid,integer,text)
+p2p_send_message(uuid,text,text)
+get_p2p_reputations_for_users(uuid[])
+p2p_enforce_order_limits()
+p2p_message_notify_telegram()
+p2p_track_abandoned_order()
+p2p_rating_update_reputation()
+p2p_release_order(uuid)
+send_p2p_offer_telegram_notification(uuid)
+create_buy_offer(text,text,bigint,numeric)
+p2p_create_offer(text,text,text,numeric,numeric,numeric,numeric,integer[],text,text,integer)
+== process_completed_building_queue
+
+DECLARE
+  v_planet planets%ROWTYPE;
+  v_queue_item RECORD;
+  v_completed_count integer := 0;
+  v_result jsonb;
+  v_legacy_completed integer := 0;
+BEGIN
+  SELECT * INTO v_planet FROM planets WHERE id = p_planet_id;
+  IF NOT FOUND OR v_planet.user_id != auth.uid() THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Planet not found or not owned');
+  END IF;
+
+  FOR v_queue_item IN
+    SELECT bq.* FROM building_queue bq
+    WHERE bq.planet_id = p_planet_id
+    AND bq.end_time IS NOT NULL
+    AND bq.end_time <= (NOW() + INTERVAL '2 seconds')
+    ORDER BY bq.queue_position
+    FOR UPDATE OF bq SKIP LOCKED
+  LOOP
+    v_result := complete_building_queue_item(v_queue_item.id);
+    IF (v_result->>'success')::boolean THEN
+      v_completed_count := v_completed_count + 1;
+    END IF;
+  END LOOP;
+
+  SELECT COUNT(*) INTO v_legacy_completed
+  FROM planet_buildings
+  WHERE planet_id = p_planet_id
+  AND is_upgrading = true
+  AND upgrade_end_time IS NOT NULL
+  AND upgrade_end_time <= (NOW() + INTERVAL '2 seconds');
+
+  IF v_legacy_completed > 0 THEN
+    UPDATE planets
+    SET fields_used = fields_used + v_legacy_completed
+    WHERE id = p_planet_id;
+
+    UPDATE planet_buildings
+    SET level = level + 1, is_upgrading = false, upgrade_end_time = NULL
+    WHERE planet_id = p_planet_id
+    AND is_upgrading = true
+    AND upgrade_end_time IS NOT NULL
+    AND upgrade_end_time <= (NOW() + INTERVAL '2 seconds');
+  END IF;
+
+  RETURN jsonb_build_object('success', true, 'completed_count', v_completed_count + v_legacy_completed);
+END;
+
+== building_queue statuses
+building|343
+building|259
+== ship_types seq
+public.ship_types_id_seq|22
+22
+== ship_types category check
+UNIQUE (code)
+PRIMARY KEY (id)
+CHECK ((category = ANY (ARRAY['civil'::text, 'combat'::text, 'special'::text])))
+special
+combat
+civil
+== colony_ship row
+3|colony_ship|Nave Colonizadora|Permite establecer nuevas colonias en planetas deshabitados.|civil|10000|20000|10000|14400|21000|85|75|7500|2500|1000|{"espionage_probe": 5, "solar_satellite": 5}|/Imagenes/Naves/Colonizadores.webp
+== fleets checks
+CHECK ((mission_type = ANY (ARRAY['attack'::text, 'transport'::text, 'deploy'::text, 'colonize'::text, 'espionage'::text, 'recycle'::text, 'destroy'::text, 'expedition'::text, 'hold'::text, 'return'::text, 'harvest'::text])))
+== get_live_tung_price_usd
+0.007157
+== has pg_cron schedule fn
+cron.schedule(text,text)
+cron.schedule(text,text,text)
+== ws/edge processes fleets? function list w/ fleet_arrival
+process_user_pending_fleets(uuid)
+accelerate_fleet(uuid)
+cancel_fleet(uuid)
+_settle_stronghold_fleets(integer)
+process_all_pending_fleets()
+process_user_fleets(uuid)
+admin_process_stuck_fleets()
+accelerate_acs(uuid)
+== user_can_build_ship callers
+process_expedition
+== get_game_speed val
+1
+== jackpot source check
+CHECK ((id = 1))
+CHECK ((balance >= (0)::numeric))
+CHECK (((contribution_rate >= (0)::numeric) AND (contribution_rate <= (100)::numeric)))
+CHECK ((id = 1))
+CHECK (((max_win_percent >= (1)::numeric) AND (max_win_percent <= (100)::numeric)))
+CHECK (((min_win_percent >= (1)::numeric) AND (min_win_percent <= (100)::numeric)))
+CHECK (((win_chance >= (0)::numeric) AND (win_chance <= (100)::numeric)))
+CHECK ((type = ANY (ARRAY['contribution'::text, 'win'::text])))
+CHECK (((expedition_percent >= 0) AND (expedition_percent <= 100)))
+CHECK (((monthly_percent >= 0) AND (monthly_percent <= 100)))
+CHECK (((plus_percent >= 0) AND (plus_percent <= 100)))

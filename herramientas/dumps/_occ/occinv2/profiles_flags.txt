@@ -1,0 +1,13 @@
+is_admin boolean
+is_banned boolean
+is_bot boolean
+is_hidden boolean
+points_buildings integer
+points_defense integer
+points_expedition integer
+points_fleet integer
+points_research integer
+points_total integer
+vacation_mode boolean
+vacation_mode_enabled_at timestamp with time zone
+vacation_remaining_research_seconds integer

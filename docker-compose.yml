@@ -1,0 +1,553 @@
+# =============================================================================
+# XNOVA - FALCO-X UNIVERSO
+# =============================================================================
+# Docker Compose Configuration for Production Deployment
+# =============================================================================
+#
+# QUICK START:
+#   1. Run: ./scripts/setup-env.sh
+#   2. Run: docker compose --profile self-hosted up -d
+#
+# Or for production with custom values:
+#   1. Copy: cp .env.docker.example .env
+#   2. Edit: nano .env
+#   3. Run: docker compose --profile self-hosted up -d
+#
+# =============================================================================
+
+name: xnova-game
+
+# =============================================================================
+# DEFAULT VALUES (for development without .env file)
+# =============================================================================
+# These defaults allow the stack to start for development/testing.
+# For PRODUCTION, always use a properly configured .env file!
+# =============================================================================
+x-default-jwt-secret: &default-jwt-secret "xnova-super-secret-jwt-key-change-in-production-minimum-32-characters"
+x-default-postgres-password: &default-postgres-password "xnova-postgres-password-change-me"
+x-default-anon-key: &default-anon-key "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjE4NjE4MzM2MDB9.Kx_V0Hm3VvTN1q8Y5x2R9mZ7wP3cL6sN8dF2gH4jK0M"
+x-default-service-key: &default-service-key "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3MDQwNjcyMDAsImV4cCI6MTg2MTgzMzYwMH0.Ax_V1Hm4VvTN2q9Y6x3R0mZ8wP4cL7sN9dF3gH5jK1N"
+
+# =============================================================================
+# SERVICES
+# =============================================================================
+services:
+
+  # ===========================================================================
+  # FRONTEND SERVICE (Nginx + React)
+  # ===========================================================================
+  frontend:
+    container_name: xnova-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-http://localhost:8000}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjE4NjE4MzM2MDB9.Kx_V0Hm3VvTN1q8Y5x2R9mZ7wP3cL6sN8dF2gH4jK0M}
+        VITE_TOKEN_CONTRACT: ${VITE_TOKEN_CONTRACT:-0xd19C01DE3C379441c3F4e8af442E10a3EE440CdE}
+        VITE_BSC_RPC_URL: ${VITE_BSC_RPC_URL:-https://bsc-dataseed1.binance.org}
+        VITE_BSC_CHAIN_ID: ${VITE_BSC_CHAIN_ID:-56}
+        VITE_BSCSCAN_API_KEY: ${VITE_BSCSCAN_API_KEY:-}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - frontend-logs:/var/log/nginx
+    networks:
+      - xnova-public
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # POSTGRESQL DATABASE
+  # ===========================================================================
+  database:
+    container_name: xnova-database
+    image: supabase/postgres:15.1.1.61
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xnova123}
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      JWT_EXP: ${JWT_EXPIRY:-3600}
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - log_min_messages=warning
+      - -c
+      - max_connections=200
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - effective_cache_size=768MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - wal_buffers=16MB
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ===========================================================================
+  # SUPABASE AUTH (GoTrue)
+  # ===========================================================================
+  auth:
+    container_name: xnova-auth
+    image: supabase/auth:v2.190.0
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD:-xnova123}@database:5432/postgres
+      GOTRUE_DB_NAMESPACE: auth
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost}
+      GOTRUE_URI_ALLOW_LIST: ${ADDITIONAL_REDIRECT_URLS:-}
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL:-http://localhost:8000}
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY:-3600}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      GOTRUE_DISABLE_SIGNUP: ${DISABLE_SIGNUP:-false}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: true
+      GOTRUE_MAILER_AUTOCONFIRM: ${ENABLE_EMAIL_AUTOCONFIRM:-true}
+      GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED: true
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-587}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@xnova.local}
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-Xnova Game}
+      GOTRUE_SMTP_MAX_FREQUENCY: 1ns
+      GOTRUE_RATE_LIMIT_HEADER: X-Forwarded-For
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: ${RATE_LIMIT_EMAIL:-100}
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:9999/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # SUPABASE REST (PostgREST)
+  # ===========================================================================
+  rest:
+    container_name: xnova-rest
+    image: postgrest/postgrest:v12.0.2
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD:-xnova-postgres-password-change-me}@database:5432/postgres
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY:-3600}
+      PGRST_DB_MAX_ROWS: 1000
+      PGRST_DB_POOL: 10
+      PGRST_DB_POOL_TIMEOUT: 10
+    networks:
+      - xnova-internal
+    # healthcheck disabled: postgrest image is scratch (no shell/curl)
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:3000/ready || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+    #   start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # SUPABASE REALTIME
+  # ===========================================================================
+  realtime:
+    container_name: xnova-realtime
+    image: supabase/realtime:v2.28.32
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USER: supabase_admin
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-xnova-postgres-password-change-me}
+      DB_NAME: postgres
+      DB_AFTER_CONNECT_QUERY: "SET search_path TO _realtime"
+      DB_ENC_KEY: ${REALTIME_ENC_KEY:-supabaserealtime0enc0key032chars}
+      API_JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      SECRET_KEY_BASE: ${REALTIME_SECRET_KEY_BASE:-UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1u2oq0}
+      ERL_AFLAGS: "-proto_dist inet_tcp"
+      ENABLE_TAILSCALE: "false"
+      DNS_NODES: "''"
+      FLY_ALLOC_ID: xnova-realtime
+      FLY_APP_NAME: xnova-realtime
+      RLIMIT_NOFILE: 10000
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # SUPABASE STORAGE
+  # ===========================================================================
+  storage:
+    container_name: xnova-storage
+    image: supabase/storage-api:v0.46.4
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+      rest:
+        condition: service_started
+    environment:
+      ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjE4NjE4MzM2MDB9.Kx_V0Hm3VvTN1q8Y5x2R9mZ7wP3cL6sN8dF2gH4jK0M}
+      SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3MDQwNjcyMDAsImV4cCI6MTg2MTgzMzYwMH0.Ax_V1Hm4VvTN2q9Y6x3R0mZ8wP4cL7sN9dF3gH5jK1N}
+      POSTGREST_URL: http://rest:3000
+      PGRST_JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD:-xnova-postgres-password-change-me}@database:5432/postgres
+      FILE_SIZE_LIMIT: ${STORAGE_FILE_SIZE_LIMIT:-52428800}
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: local
+      GLOBAL_S3_BUCKET: stub
+      ENABLE_IMAGE_TRANSFORMATION: "true"
+      IMGPROXY_URL: http://imgproxy:5001
+    volumes:
+      - storage-data:/var/lib/storage
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # IMAGE PROXY (ImgProxy)
+  # ===========================================================================
+  imgproxy:
+    container_name: xnova-imgproxy
+    image: darthsim/imgproxy:v3.21
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    environment:
+      IMGPROXY_BIND: ":5001"
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_ENABLE_WEBP_DETECTION: "true"
+    volumes:
+      - storage-data:/var/lib/storage:ro
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # EDGE FUNCTIONS (Deno Runtime)
+  # ===========================================================================
+  functions:
+    container_name: xnova-functions
+    image: supabase/edge-runtime:v1.45.2
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-xnova-super-secret-jwt-key-change-in-production-minimum-32-characters}
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjE4NjE4MzM2MDB9.Kx_V0Hm3VvTN1q8Y5x2R9mZ7wP3cL6sN8dF2gH4jK0M}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3MDQwNjcyMDAsImV4cCI6MTg2MTgzMzYwMH0.Ax_V1Hm4VvTN2q9Y6x3R0mZ8wP4cL7sN9dF3gH5jK1N}
+      SUPABASE_DB_URL: postgres://postgres:${POSTGRES_PASSWORD:-xnova-postgres-password-change-me}@database:5432/postgres
+      VERIFY_JWT: "false"
+    volumes:
+      - ./supabase/functions:/home/deno/functions:ro
+    command:
+      - start
+      - --main-service
+      - /home/deno/functions/main
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # KONG API GATEWAY
+  # ===========================================================================
+  kong:
+    container_name: xnova-kong
+    image: kong:2.8.3
+    profiles: ["self-hosted"]
+    restart: unless-stopped
+    depends_on:
+      auth:
+        condition: service_healthy
+      rest:
+        condition: service_healthy
+    ports:
+      - "${KONG_HTTP_PORT:-8000}:8000"
+      - "${KONG_HTTPS_PORT:-8443}:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+      KONG_LOG_LEVEL: warn
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjE4NjE4MzM2MDB9.Kx_V0Hm3VvTN1q8Y5x2R9mZ7wP3cL6sN8dF2gH4jK0M}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3MDQwNjcyMDAsImV4cCI6MTg2MTgzMzYwMH0.Ax_V1Hm4VvTN2q9Y6x3R0mZ8wP4cL7sN9dF3gH5jK1N}
+    volumes:
+      - ./kong/kong.yml:/var/lib/kong/kong.yml:ro
+    networks:
+      - xnova-internal
+      - xnova-public
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================================================
+  # REDIS CACHE (Optional)
+  # ===========================================================================
+  redis:
+    container_name: xnova-redis
+    image: redis:7-alpine
+    profiles: ["self-hosted", "cache"]
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - xnova-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  database-data:
+    name: xnova-database-data
+    driver: local
+  storage-data:
+    name: xnova-storage-data
+    driver: local
+  redis-data:
+    name: xnova-redis-data
+    driver: local
+  frontend-logs:
+    name: xnova-frontend-logs
+    driver: local
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  xnova-internal:
+    name: xnova-internal
+    driver: bridge
+  xnova-public:
+    name: xnova-public
+    driver: bridge

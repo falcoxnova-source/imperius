@@ -1,0 +1,162 @@
+=== secure_add_to_building_queue
+=== secure_activate_building_queue
+=== complete_building_queue_item
+33-    v_old_level := v_existing_building.level;
+34-    UPDATE planet_buildings
+35:    SET level = v_queue.target_level, is_upgrading = false, upgrade_end_time = NULL
+36-    WHERE id = v_existing_building.id;
+37-  ELSE
+38-    v_levels_added := v_queue.target_level;
+39-    v_old_level := 0;
+40:    INSERT INTO planet_buildings (planet_id, building_type_id, level, is_upgrading)
+41-    VALUES (v_queue.planet_id, v_queue.building_type_id, v_queue.target_level, false);
+42-  END IF;
+=== process_building_queue_internal
+40-      v_levels_added := v_queue_item.target_level - v_existing_building.level;
+41-      UPDATE planet_buildings 
+42:      SET level = v_queue_item.target_level, is_upgrading = false, upgrade_end_time = NULL
+43-      WHERE id = v_existing_building.id;
+44-    ELSE
+45-      v_levels_added := v_queue_item.target_level;
+46:      INSERT INTO planet_buildings (planet_id, building_type_id, level, is_upgrading)
+47-      VALUES (v_queue_item.planet_id, v_queue_item.building_type_id, v_queue_item.target_level, false);
+48-    END IF;
+--
+85-  FROM planet_buildings
+86-  WHERE planet_id = p_planet_id
+87:    AND is_upgrading = true
+88-    AND upgrade_end_time IS NOT NULL
+89-    AND upgrade_end_time <= (NOW() + INTERVAL '2 seconds');
+--
+95-    
+96-    UPDATE planet_buildings
+97:    SET level = level + 1, is_upgrading = false, upgrade_end_time = NULL
+98-    WHERE planet_id = p_planet_id
+99:      AND is_upgrading = true
+100-      AND upgrade_end_time IS NOT NULL
+101-      AND upgrade_end_time <= (NOW() + INTERVAL '2 seconds');
+=== global_process_all_expired_queues
+21-LOOP
+22-BEGIN
+23:INSERT INTO planet_buildings (planet_id, building_type_id, level, is_upgrading, upgrade_end_time)
+24-VALUES (v_queue_item.planet_id, v_queue_item.building_type_id, v_queue_item.target_level, false, NULL)
+25-ON CONFLICT (planet_id, building_type_id)
+26-DO UPDATE SET 
+27-level = GREATEST(planet_buildings.level, v_queue_item.target_level),
+28:is_upgrading = false,
+29-upgrade_end_time = NULL;
+30-
+=== optimized_global_queue_processor
+45-LOOP
+46-BEGIN
+47:INSERT INTO planet_buildings (planet_id, building_type_id, level, is_upgrading, upgrade_end_time)
+48-VALUES (v_queue_item.planet_id, v_queue_item.building_type_id, v_queue_item.target_level, false, NULL)
+49-ON CONFLICT (planet_id, building_type_id)
+50-DO UPDATE SET
+51-level = GREATEST(planet_buildings.level, EXCLUDED.level),
+52:is_upgrading = false,
+53-upgrade_end_time = NULL;
+54-
+=== process_all_user_building_queues
+47-),
+48-upserted AS (
+49:INSERT INTO planet_buildings (planet_id, building_type_id, level, is_upgrading, upgrade_end_time)
+50-SELECT c.planet_id, c.building_type_id, c.target_level, false, NULL
+51-FROM completed c
+--
+53-DO UPDATE SET 
+54-level = GREATEST(planet_buildings.level, EXCLUDED.level),
+55:is_upgrading = false,
+56-upgrade_end_time = NULL
+57-RETURNING planet_id
+=== apply_attack_building_damage
+17-    AND bt.code IN ('robotics_factory','shipyard','research_lab','nanite_factory')
+18-    AND COALESCE(pb.level, 0) >= 1
+19:    AND COALESCE(pb.is_upgrading, false) = false
+20-  ORDER BY random()
+21-  LIMIT 1;
+=== secure_demolish_building
+24-  SELECT COUNT(*) INTO v_queue_count FROM building_queue WHERE planet_id = p_planet_id;
+25-  IF v_queue_count > 0 THEN RETURN jsonb_build_object('success', false, 'error', 'Cannot demolish while construction queue is active'); END IF;
+26:  IF v_building.is_upgrading THEN RETURN jsonb_build_object('success', false, 'error', 'Cannot demolish while building is upgrading'); END IF;
+27-
+28-  v_refund_metal := FLOOR(v_building_type.base_metal * POWER(v_building_type.cost_factor, v_current_level - 1) * 0.5);
+=== current is_upgrading rows
+0
+0
+=== cron/other callers of process queues
+process_shipyard_queue_internal
+process_next_shipyard_unit
+bot_process_queues
+process_completed_shipyard_queue
+=== process_shipyard_queue_core head
+
+DECLARE
+  v_owner uuid;
+  v_item_type text;
+  v_row shipyard_queue%ROWTYPE;
+  v_build integer;
+  v_remaining integer;
+  v_units integer;
+  v_total integer := 0;
+  v_guard integer;
+  v_ref_m numeric;    -- [SHYFIX1] reembolso de lote descartado
+  v_ref_c numeric;
+  v_ref_d numeric;
+  v_ref_bp integer;
+  v_bp_id bigint;
+BEGIN
+  SELECT user_id INTO v_owner FROM planets WHERE id = p_planet_id;
+  IF v_owner IS NULL THEN
+    RETURN 0;
+  END IF;
+
+  -- Serializa las llamadas concurrentes sobre el mismo planeta.
+  -- Sin esto, dos RPC simultaneas podrian acreditar las mismas unidades.
+  PERFORM 1 FROM shipyard_queue WHERE planet_id = p_planet_id FOR UPDATE;
+
+  FOREACH v_item_type IN ARRAY ARRAY['ship','defense']::text[] LOOP
+
+    -- (a) Retirar lotes ya agotados
+    DELETE FROM shipyard_queue
+    WHERE planet_id = p_planet_id
+      AND item_type = v_item_type
+      AND quantity_completed >= quantity;
+
+    -- (b) Renumerar y (c) restaurar invariante del reloj
+    WITH r AS (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY queue_position, created_at, id) AS np
+      FROM shipyard_queue
+      WHERE planet_id = p_planet_id AND item_type = v_item_type
+    )
+    UPDATE shipyard_queue sq
+    SET queue_position = r.np
+    FROM r
+    WHERE sq.id = r.id AND sq.queue_position IS DISTINCT FROM r.np;
+
+    UPDATE shipyard_queue
+    SET start_time = NULL, current_unit_end_time = NULL
+    WHERE planet_id = p_planet_id
+      AND item_type = v_item_type
+      AND queue_position > 1
+      AND (start_time IS NOT NULL OR current_unit_end_time IS NOT NULL);
+
+    -- (d) El activo siempre tiene reloj. Si le faltaba, arranca ahora.
+    UPDATE shipyard_queue
+    SET start_time = now(),
+        current_unit_end_time = now()
+          + (GREATEST(1, build_time_per_unit) || ' seconds')::interval
+    WHERE planet_id = p_planet_id
+      AND item_type = v_item_type
+      AND queue_position = 1
+      AND current_unit_end_time IS NULL;
+
+    -- (e) Producir unidades vencidas
+    v_guard := 0;
+    LOOP
+      v_guard := v_guard + 1;
+      EXIT WHEN v_guard > 200;
+
+      SELECT * INTO v_row
+      FROM shipyard_queue
+      WHERE planet_id = p_planet_id

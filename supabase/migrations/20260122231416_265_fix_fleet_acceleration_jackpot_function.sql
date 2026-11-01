@@ -1,0 +1,149 @@
+/*
+  # Fix Fleet Acceleration - Use Correct Jackpot Function
+  
+  ## Description
+  Fixes the accelerate_fleet function to use the correct jackpot contribution function name.
+*/
+
+CREATE OR REPLACE FUNCTION accelerate_fleet(p_fleet_id uuid)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id uuid;
+  v_fleet fleets%ROWTYPE;
+  v_fxu_cost integer;
+  v_current_fxu numeric;
+  v_jackpot_percent numeric;
+  v_jackpot_amount numeric;
+  v_revenue_amount numeric;
+  v_target_planet planets%ROWTYPE;
+  v_defender_id uuid;
+  v_origin_coords text;
+  v_is_hostile boolean;
+BEGIN
+  v_user_id := auth.uid();
+  
+  IF v_user_id IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+  END IF;
+  
+  -- Get fleet
+  SELECT * INTO v_fleet FROM fleets WHERE id = p_fleet_id;
+  
+  IF v_fleet IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Flota no encontrada');
+  END IF;
+  
+  -- Check ownership
+  IF v_fleet.user_id != v_user_id THEN
+    RETURN jsonb_build_object('success', false, 'error', 'No eres el propietario de esta flota');
+  END IF;
+  
+  -- Check if already completed
+  IF v_fleet.is_completed THEN
+    RETURN jsonb_build_object('success', false, 'error', 'La flota ya ha llegado');
+  END IF;
+  
+  -- Calculate FXU cost
+  v_fxu_cost := calculate_fxu_cost_fleet(p_fleet_id);
+  
+  IF v_fxu_cost <= 0 THEN
+    RETURN jsonb_build_object('success', false, 'error', 'La flota esta a punto de llegar');
+  END IF;
+  
+  -- Check FXU balance
+  SELECT fxu_balance INTO v_current_fxu FROM profiles WHERE id = v_user_id;
+  
+  IF v_current_fxu IS NULL OR v_current_fxu < v_fxu_cost THEN
+    RETURN jsonb_build_object(
+      'success', false, 
+      'error', 'FXU insuficiente. Necesitas ' || v_fxu_cost || ' FXU (tienes ' || COALESCE(v_current_fxu, 0)::integer || ')'
+    );
+  END IF;
+  
+  -- Get jackpot percentage from settings
+  SELECT COALESCE(value::numeric, 49) INTO v_jackpot_percent
+  FROM game_settings WHERE key = 'fleet_acceleration_jackpot_percent';
+  
+  IF v_jackpot_percent < 0 THEN v_jackpot_percent := 0; END IF;
+  IF v_jackpot_percent > 100 THEN v_jackpot_percent := 100; END IF;
+  
+  -- Calculate jackpot and revenue amounts
+  v_jackpot_amount := FLOOR(v_fxu_cost * v_jackpot_percent / 100);
+  v_revenue_amount := v_fxu_cost - v_jackpot_amount;
+  
+  -- Deduct FXU from user
+  UPDATE profiles 
+  SET fxu_balance = fxu_balance - v_fxu_cost 
+  WHERE id = v_user_id;
+  
+  -- Record revenue
+  IF v_revenue_amount > 0 THEN
+    INSERT INTO admin_revenue (type, amount, user_id, description)
+    VALUES ('fleet_acceleration', v_revenue_amount, v_user_id, 
+      'Aceleracion de flota ' || v_fleet.mission_type || 
+      CASE WHEN v_fleet.is_returning THEN ' (regreso)' ELSE '' END
+    );
+  END IF;
+  
+  -- Contribute to jackpot (using correct function name)
+  IF v_jackpot_amount > 0 THEN
+    PERFORM contribute_to_jackpot(v_user_id, v_jackpot_amount, 'fleet_acceleration');
+  END IF;
+  
+  -- Check if this is a hostile mission (for defender notification)
+  v_is_hostile := v_fleet.mission_type IN ('attack', 'espionage', 'acs_attack') AND NOT v_fleet.is_returning;
+  
+  -- If hostile, notify the defender
+  IF v_is_hostile THEN
+    SELECT p.* INTO v_target_planet
+    FROM planets p
+    WHERE p.galaxy = v_fleet.target_galaxy 
+      AND p.solar_system = v_fleet.target_system 
+      AND p.position = v_fleet.target_position
+    LIMIT 1;
+    
+    IF v_target_planet IS NOT NULL AND v_target_planet.user_id != v_user_id THEN
+      v_defender_id := v_target_planet.user_id;
+      
+      -- Get origin coordinates for the message
+      SELECT '[' || p.galaxy || ':' || p.solar_system || ':' || p.position || ']' INTO v_origin_coords
+      FROM planets p WHERE p.id = v_fleet.origin_planet_id;
+      
+      -- Send notification to defender
+      INSERT INTO messages (recipient_id, sender_name, subject, body, message_type)
+      VALUES (
+        v_defender_id,
+        'Sistema de Defensa',
+        'ALERTA: Flota hostil acelerada',
+        'Una flota hostil de tipo "' || v_fleet.mission_type || '" procedente de ' || COALESCE(v_origin_coords, 'coordenadas desconocidas') || 
+        ' ha sido ACELERADA y llegara antes de lo previsto a tu planeta en [' || 
+        v_fleet.target_galaxy || ':' || v_fleet.target_system || ':' || v_fleet.target_position || '].' ||
+        E'\n\nPrepara tus defensas inmediatamente.',
+        'combat'
+      );
+    END IF;
+  END IF;
+  
+  -- Update fleet times to now (instant arrival)
+  IF v_fleet.is_returning THEN
+    UPDATE fleets 
+    SET return_time = now() - interval '1 second'
+    WHERE id = p_fleet_id;
+  ELSE
+    UPDATE fleets 
+    SET arrival_time = now() - interval '1 second'
+    WHERE id = p_fleet_id;
+  END IF;
+  
+  RETURN jsonb_build_object(
+    'success', true,
+    'message', 'Flota acelerada exitosamente',
+    'fxu_spent', v_fxu_cost,
+    'jackpot_contribution', v_jackpot_amount
+  );
+END;
+$$;

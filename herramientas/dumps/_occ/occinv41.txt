@@ -1,0 +1,9 @@
+=== triggers planet_ships ===
+protect_planet_ships_trigger|CREATE TRIGGER protect_planet_ships_trigger BEFORE UPDATE ON public.planet_ships FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trigger_fleet_points|CREATE TRIGGER trigger_fleet_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+BEGIN
+NOTICE:  inv has 24: 1
+NOTICE:  set: {"success": true, "planet_id": "720d94d5-89c0-413e-bc8e-9ef26931cb6c", "ship_name": "Nave de Ocupación", "new_quantity": 3, "old_quantity": 0, "ship_type_id": 24}
+NOTICE:  qty now: 3
+DO
+ROLLBACK

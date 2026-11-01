@@ -1,0 +1,53 @@
+== listings cols
+id uuid gen_random_uuid()
+seller_id uuid 
+listing_type text 
+item_code text 
+quantity bigint 
+price_per_unit numeric 
+total_price numeric 
+planet_id uuid 
+status text 'active'::text
+created_at timestamp with time zone now()
+updated_at timestamp with time zone now()
+purchasable_at timestamp with time zone now()
+== buy cols
+id uuid gen_random_uuid()
+buyer_id uuid 
+listing_type text 
+item_code text 
+quantity bigint 
+quantity_filled bigint 0
+price_per_unit numeric 
+total_price numeric 
+status text 'active'::text
+created_at timestamp with time zone now()
+updated_at timestamp with time zone now()
+== funcs expire
+_occ_try_start
+cron_expire_market_offers
+expire_old_market_listings
+get_market_listings_public
+get_my_monthly_market_sales
+secure_send_fleet
+start_research
+toggle_vacation_mode
+== settings
+market_fee_percent|10
+market_listing_cooldown_minutes|5
+market_fee_admin_share|40
+market_fee_pool_share|30
+market_fee_referral_share|30
+supply_box_market_ratio|0.5
+== status counts
+active|234|2026-10-09 03:35:25.138285+00|2026-10-14 16:14:53.180979+00
+sold|3032|2026-06-24 19:16:52.603708+00|2026-10-14 14:54:25.671401+00
+cancelled|19051|2026-06-22 16:30:30.820077+00|2026-10-14 15:48:49.700125+00
+cancelled|34
+filled|17
+== triggers
+trg_return_blueprint_on_listing_cancel|market_listings|CREATE TRIGGER trg_return_blueprint_on_listing_cancel AFTER UPDATE OF status ON public.market_listings FOR EACH ROW EXECUTE FUNCTION trg_return_blueprint_on_listing_cancel()
+trg_set_market_listing_purchasable_at|market_listings|CREATE TRIGGER trg_set_market_listing_purchasable_at BEFORE INSERT ON public.market_listings FOR EACH ROW EXECUTE FUNCTION set_market_listing_purchasable_at()
+trg_guard_blueprint_sale|market_listings|CREATE TRIGGER trg_guard_blueprint_sale BEFORE UPDATE ON public.market_listings FOR EACH ROW EXECUTE FUNCTION trg_guard_blueprint_sale()
+trg_guard_colony_listing|market_listings|CREATE TRIGGER trg_guard_colony_listing BEFORE INSERT OR UPDATE ON public.market_listings FOR EACH ROW EXECUTE FUNCTION trg_guard_colony_listing()
+trg_colony_listing_sale_state|market_listings|CREATE TRIGGER trg_colony_listing_sale_state AFTER INSERT OR UPDATE OF status ON public.market_listings FOR EACH ROW WHEN ((new.listing_type = 'colony'::text)) EXECUTE FUNCTION _trg_colony_listing_sale_state()

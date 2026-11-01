@@ -1,0 +1,124 @@
+== sigs
+calculate_and_sync_resources_internal(p_planet_id uuid, p_user_id uuid) -> jsonb
+calculate_building_points(p_user_id uuid) -> integer
+check_bashing_limit(p_attacker_id uuid, p_defender_id uuid) -> jsonb
+check_noob_protection(p_attacker_id uuid, p_defender_id uuid) -> jsonb
+enforce_ship_blueprint_requirement() -> trigger
+fleet_calc_distance(p_origin_galaxy integer, p_origin_system integer, p_origin_position integer, p_target_galaxy integer, p_target_system integer, p_target_position integer) -> integer
+fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer) -> integer
+fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer, p_admiral_bonus numeric) -> integer
+fleet_calc_fuel(p_fleet_ships jsonb, p_distance integer, p_speed_percent integer) -> bigint
+fleet_calc_slowest_speed(p_fleet_ships jsonb, p_user_id uuid) -> integer
+is_user_plus(p_user_id uuid) -> boolean
+process_expedition(p_fleet_id uuid) -> jsonb
+process_fleet_arrival(p_fleet_id uuid) -> void
+secure_send_fleet(p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_mission_type text, p_fleet_ships jsonb, p_cargo_metal bigint, p_cargo_crystal bigint, p_cargo_deuterium bigint, p_speed_percent integer, p_target_type text, p_override_user_id uuid) -> jsonb
+sync_planet_resources(p_planet_id uuid) -> jsonb
+validate_fleet_mission(p_user_id uuid, p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_mission_type text, p_target_type text) -> jsonb
+== md5 live vs dumps
+check_noob_protection|96e925fcf6ade8e76aae981b9a01985e
+enforce_ship_blueprint_requirement|97066571b46f8eb338e8fe11433b7602
+process_expedition|2baad2630d3e8ddd6d67fa92511f934c
+process_fleet_arrival|806e8f13a6776b16165a378907c2bcb9
+purchase_colony_listing|df40c12311323a24f15bc7f56c2fcd9a
+secure_send_fleet|feb574fc027524ee5b2766d58325a2de
+validate_fleet_mission|671649e40ac84c645a7bb0529c755914
+== cols alliance_members / points_update_queue / game_settings / ship_requirements / market_listings
+alliance_members.id uuid
+alliance_members.alliance_id uuid
+alliance_members.user_id uuid
+alliance_members.rank_name text
+alliance_members.rank_level integer
+alliance_members.can_invite boolean
+alliance_members.can_kick boolean
+alliance_members.can_edit boolean
+alliance_members.joined_at timestamp with time zone
+game_settings.id integer
+game_settings.key text
+game_settings.value text
+game_settings.description text
+game_settings.updated_at timestamp with time zone
+market_listings.id uuid
+market_listings.seller_id uuid
+market_listings.listing_type text
+market_listings.item_code text
+market_listings.quantity bigint
+market_listings.price_per_unit numeric
+market_listings.total_price numeric
+market_listings.planet_id uuid
+market_listings.status text
+market_listings.created_at timestamp with time zone
+market_listings.updated_at timestamp with time zone
+market_listings.purchasable_at timestamp with time zone
+points_update_queue.user_id uuid
+points_update_queue.queued_at timestamp with time zone
+referral_commissions.id uuid
+referral_commissions.referrer_id uuid
+referral_commissions.seller_id uuid
+referral_commissions.transaction_id uuid
+referral_commissions.commission_type text
+referral_commissions.resource_type text
+referral_commissions.amount bigint
+referral_commissions.created_at timestamp with time zone
+referral_commissions.fxu_amount numeric
+ship_requirements.id integer
+ship_requirements.ship_type_id integer
+ship_requirements.required_building_id integer
+ship_requirements.required_building_level integer
+ship_requirements.required_tech_id integer
+ship_requirements.required_tech_level integer
+== funcs referencing ship_types (names)
+_raffle_deliver_prize, admin_audit_suspicious_ships, admin_clean_fraudulent_ships, admin_create_raffle, admin_get_planet_inventory, admin_list_instant_unit_offers, admin_raffle_catalog, admin_restore_fleet, admin_set_planet_ship, auto_cancel_insufficient_listings, auto_cancel_insufficient_market_listings, bot_ai_tick, bot_farm_inactive_players, calculate_fleet_points, calculate_fxu_cost_shipyard, calculate_planet_resources, create_buy_offer, create_market_listing, distribute_acs_loot, distribute_acs_ships_after_combat, enforce_ship_blueprint_requirement, fleet_calc_fuel, fleet_calc_slowest_speed, fulfill_buy_offer, generate_espionage_report, get_acs_combined_ships, get_acs_participant_details, get_acs_total_cargo_capacity, get_all_fortresses, get_all_treasure_planets, get_destruction_ranking, get_fortress_info, get_incoming_attacks, get_my_monthly_market_sales, get_treasure_planet_info, get_universe_records, instant_complete_shipyard, instant_complete_shipyard_item, join_acs_with_fleet, perform_acs_combat, perform_combat, perform_combat_acs, phalanx_scan, preview_shipyard_fxu_cost, process_acs_stronghold_arrival, process_espionage_mission, process_expedition, process_fleet_arrival, process_moon_destruction, purchase_instant_unit, purchase_market_listing, purchase_market_listing, purchase_ship_blueprint, resolve_fortress_attack, resolve_treasure_planet_attack, secure_add_to_shipyard_queue, secure_add_to_shipyard_queue, secure_send_fleet
+== funcs selecting ship_types generically (random/ORDER BY/NOT IN)
+bot_ai_tick
+process_fleet_arrival
+process_expedition
+create_market_listing
+create_buy_offer
+== occupation existing
+col galaxy_positions.is_occupied
+col galaxy_positions.occupied_by
+== colony ship row
+{"id":3,"code":"colony_ship","name":"Nave Colonizadora","description":"Permite establecer nuevas colonias en planetas deshabitados.","category":"civil","metal_cost":10000,"crystal_cost":20000,"deuterium_cost":10000,"build_time_seconds":14400,"structural_integrity":21000,"shield_power":85,"weapon_power":75,"cargo_capacity":7500,"base_speed":2500,"fuel_consumption":1000,"rapid_fire":{"espionage_probe": 5, "solar_satellite": 5},"image_url":"/Imagenes/Naves/Colonizadores.webp"}
+== colony ship requirements
+{"id":14,"ship_type_id":3,"required_building_id":11,"required_building_level":4,"required_tech_id":null,"required_tech_level":0}
+{"id":15,"ship_type_id":3,"required_building_id":null,"required_building_level":0,"required_tech_id":7,"required_tech_level":3}
+== planets FK / delete rule
+planets_user_id_fkey|FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE
+== protect_planets trigger def
+CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+== cron jobs
+auto-cancel-insufficient-listings | */3 * * * * | SELECT public.auto_cancel_insufficient_market_listings();
+battleship-daily-pool | 1 0 * * * | SELECT public.battleship_daily_pool_payout()
+battleship-tick | 10 seconds | SELECT public.battleship_tick()
+bot_tick_worker | 10 seconds | SELECT public.bot_tick_worker();
+clean_expired_cosmetics_every_5min | */5 * * * * | SELECT public.clean_all_expired_cosmetics();
+cleanup-cron-run-details | 30 4 * * * | DELETE FROM cron.job_run_details WHERE end_time < now() - interval '7 days'
+cleanup-http-response | 0 4 * * * | DELETE FROM net._http_response WHERE created < now() - interval '24 hours'
+cleanup-old-completed-fleets | 0 5 * * 0 | DELETE FROM fleets WHERE is_completed = true AND arrival_time < now() - interval '30 days'
+cleanup-old-game-messages | 30 3 * * * | DELETE FROM public.messages 
+    WHERE (
+      (message_type IN ('expedition', 'espionage') AND created_at < now() - i
+cleanup_old_broadcast_messages | 0 3 * * * | DELETE FROM public.messages WHERE message_type = 'broadcast' AND created_at < NOW() - INTERVAL '7 days'
+distribute-top50-pool | 15 0 * * * | SELECT public.admin_distribute_monthly_pool()
+distribute-treasure-pool | 5 0 * * * | SELECT admin_distribute_treasure_pool()
+enforce-alliance-member-limits | */10 * * * * | SELECT public.cron_enforce_alliance_member_limits();
+expire-market-offers-24h | */5 * * * * | SELECT public.cron_expire_market_offers();
+fetch-twitter-missions | */5 * * * * | 
+  SELECT net.http_post(
+    url := c.supabase_project_url || '/functions/v1/fetch-twitter-missions',
+    headers := 
+hero-duel-resolve | * * * * * | SELECT public.resolve_hero_duel(id) FROM public.hero_duels WHERE status = 'accepted' AND resolves_at <= now()
+lottery-auto-draw | 10 0 * * * | SELECT public.cron_execute_lottery_draw();
+p2p_expire_offers_every_15min | */15 * * * * | SELECT public.p2p_expire_stale_offers();
+raffle-auto-draw | * * * * * | SELECT public.cron_execute_raffle_draws();
+research-orphan-tick | * * * * * | SELECT public.cron_promote_orphan_research();
+sports-football-tick | * * * * * | SELECT public._sports_cron_tick()
+update-player-rankings | */5 * * * * | SELECT public.update_all_rankings();

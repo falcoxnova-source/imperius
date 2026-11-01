@@ -1,0 +1,90 @@
+﻿sig admin_set_planet_ship(uuid,integer,integer)
+sig calculate_planet_resources(uuid)
+sig cancel_fleet(uuid)
+sig create_buy_offer(text,text,bigint,numeric)
+sig fulfill_buy_offer(uuid,bigint,uuid)
+sig get_live_tung_price_usd()
+sig purchase_market_listing(uuid,integer)
+sig purchase_market_listing(uuid,uuid)
+sig purchase_market_listing(uuid,integer,uuid)
+sig secure_add_to_shipyard_queue(uuid,integer,integer)
+sig secure_add_to_shipyard_queue(uuid,text,integer,integer)
+grant calc true
+listing types blueprint,colony,dark_matter,resource,ship
+bo cols id,buyer_id,listing_type,item_code,quantity,quantity_filled,price_per_unit,total_price,status,created_at,updated_at
+tables bo instant_unit_offers,market_buy_offers,p2p_offers,hero_duel_offers_view
+CREATE OR REPLACE FUNCTION public.create_buy_offer(p_listing_type text, p_item_code text, p_quantity bigint, p_price_per_unit numeric)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_user_id uuid;
+  v_total_price numeric;
+  v_fxu_balance numeric;
+  v_telegram_id bigint;
+  v_is_member boolean;
+  v_offer_id uuid;
+  v_vacation boolean;
+  v_pref jsonb;
+  v_dyn_min numeric;
+BEGIN
+  v_user_id := auth.uid();
+  IF v_user_id IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+  END IF;
+
+  SELECT telegram_id INTO v_telegram_id
+  FROM telegram_links
+  WHERE user_id = v_user_id;
+
+  IF v_telegram_id IS NULL THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'error', 'Debes vincular tu cuenta de Telegram para usar el mercado.',
+      'requires_telegram', true
+    );
+  END IF;
+
+  SELECT is_member INTO v_is_member
+  FROM telegram_task_rewards
+  WHERE user_id = v_user_id AND task_type = 'join_group';
+
+  IF v_is_member IS NULL OR v_is_member = false THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'error', 'Debes ser miembro del grupo de Telegram para usar el mercado.',
+      'requires_telegram', true
+    );
+  END IF;
+
+  SELECT vacation_mode INTO v_vacation FROM profiles WHERE id = v_user_id;
+  IF COALESCE(v_vacation, false) THEN
+    RETURN jsonb_build_object('success', false, 'error', 'No puedes operar en el mercado en modo vacaciones');
+  END IF;
+
+  IF p_listing_type NOT IN ('resource', 'ship') THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Tipo invalido');
+  END IF;
+
+  IF p_listing_type = 'resource' AND p_item_code NOT IN ('metal', 'crystal', 'deuterium') THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Recurso invalido');
+  END IF;
+
+  IF p_listing_type = 'ship' AND NOT EXISTS (SELECT 1 FROM ship_types WHERE code = p_item_code) THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Tipo de nave invalido');
+  END IF;
+
+  IF p_quantity <= 0 THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Cantidad debe ser mayor a 0');
+  END IF;
+
+  IF p_price_per_unit <= 0 THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Precio debe ser mayor a 0');
+  END IF;
+
+  -- Precio minimo DINAMICO (20% por debajo del promedio del mercado) para recurso y nave.
+  IF p_listing_type IN ('resource', 'ship') THEN
+    v_pref := get_market_price_reference(p_listing_type, p_item_code);
+    v_dyn_min := (v_pref->>'min_pr

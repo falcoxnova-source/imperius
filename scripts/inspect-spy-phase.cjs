@@ -1,0 +1,17 @@
+const { Client } = require('pg');
+(async () => {
+  const c = new Client({
+    host: 'aws-1-eu-north-1.pooler.supabase.com',
+    port: 6543,
+    user: 'postgres.hhrgcnvydmjqcevgmlhj',
+    password: process.env.SUPABASE_DB_PASSWORD || 'Jfs.samsung1989*',
+    database: 'postgres',
+    ssl: { rejectUnauthorized: false }
+  });
+  await c.connect();
+  const r = await c.query("SELECT prosrc FROM pg_proc WHERE proname='bot_ai_tick'");
+  const lines = r.rows[0].prosrc.split(/\r?\n/);
+  console.log('--- PHASE E espionage (716-765) ---');
+  console.log(lines.slice(715, 765).join('\n'));
+  await c.end();
+})();

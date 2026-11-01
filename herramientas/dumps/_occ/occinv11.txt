@@ -1,0 +1,450 @@
+﻿=== purchase_market_listing(uuid,integer,uuid) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.purchase_market_listing(p_listing_id uuid, p_quantity integer DEFAULT NULL::integer, p_buyer_planet_id uuid DEFAULT NULL::uuid)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5: AS $function$
+6: DECLARE
+7:   v_user_id uuid;
+8:   v_listing RECORD;
+9:   v_buyer_planet_id uuid;
+10:   v_purchase_qty integer;
+11:   v_total_price numeric;
+12:   v_buyer_fxu numeric;
+13:   v_admin_id uuid;
+14:   v_fee numeric;
+15:   v_jackpot_amount numeric;
+16:   v_admin_fee numeric;
+17:   v_referral_fee numeric;
+18:   v_seller_amount numeric;
+19:   v_ship_type_id integer;
+20:   v_market_fee_percent numeric;
+21:   v_referrer_id uuid;
+22:   v_transaction_id uuid;
+23:   v_seller_resources RECORD;
+24:   v_seller_ship_qty integer;
+25:   v_telegram_id bigint;
+26:   v_is_member boolean;
+27:   v_year_week text;
+28:   v_ship_value bigint;
+29: BEGIN
+30:   v_user_id := auth.uid();
+31:   IF v_user_id IS NULL THEN
+32:     RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
+33:   END IF;
+34: 
+35:   IF EXISTS (SELECT 1 FROM profiles WHERE id = v_user_id AND vacation_mode = true) THEN
+36:     RETURN jsonb_build_object('success', false, 'error', 'Cannot use the market while in vacation mode');
+37:   END IF;
+38: 
+39:   SELECT telegram_id INTO v_telegram_id FROM telegram_links WHERE user_id = v_user_id;
+40:   IF v_telegram_id IS NULL THEN
+41:     RETURN jsonb_build_object('success', false, 'error', 'Debes vincular tu cuenta de Telegram para usar el mercado.', 'requires_telegram', true);
+42:   END IF;
+43: 
+44:   SELECT is_member INTO v_is_member FROM telegram_task_rewards WHERE user_id = v_user_id AND task_type = 'join_group';
+45:   IF v_is_member IS NULL OR v_is_member = false THEN
+=== fulfill_buy_offer(uuid,bigint,uuid) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.fulfill_buy_offer(p_offer_id uuid, p_quantity bigint, p_planet_id uuid DEFAULT NULL::uuid)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: DECLARE
+8:   v_user_id uuid;
+9:   v_offer RECORD;
+10:   v_fill_qty bigint;
+11:   v_fill_price numeric;
+12:   v_fee numeric;
+13:   v_jackpot_contribution_rate numeric;
+14:   v_jackpot_amount numeric;
+15:   v_admin_fee numeric;
+16:   v_seller_amount numeric;
+17:   v_admin_id uuid;
+18:   v_market_fee_percent numeric;
+19:   v_ship_type_id integer;
+20:   v_seller_ship_qty integer;
+21:   v_seller_resources RECORD;
+22:   v_seller_dm integer;
+23:   v_telegram_id bigint;
+24:   v_is_member boolean;
+25:   v_referrer_id uuid;
+26:   v_referral_commission_percent numeric;
+27:   v_referral_commission numeric;
+28:   v_referral_resource_amount bigint;
+29:   v_referrer_planet_id uuid;
+30:   v_transaction_id uuid;
+31:   v_vacation boolean;
+32:   v_buyer_planet_id uuid;
+33: BEGIN
+34:   v_user_id := auth.uid();
+35:   IF v_user_id IS NULL THEN
+36:     RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+37:   END IF;
+38: 
+39:   SELECT telegram_id INTO v_telegram_id
+40:   FROM telegram_links
+41:   WHERE user_id = v_user_id;
+42: 
+43:   IF v_telegram_id IS NULL THEN
+44:     RETURN jsonb_build_object(
+45:       'success', false,
+=== purchase_market_listing(uuid,integer) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.purchase_market_listing(p_listing_id uuid, p_quantity integer DEFAULT NULL::integer)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4: AS $function$
+5: DECLARE
+6:   v_user_id uuid;
+7:   v_listing RECORD;
+8:   v_buyer_planet_id uuid;
+9:   v_purchase_qty integer;
+10:   v_total_price numeric;
+11:   v_buyer_fxu numeric;
+12:   v_admin_id uuid;
+13:   v_fee numeric;
+14:   v_jackpot_amount numeric;
+15:   v_admin_fee numeric;
+16:   v_referral_fee numeric;
+17:   v_seller_amount numeric;
+18:   v_ship_type_id integer;
+19:   v_market_fee_percent numeric;
+20:   v_referrer_id uuid;
+21:   v_transaction_id uuid;
+22:   v_seller_resources RECORD;
+23:   v_seller_ship_qty integer;
+24:   v_telegram_id bigint;
+25:   v_is_member boolean;
+26:   v_year_week text;
+27:   v_ship_value bigint;
+28:   -- Configurable share percentages
+29:   v_admin_share numeric;
+30:   v_pool_share numeric;
+31:   v_referral_share numeric;
+32: BEGIN
+33:   v_user_id := auth.uid();
+34:   IF v_user_id IS NULL THEN
+35:     RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
+36:   END IF;
+37: 
+38:   -- Vacation mode check
+39:   IF EXISTS (SELECT 1 FROM profiles WHERE id = v_user_id AND vacation_mode = true) THEN
+40:     RETURN jsonb_build_object('success', false, 'error', 'Cannot use the market while in vacation mode');
+41:   END IF;
+42: 
+43:   -- Telegram verification
+44:   SELECT telegram_id INTO v_telegram_id
+45:   FROM telegram_links
+=== purchase_market_listing(uuid,uuid) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.purchase_market_listing(p_listing_id uuid, p_buyer_planet_id uuid)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: BEGIN
+8:   -- Redirige al flujo canonico y robusto (verifica stock del vendedor,
+9:   -- descuenta al vendedor, entrega al comprador; todo atomico).
+10:   RETURN public.purchase_market_listing(p_listing_id, NULL::integer, p_buyer_planet_id);
+11: END;
+12: $function$
+13: 
+=== secure_start_research(uuid,integer) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.secure_start_research(p_planet_id uuid, p_tech_type_id integer)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6:  SET statement_timeout TO '60s'
+7:  SET lock_timeout TO '30s'
+8: AS $function$
+9: DECLARE
+10:   v_validation jsonb;
+11:   v_planet RECORD;
+12:   v_tech_type RECORD;
+13:   v_current_level integer;
+14:   v_resources RECORD;
+15:   v_cost_metal bigint;
+16:   v_cost_crystal bigint;
+17:   v_cost_deuterium bigint;
+18:   v_effective_lab_level integer;
+19:   v_research_time integer;
+20:   v_start_time timestamptz;
+21:   v_end_time timestamptz;
+22:   v_existing_research boolean;
+23:   v_game_speed integer;
+24:   v_has_technocrat boolean;
+25:   v_lab_in_queue boolean;
+26:   v_research_lab_type_id integer;
+27:   v_total_energy bigint;
+28:   v_scaled_energy bigint;
+29:   v_university_level integer;
+30:   v_has_commander boolean;
+31:   v_queue_count integer;
+32: BEGIN
+33:   IF auth.uid() IS NULL THEN
+34:     RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
+35:   END IF;
+36: 
+37:   IF is_user_in_vacation_mode(auth.uid()) THEN
+38:     RETURN jsonb_build_object('success', false, 'error', 'Cannot research while in vacation mode');
+39:   END IF;
+40: 
+41:   SELECT * INTO v_planet FROM planets WHERE id = p_planet_id AND user_id = auth.uid();
+42:   IF NOT FOUND THEN
+43:     RETURN jsonb_build_object('success', false, 'error', 'Planet not found or not owned');
+44:   END IF;
+45: 
+=== deploy_to_fortress(integer,uuid,jsonb) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.deploy_to_fortress(p_galaxy integer, p_planet_id uuid, p_ships jsonb)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: DECLARE
+8:   v_user_id uuid;
+9:   v_alliance_id uuid;
+10:   v_fortress record;
+11:   v_ship record;
+12:   v_existing integer;
+13:   v_total bigint := 0;
+14: BEGIN
+15:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+16:   IF public._colony_listed_since(p_planet_id) IS NOT NULL THEN
+17:     RETURN jsonb_build_object('success', false, 'error', 'Esta colonia esta en venta en el mercado. Cancela la venta para poder usarla.');
+18:   END IF;
+19:   -- Usuario autenticado
+20:   v_user_id := auth.uid();
+21:   IF v_user_id IS NULL THEN
+22:     RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+23:   END IF;
+24: 
+25:   -- Verificar membres├¡a de alianza
+26:   SELECT am.alliance_id INTO v_alliance_id
+27:   FROM alliance_members am
+28:   WHERE am.user_id = v_user_id;
+29: 
+30:   IF v_alliance_id IS NULL THEN
+31:     RETURN jsonb_build_object('success', false, 'error', 'No perteneces a ninguna alianza');
+32:   END IF;
+33: 
+34:   -- SEGURIDAD: el planeta de origen DEBE pertenecer al usuario.
+35:   -- Sin esta comprobaci├│n un jugador podr├¡a drenar naves de un planeta ajeno.
+36:   IF NOT EXISTS (
+37:     SELECT 1 FROM planets WHERE id = p_planet_id AND user_id = v_user_id
+38:   ) THEN
+39:     RETURN jsonb_build_object('success', false, 'error', 'El planeta de origen no te pertenece');
+40:   END IF;
+41: 
+42:   -- Verificar que la alianza es due├▒a de la fortaleza
+43:   SELECT * INTO v_fortress
+44:   FROM alliance_fortresses
+45:   WHERE galaxy = p_galaxy;
+=== update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.update_production_percentages(p_planet_id uuid, p_metal_mine_percent smallint DEFAULT NULL::smallint, p_crystal_mine_percent smallint DEFAULT NULL::smallint, p_deuterium_synth_percent smallint DEFAULT NULL::smallint, p_solar_plant_percent smallint DEFAULT NULL::smallint, p_fusion_reactor_percent smallint DEFAULT NULL::smallint, p_solar_satellite_percent smallint DEFAULT NULL::smallint)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: DECLARE
+8:   v_planet RECORD;
+9:   v_result jsonb;
+10: BEGIN
+11:   -- Verify planet belongs to current user
+12:   SELECT * INTO v_planet FROM planets WHERE id = p_planet_id AND user_id = auth.uid();
+13:   IF NOT FOUND THEN
+14:     RETURN jsonb_build_object('error', 'Planet not found or not yours');
+15:   END IF;
+16: 
+17:   -- Validate all values are 0-100 (in steps of 10, OGame standard)
+18:   IF p_metal_mine_percent IS NOT NULL AND (p_metal_mine_percent < 0 OR p_metal_mine_percent > 100 OR p_metal_mine_percent % 10 != 0) THEN
+19:     RETURN jsonb_build_object('error', 'metal_mine_percent must be 0-100 in steps of 10');
+20:   END IF;
+21:   IF p_crystal_mine_percent IS NOT NULL AND (p_crystal_mine_percent < 0 OR p_crystal_mine_percent > 100 OR p_crystal_mine_percent % 10 != 0) THEN
+22:     RETURN jsonb_build_object('error', 'crystal_mine_percent must be 0-100 in steps of 10');
+23:   END IF;
+24:   IF p_deuterium_synth_percent IS NOT NULL AND (p_deuterium_synth_percent < 0 OR p_deuterium_synth_percent > 100 OR p_deuterium_synth_percent % 10 != 0) THEN
+25:     RETURN jsonb_build_object('error', 'deuterium_synth_percent must be 0-100 in steps of 10');
+26:   END IF;
+27:   IF p_solar_plant_percent IS NOT NULL AND (p_solar_plant_percent < 0 OR p_solar_plant_percent > 100 OR p_solar_plant_percent % 10 != 0) THEN
+28:     RETURN jsonb_build_object('error', 'solar_plant_percent must be 0-100 in steps of 10');
+29:   END IF;
+30:   IF p_fusion_reactor_percent IS NOT NULL AND (p_fusion_reactor_percent < 0 OR p_fusion_reactor_percent > 100 OR p_fusion_reactor_percent % 10 != 0) THEN
+31:     RETURN jsonb_build_object('error', 'fusion_reactor_percent must be 0-100 in steps of 10');
+32:   END IF;
+33:   IF p_solar_satellite_percent IS NOT NULL AND (p_solar_satellite_percent < 0 OR p_solar_satellite_percent > 100 OR p_solar_satellite_percent % 10 != 0) THEN
+34:     RETURN jsonb_build_object('error', 'solar_satellite_percent must be 0-100 in steps of 10');
+35:   END IF;
+36: 
+37:   -- First sync resources with current percentages (flush accumulated production)
+38:   v_result := calculate_planet_resources(p_planet_id);
+39: 
+40:   -- Save accumulated resources before changing percentages
+41:   UPDATE planet_resources SET
+42:     metal              = COALESCE((v_result->>'metal')::numeric, metal),
+43:     crystal            = COALESCE((v_result->>'crystal')::numeric, crystal),
+44:     deuterium          = COALESCE((v_result->>'deuterium')::numeric, deuterium),
+45:     metal_per_hour     = COALESCE((v_result->>'metal_per_hour')::numeric, metal_per_hour),
+=== send_fleet(uuid,integer,integer,integer,text,jsonb,numeric,numeric,numeric,integer) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.send_fleet(p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_mission_type text, p_ships jsonb, p_cargo_metal numeric DEFAULT 0, p_cargo_crystal numeric DEFAULT 0, p_cargo_deuterium numeric DEFAULT 0, p_speed_percent integer DEFAULT 100)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: BEGIN
+8:   -- Wrapper legacy: delega en secure_send_fleet (unica fuente de verdad de validaciones).
+9:   RETURN secure_send_fleet(
+10:     p_origin_planet_id, p_target_galaxy, p_target_system, p_target_position,
+11:     p_mission_type, p_ships,
+12:     FLOOR(COALESCE(p_cargo_metal, 0))::bigint,
+13:     FLOOR(COALESCE(p_cargo_crystal, 0))::bigint,
+14:     FLOOR(COALESCE(p_cargo_deuterium, 0))::bigint,
+15:     p_speed_percent, 'planet', NULL
+16:   );
+17: END;
+18: $function$
+19: 
+=== purchase_supply_box(text,uuid) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.purchase_supply_box(p_box_code text, p_planet_id uuid)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: DECLARE
+8:   v_user_id uuid;
+9:   v_box supply_boxes%ROWTYPE;
+10:   v_planet planets%ROWTYPE;
+11:   v_current_fxu numeric;
+12:   v_price numeric;
+13:   v_live_price numeric;
+14:   v_calculated jsonb;
+15:   v_synced_metal numeric;
+16:   v_synced_crystal numeric;
+17:   v_synced_deuterium numeric;
+18: BEGIN
+19:   v_user_id := auth.uid();
+20: 
+21:   IF v_user_id IS NULL THEN
+22:     RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+23:   END IF;
+24: 
+25:   SELECT * INTO v_box FROM supply_boxes WHERE code = p_box_code AND is_active = true;
+26: 
+27:   IF v_box.id IS NULL THEN
+28:     RETURN jsonb_build_object('success', false, 'error', 'Caja no encontrada o no disponible');
+29:   END IF;
+30: 
+31:   SELECT * INTO v_planet FROM planets WHERE id = p_planet_id AND user_id = v_user_id;
+32: 
+33:   IF v_planet.id IS NULL THEN
+34:     RETURN jsonb_build_object('success', false, 'error', 'Planeta no encontrado o no te pertenece');
+35:   END IF;
+36: 
+37:   -- Price: if the box has a USDT price, charge TUNG dynamically at the live
+38:   -- market price; otherwise fall back to the fixed TUNG price (price_fxu).
+39:   IF COALESCE(v_box.price_usdt, 0) > 0 THEN
+40:     v_live_price := get_live_tung_price_usd();
+41:     IF v_live_price IS NULL OR v_live_price <= 0 THEN
+42:       RETURN jsonb_build_object('success', false, 'error', 'Precio de TUNG no disponible, intenta de nuevo en unos segundos');
+43:     END IF;
+44:     v_price := CEIL(v_box.price_usdt / v_live_price);
+45:   ELSE
+=== purchase_ship_blueprint(text,uuid) rettype=jsonb
+1: CREATE OR REPLACE FUNCTION public.purchase_ship_blueprint(p_blueprint_code text, p_planet_id uuid DEFAULT NULL::uuid)
+2:  RETURNS jsonb
+3:  LANGUAGE plpgsql
+4:  SECURITY DEFINER
+5:  SET search_path TO 'public'
+6: AS $function$
+7: DECLARE
+8:   v_user_id     uuid;
+9:   v_bp          ship_blueprints%ROWTYPE;
+10:   v_balance     numeric;
+11:   v_tung_usd    numeric;
+12:   v_cost        numeric;
+13:   v_owned       integer;
+14:   v_usb_id      uuid;
+15: 
+16:   -- entrega de recursos
+17:   v_grant_on    boolean := true;
+18:   v_target      uuid;
+19:   v_planet_name text;
+20:   v_metal       numeric := 0;
+21:   v_crystal     numeric := 0;
+22:   v_deuterium   numeric := 0;
+23:   v_calc        jsonb;
+24:   v_granted     boolean := false;
+25:   v_grant_note  text := NULL;
+26: BEGIN
+27:   v_user_id := auth.uid();
+28:   IF v_user_id IS NULL THEN
+29:     RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+30:   END IF;
+31: 
+32:   SELECT * INTO v_bp
+33:   FROM ship_blueprints
+34:   WHERE code = p_blueprint_code AND is_active = true AND is_for_sale = true;
+35:   IF NOT FOUND THEN
+36:     RETURN jsonb_build_object('success', false, 'error', 'Plano no disponible');
+37:   END IF;
+38: 
+39:   -- CONSUMIBLE: se permite comprar varios planos (se apilan en el inventario).
+40: 
+41:   -- Coste en TUNG
+42:   IF COALESCE(v_bp.price_usd, 0) > 0 THEN
+43:     v_tung_usd := get_live_tung_price_usd();
+44:     IF v_tung_usd IS NULL OR v_tung_usd <= 0 THEN
+45:       RETURN jsonb_build_object('success', false, 'error',
+=== COLMKT5 in purchase_instant_unit
+20: BEGIN
+21:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in update_planet_resources
+46:   
+47:   -- [COLMKT5] colonia en venta: solo cuenta la produccion anterior a la publicacion
+ count_anchor=0
+=== COLMKT5 in set_planet_autopilot_enabled
+7: BEGIN
+8:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in secure_send_fleet
+67: 
+68:   -- [COLMKT5] colonia en venta: no salen flotas de ella ni van flotas propias hacia ella
+ count_anchor=0
+=== COLMKT5 in calculate_planet_resources
+88:   v_deuterium_rate_display numeric;
+89:   v_colmkt5_since timestamptz; -- [COLMKT5]
+116:   IF v_elapsed_hours < 0 THEN v_elapsed_hours := 0; END IF;
+117:   -- [COLMKT5] colonia en venta: solo cuenta la produccion anterior a la publicacion
+297: 
+298:   -- [COLMKT5] colonia en venta: produccion pausada
+ count_anchor=0
+=== COLMKT5 in launch_missiles
+31: BEGIN
+32:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in secure_demolish_building
+12: BEGIN
+13:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in deploy_to_fortress
+14: BEGIN
+15:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in create_market_listing
+36: BEGIN
+37:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in use_jump_gate
+19: BEGIN
+20:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1
+=== COLMKT5 in refill_colony_resources
+19: BEGIN
+20:   -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+ count_anchor=1

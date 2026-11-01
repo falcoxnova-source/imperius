@@ -1,0 +1,78 @@
+# Robots.txt for Xnova
+# https://falcoxnova.com/
+# Juego de estrategia espacial tipo OGame - Genera ingresos gratis vendiendo recursos
+
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /blog
+Allow: /blog/
+Allow: /ganar-criptomonedas-jugando
+Allow: /juegos-play-to-earn-gratis
+Allow: /alternativa-ogame-crypto
+Allow: /ganar-dinero-jugando
+Allow: /5-pasos-para-ganar-criptomonedas
+Allow: /generar-ingresos-gratis
+Allow: /vender-recursos-ganar-dinero
+Allow: /about
+Allow: /roadmap
+Allow: /terms
+Allow: /privacy
+
+# Disallow admin and internal routes from crawling
+Disallow: /game/admin
+Disallow: /game/settings
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /forgot-password
+
+# Sitemap location
+Sitemap: https://falcoxnova.com/sitemap.xml
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Block AI training bots but allow search indexing
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /

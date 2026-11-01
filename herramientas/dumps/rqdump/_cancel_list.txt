@@ -1,0 +1,4 @@
+occupation_cancel_build(bigint)
+secure_cancel_building_queue_item(uuid)
+secure_cancel_shipyard_queue_item(uuid)
+secure_cancel_queued_research(uuid)

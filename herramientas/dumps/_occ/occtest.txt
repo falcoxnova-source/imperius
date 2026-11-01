@@ -1,0 +1,149 @@
+BEGIN
+SET
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+ALTER TABLE
+REVOKE
+CREATE TABLE
+CREATE INDEX
+ALTER TABLE
+REVOKE
+CREATE TABLE
+CREATE INDEX
+ALTER TABLE
+REVOKE
+REVOKE
+INSERT 0 1
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+psql:/tmp/ocupa1_body.sql:744: NOTICE:  trigger "trg_occ_garrison_end_upd" for relation "public.fleets" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/tmp/ocupa1_body.sql:751: NOTICE:  trigger "trg_occ_garrison_end_del" for relation "public.fleets" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+DROP TRIGGER
+psql:/tmp/ocupa1_body.sql:771: NOTICE:  trigger "trg_occ_block_fleet" for relation "public.fleets" does not exist, skipping
+CREATE TRIGGER
+CREATE FUNCTION
+psql:/tmp/ocupa1_body.sql:796: NOTICE:  trigger "trg_occ_block_queue" for relation "public.building_queue" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/tmp/ocupa1_body.sql:799: NOTICE:  trigger "trg_occ_block_queue" for relation "public.shipyard_queue" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+psql:/tmp/ocupa1_body.sql:802: NOTICE:  trigger "trg_occ_block_queue" for relation "public.research_queue" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+DROP TRIGGER
+CREATE TRIGGER
+psql:/tmp/ocupa1_body.sql:843: NOTICE:  trigger "trg_occ_hostile_warning" for relation "public.fleets" does not exist, skipping
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+DO
+DO
+DO
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH create_buy_offer(text,text,bigint,numeric) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH create_market_listing(text,text,bigint,numeric,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH deploy_to_fortress(integer,uuid,jsonb) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH enforce_ship_blueprint_requirement() markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH fulfill_buy_offer(uuid,bigint,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH galaxy_navigate(uuid,integer,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH join_acs_with_fleet(uuid,uuid,jsonb,integer) markers=2
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH launch_missiles(uuid,integer,integer,integer,integer,text) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH perform_acs_combat(uuid,uuid) markers=2
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH perform_combat(uuid,uuid) markers=2
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH process_acs_fleet_arrival(uuid) markers=4
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH process_fleet_arrival(uuid) markers=2
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH purchase_market_listing(uuid,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH purchase_market_listing(uuid,integer,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH purchase_supply_box(text,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_abandon_colony(uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_activate_building_queue(uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_add_to_building_queue(uuid,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_add_to_shipyard_queue(uuid,integer,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_add_to_shipyard_queue(uuid,text,integer,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_demolish_building(uuid,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_send_fleet(uuid,integer,integer,integer,text,jsonb,bigint,bigint,bigint,integer,text,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH secure_start_research(uuid,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH user_can_build_ship(uuid,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH validate_fleet_mission(uuid,uuid,integer,integer,integer,text,text) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH refill_colony_resources(uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH set_planet_autopilot_enabled(uuid,boolean) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH purchase_ship_blueprint(text,uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH purchase_instant_unit(text,uuid,integer) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH create_colony_listing(uuid,numeric) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  PATCH purchase_colony_listing(uuid) markers=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  ship occ=23 big=13 lf=7
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  A=3f4d0031-10ac-483e-b4fb-db72d0408f20 M=ffa065d8-4197-4c75-a0f7-00c6a51a7801 | B=6b78f540-c296-4e44-b224-5d4ee60bdda7 C=76141a71-08c5-4741-ae04-b347882918da BM=8f6358ff-bb19-4732-9af7-ef75a2a7f9cb
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  INFO {"ship": {"id": 23, "code": "occupation_ship", "name": "Nave de Ocupación", "image_url": "/Imagenes/Naves/Nave de Ocupación.webp", "base_speed": 2500, "description": "Nave especial para ocupar colonias enemigas. Solo se adquiere con TUNG en el Mercado del sistema. Viaja en una misión de Ataque: si ganas la batalla y sobrevive junto a otra nave, el planeta queda ocupado y tu flota se convierte en su guarnición.", "shield_power": 85, "weapon_power": 75, "cargo_capacity": 7500, "fuel_consumption": 1000, "structural_integrity": 21000}, "balance": 101502.0527757550923990000000000000, "success": true, "tung_price_usd": 0.007120, "unit_cost_tung": 3512, "unit_price_usd": 25, "max_per_purchase": 10, "active_occupations": 0, "max_active_occupations": 3}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  BUY {"message": "2 Nave(s) de Ocupación entregada(s) en Colonia [2:50:6].", "success": true, "quantity": 2, "cost_tung": 7023, "planet_name": "Colonia", "tung_price_usd": 0.007120}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  BUY qty0 {"error": "Cantidad inválida (1 a 10 por compra)", "success": false}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  planet M occ ships=2
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  SELL {"error": "Error al crear oferta: La Nave de Ocupación no se puede vender en el mercado.", "success": false}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  SHIPYARD occ blocked OK: La Nave de Ocupación no se puede fabricar en el hangar. Se adquiere con TUNG.
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  user_can_build_ship occ=f
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  OCC found=t garrison=t fb=1 fs=1 prev_ap=t
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  fleet state=deploy/false/false occ ships left=<NULL>
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  queues C: bq=0 sq=0 autopilot=f
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  msgs A=Reporte de Combate - Victoria | ¡Planeta ocupado! B=Flota hostil detectada! | Tu planeta Colonia fue atacado - Derrota | ¡Tu colonia ha sido ocupada!
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  B build blocked OK: Este planeta está ocupado por otro jugador. Recupéralo atacando a la guarnición enemiga.
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  B send blocked OK: Este planeta está ocupado por otro jugador. Recupéralo atacando a la guarnición enemiga.
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  B transport to C -> {"valid": false, "reason": "Este planeta está ocupado por otro jugador: no admite transportes ni despliegues."}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  B attack to C -> {"valid": true}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  A attack to C -> {"valid": false, "reason": "No puedes atacar un planeta que tienes ocupado."}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  B overview {"success": true, "as_owner": [{"galaxy": 4, "position": 8, "planet_id": "76141a71-08c5-4741-ae04-b347882918da", "started_at": "2026-10-08T17:21:53.212564+00:00", "planet_name": "Colonia", "solar_system": 112, "occupation_id": "be5d1990-781c-4361-80ab-0318c4f000e8", "occupier_name": "ITACHI"}], "max_active": 3, "as_occupier": []}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  A overview {"success": true, "as_owner": [], "max_active": 3, "as_occupier": [{"galaxy": 4, "image_id": 1, "position": 8, "planet_id": "76141a71-08c5-4741-ae04-b347882918da", "owner_name": "TITAN", "started_at": "2026-10-08T17:21:53.212564+00:00", "planet_name": "Colonia", "solar_system": 112, "occupation_id": "be5d1990-781c-4361-80ab-0318c4f000e8", "garrison_ships": 50, "pending_builds": 0}]}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  A detail ok=true res={"metal": 500000, "crystal": 500000, "deuterium": 500000, "metal_per_hour": 2105.33, "crystal_per_hour": 987.35, "deuterium_per_hour": 53.41} garrison=[{"code": "destroyer", "name": "Destructor", "quantity": 50, "image_url": "/Imagenes/Naves/Destructores.webp", "base_speed": 5000, "ship_type_id": 13, "cargo_capacity": 2000}] ships_avail=7 defs_avail=4 targets=6
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  BUILD lf {"message": "3 x Cazador Ligero añadidos a la producción.", "success": true, "unit_time": 576, "start_time": "2026-10-08T17:21:53.212564+00:00"}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  BUILD def {"message": "5 x Lanzamisiles añadidos a la producción.", "success": true, "unit_time": 288, "start_time": "2026-10-08T17:50:41.212564+00:00"}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  BUILD occ {"error": "Esta unidad no se puede producir en un planeta ocupado", "success": false}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  BUILD dome {"error": "Esta defensa no se puede producir en un planeta ocupado", "success": false}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  CRON 0
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  garrison lf=3 queue=defense:pending:0,ship:done:3
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  CANCEL def {"message": "Orden cancelada. Recursos devueltos al planeta ocupado.", "success": true}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  TRANSPORT all -> {"error": "Debes dejar al menos una nave como guarnición. Para retirar todo usa \"Abandonar ocupación\".", "success": false}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  TRANSPORT 1 -> {"message": "Flota enviada a Colonia [2:50:6].", "success": true, "fleet_id": "e8518fc8-3e13-4c81-83ce-ae33fda90e39", "flight_time": 12928, "arrival_time": "2026-10-08T20:57:21.212564+00:00", "fuel_consumption": 46}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  RANKING {"ranking": [{"rank": 1, "hours": 0, "is_me": true, "active": 1, "username": "ITACHI", "conquests": 1, "recovered_by_owner": 0}], "success": true}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  RECOVERY occ=ended/recovered garrison=deploy/false/true owner fleet=attack/true/false
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  restored: bq=1 sq=1 autopilot=t defs=<NULL>
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  msgs B=Flota hostil detectada! | Tu planeta Colonia fue atacado - Derrota | ¡Tu colonia ha sido ocupada! | ¡Planeta recuperado! | Recuperación de Colonia - Victoria
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  battle_report rows=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  OCC2 found=t fb=1 fs=1
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  ABANDON {"message": "Has abandonado la ocupación. Tu guarnición regresa a casa.", "success": true}
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  after abandon occ=ended/abandoned fleet=deploy/true/false
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  try_start main -> f
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  fail msg=Tu flota ganó la batalla en Planeta Principal [1:112:5], pero no pudo ocuparlo: El planeta principal de un jugador no se puede ocupar. Solo sus colonias. La flota regresa a casa.
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  OCC3 found=t
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  after garrison destroyed occ=ended/liberated
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  OCC4 found=t
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  is_recovery_acs=t
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  ACS RECOVERY occ=ended/recovered garrison=deploy/false/true acs fleet=attack/true/false
+psql:/tmp/ocupa1_tests.sql:219: NOTICE:  ALL TESTS FINISHED
+DO
+ROLLBACK

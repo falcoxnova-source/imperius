@@ -1,0 +1,5 @@
+implementalo de una manera que no cree bug analiza bien todo antes 
+de hacer cambios para que sean cambios quirurgico y no creen bug 
+en cadena y no se nos quede nada por implementar para que quede 
+todo al 100% es posible?
+

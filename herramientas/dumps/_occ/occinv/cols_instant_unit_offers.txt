@@ -1,0 +1,14 @@
+id bigint nextval('instant_unit_offers_id_seq'::regclass)
+code text 
+item_type text 
+ship_type_id integer 
+defense_type_id integer 
+name text 
+description text ''::text
+image_url text 
+price_usd numeric 0
+max_per_order integer 100
+is_active boolean false
+sort_order integer 0
+created_at timestamp with time zone now()
+updated_at timestamp with time zone now()

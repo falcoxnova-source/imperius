@@ -1,0 +1,5 @@
+bashing_protection|true
+max_galaxies|5
+newbie_protection_points|1000
+protection_ratio|3
+vacation_mode_days|2

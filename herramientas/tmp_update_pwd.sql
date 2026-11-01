@@ -1,0 +1,1 @@
+UPDATE auth.users SET encrypted_password = '$2b$10$2U5ogtO49GuKbgySeMdaS.XU7GiT20lQE7hxoYL5KFi1bcqMLr96e' WHERE email = 'falcoxcorp@gmail.com';

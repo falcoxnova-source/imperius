@@ -1,0 +1,185 @@
+== constraints
+admin_revenue admin_revenue_amount_check CHECK ((amount >= (0)::numeric))
+admin_revenue admin_revenue_currency_check CHECK ((currency = ANY (ARRAY['FXU'::text, 'USDT'::text])))
+admin_revenue admin_revenue_pkey PRIMARY KEY (id)
+admin_revenue admin_revenue_related_user_id_fkey FOREIGN KEY (related_user_id) REFERENCES profiles(id) ON DELETE SET NULL
+admin_revenue admin_revenue_revenue_type_check CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+fleet_ships fleet_ships_fleet_id_fkey FOREIGN KEY (fleet_id) REFERENCES fleets(id) ON DELETE CASCADE
+fleet_ships fleet_ships_fleet_id_ship_type_id_key UNIQUE (fleet_id, ship_type_id)
+fleet_ships fleet_ships_pkey PRIMARY KEY (id)
+fleet_ships fleet_ships_quantity_check CHECK ((quantity > 0))
+fleet_ships fleet_ships_ship_type_id_fkey FOREIGN KEY (ship_type_id) REFERENCES ship_types(id) ON DELETE CASCADE
+jackpot_history jackpot_history_pkey PRIMARY KEY (id)
+jackpot_history jackpot_history_type_check CHECK ((type = ANY (ARRAY['contribution'::text, 'win'::text])))
+jackpot_history jackpot_history_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id)
+planet_defenses planet_defenses_defense_type_id_fkey FOREIGN KEY (defense_type_id) REFERENCES defense_types(id) ON DELETE CASCADE
+planet_defenses planet_defenses_pkey PRIMARY KEY (id)
+planet_defenses planet_defenses_planet_id_defense_type_id_key UNIQUE (planet_id, defense_type_id)
+planet_defenses planet_defenses_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+planet_ships planet_ships_pkey PRIMARY KEY (id)
+planet_ships planet_ships_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+planet_ships planet_ships_planet_id_ship_type_id_key UNIQUE (planet_id, ship_type_id)
+planet_ships planet_ships_quantity_non_negative CHECK ((quantity >= 0))
+planet_ships planet_ships_ship_type_id_fkey FOREIGN KEY (ship_type_id) REFERENCES ship_types(id) ON DELETE CASCADE
+referral_commissions referral_commissions_pkey PRIMARY KEY (id)
+referral_commissions referral_commissions_referrer_id_fkey FOREIGN KEY (referrer_id) REFERENCES profiles(id) ON DELETE SET NULL
+referral_commissions referral_commissions_seller_id_fkey FOREIGN KEY (seller_id) REFERENCES profiles(id) ON DELETE SET NULL
+referral_commissions referral_commissions_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES market_transactions(id)
+ship_types ship_types_category_check CHECK ((category = ANY (ARRAY['civil'::text, 'combat'::text, 'special'::text])))
+ship_types ship_types_code_key UNIQUE (code)
+ship_types ship_types_pkey PRIMARY KEY (id)
+== cron
+8 | cleanup_old_broadcast_messages | 0 3 * * * | DELETE FROM public.messages WHERE message_type = 'broadcast' AND created_at < NOW() - INTERVAL '7 days'
+10 | fetch-twitter-missions | */5 * * * * | 
+  SELECT net.http_post(
+    url := c.supabase_project_url || '/functions/v1/fetch-twitter-missions',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer ' || c.supabase_anon_key
+    ),
+    body := '{}'::jsonb
+  )
+  FROM twitter_social_config c
+  WHERE c.supabase_project_url IS NOT NULL
+    AND c.supabase_anon_key IS NOT NULL
+  LIMIT 1;
+  
+13 | cleanup-http-response | 0 4 * * * | DELETE FROM net._http_response WHERE created < now() - interval '24 hours'
+14 | cleanup-old-completed-fleets | 0 5 * * 0 | DELETE FROM fleets WHERE is_completed = true AND arrival_time < now() - interval '30 days'
+16 | cleanup-cron-run-details | 30 4 * * * | DELETE FROM cron.job_run_details WHERE end_time < now() - interval '7 days'
+17 | cleanup-old-game-messages | 30 3 * * * | DELETE FROM public.messages 
+    WHERE (
+      (message_type IN ('expedition', 'espionage') AND created_at < now() - interval '7 days')
+      OR (message_type = 'system' AND created_at < now() - interval '7 days')
+      OR (message_type = 'combat' AND created_at < now() - interval '7 days')
+    )
+26 | p2p_expire_offers_every_15min | */15 * * * * | SELECT public.p2p_expire_stale_offers();
+27 | auto-cancel-insufficient-listings | */3 * * * * | SELECT public.auto_cancel_insufficient_market_listings();
+28 | clean_expired_cosmetics_every_5min | */5 * * * * | SELECT public.clean_all_expired_cosmetics();
+29 | distribute-treasure-pool | 5 0 * * * | SELECT admin_distribute_treasure_pool()
+30 | lottery-auto-draw | 10 0 * * * | SELECT public.cron_execute_lottery_draw();
+31 | distribute-top50-pool | 15 0 * * * | SELECT public.admin_distribute_monthly_pool()
+32 | enforce-alliance-member-limits | */10 * * * * | SELECT public.cron_enforce_alliance_member_limits();
+33 | research-orphan-tick | * * * * * | SELECT public.cron_promote_orphan_research();
+34 | expire-market-offers-24h | */5 * * * * | SELECT public.cron_expire_market_offers();
+35 | bot_tick_worker | 10 seconds | SELECT public.bot_tick_worker();
+36 | raffle-auto-draw | * * * * * | SELECT public.cron_execute_raffle_draws();
+37 | update-player-rankings | */5 * * * * | SELECT public.update_all_rankings();
+38 | hero-duel-resolve | * * * * * | SELECT public.resolve_hero_duel(id) FROM public.hero_duels WHERE status = 'accepted' AND resolves_at <= now()
+39 | battleship-tick | 10 seconds | SELECT public.battleship_tick()
+40 | sports-football-tick | * * * * * | SELECT public._sports_cron_tick()
+41 | battleship-daily-pool | 1 0 * * * | SELECT public.battleship_daily_pool_payout()
+== ship_types images
+1 | small_cargo | Nave Pequena de Carga | civil | /Imagenes/Naves/Fragatas Pequeñas.webp
+2 | large_cargo | Nave Grande de Carga | civil | /Imagenes/Naves/Fragatas Medianas.webp
+3 | colony_ship | Nave Colonizadora | civil | /Imagenes/Naves/Colonizadores.webp
+4 | recycler | Reciclador | civil | /Imagenes/Naves/Recicladores.webp
+5 | espionage_probe | Sonda de Espionaje | civil | /Imagenes/Naves/Sondas de espionaje.webp
+6 | solar_satellite | Satelite Solar | civil | /Imagenes/Naves/Satelites solares.webp
+7 | light_fighter | Cazador Ligero | combat | /Imagenes/Naves/Cazadores ligeros.webp
+8 | heavy_fighter | Cazador Pesado | combat | /Imagenes/Naves/Cazadores pesados.webp
+9 | cruiser | Crucero | combat | /Imagenes/Naves/Crucerors Ligeros.webp
+10 | battleship | Nave de Batalla | combat | /Imagenes/Naves/Cruceros Pesados.webp
+11 | battlecruiser | Acorazado | combat | /Imagenes/Naves/Acorazados.webp
+12 | bomber | Bombardero | combat | /Imagenes/Naves/Bombarderos.webp
+13 | destroyer | Destructor | combat | /Imagenes/Naves/Destructores.webp
+14 | deathstar | Estrella de la Muerte | special | /Imagenes/Naves/Estrellas de la muerte.png
+17 | falco_x_clasica | Falco-X Clasica | special | /Imagenes/Naves/falcox_class.png
+18 | nova | Nova | special | /Imagenes/Naves/Novas.png
+19 | large_frigate | Fragata Grande | civil | /Imagenes/Naves/Fragatas Grandes.webp
+20 | destruccion_masiva | Destruccion Masiva | special | https://photos.pinksale.finance/file/pinksale-logo-upload/1772161947553-d10a478403f32771c3d8c726509e978e.png
+21 | mega_recycler | Mega Reciclador | civil | /Imagenes/Naves/Recicladores Grandes.webp
+22 | dark_matter_collector | Recolectores de Materia Oscura | civil | /Imagenes/Naves/Recolectores_de_Materia_Oscura.webp
+== ship_types full colony
+{"id":3,"code":"colony_ship","name":"Nave Colonizadora","description":"Permite establecer nuevas colonias en planetas deshabitados.","category":"civil","metal_cost":10000,"crystal_cost":20000,"deuterium_cost":10000,"build_time_seconds":14400,"structural_integrity":21000,"shield_power":85,"weapon_power":75,"cargo_capacity":7500,"base_speed":2500,"fuel_consumption":1000,"rapid_fire":{"espionage_probe": 5, "solar_satellite": 5},"image_url":"/Imagenes/Naves/Colonizadores.webp"}
+{"id":1,"code":"small_cargo","name":"Nave Pequena de Carga","description":"Nave de transporte basica con capacidad de 5,000 unidades.","category":"civil","metal_cost":2000,"crystal_cost":2000,"deuterium_cost":0,"build_time_seconds":1200,"structural_integrity":2800,"shield_power":8,"weapon_power":7,"cargo_capacity":5000,"base_speed":5000,"fuel_consumption":10,"rapid_fire":{"espionage_probe": 5, "solar_satellite": 5},"image_url":"/Imagenes/Naves/Fragatas Pequeñas.webp"}
+== defense types
+1 | rocket_launcher | Lanzamisiles | -
+2 | light_laser | Laser Ligero | -
+3 | heavy_laser | Laser Pesado | -
+4 | gauss_cannon | Canon de Gauss | -
+5 | ion_cannon | Canon Ionico | -
+6 | plasma_turret | Torreta de Plasma | -
+7 | small_shield_dome | Cupula Pequena de Escudo | 1
+8 | large_shield_dome | Cupula Grande de Escudo | 1
+9 | anti_ballistic_missile | Misil de Intercepcion | -
+10 | interplanetary_missile | Misil Interplanetario | -
+11 | outer_protection_dome | Cupula externa de proteccion | 1
+13 | orbital_defense_platform | Plataforma de Defensa Orbital | 1
+15 | graviton_cannon | Cañón de Gravitón | -
+== fns
+accelerate_fleet_v2(uuid)
+auto_cancel_insufficient_listings(uuid)
+calculate_planet_resources(uuid)
+cancel_fleet(uuid)
+create_buy_offer(text,text,bigint,numeric)
+create_market_listing(text,text,bigint,numeric,uuid)
+deploy_to_fortress(integer,uuid,jsonb)
+fulfill_buy_offer(uuid,bigint,uuid)
+galaxy_navigate(uuid,integer,integer)
+instant_complete_building(uuid)
+instant_complete_shipyard(uuid,uuid)
+instant_complete_shipyard_item(uuid)
+launch_missiles(uuid,integer,integer,integer,integer,text)
+process_user_pending_fleets(uuid)
+purchase_market_listing(uuid,integer)
+purchase_market_listing(uuid,uuid)
+purchase_market_listing(uuid,integer,uuid)
+purchase_supply_box(text,uuid)
+recall_deployed_fleet(uuid)
+secure_abandon_colony(uuid)
+secure_activate_building_queue(uuid)
+secure_add_to_building_queue(uuid,integer)
+secure_demolish_building(uuid,integer)
+secure_start_research(uuid,integer)
+sync_planet_resources(uuid)
+update_planet_resources(uuid)
+update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint)
+use_jump_gate(uuid,uuid,jsonb)
+refill_colony_resources(uuid)
+set_planet_autopilot_enabled(uuid,boolean)
+purchase_instant_unit(text,uuid,integer)
+create_colony_listing(uuid,numeric)
+purchase_colony_listing(uuid)
+== market_listings cols
+id:uuid, seller_id:uuid, listing_type:text, item_code:text, quantity:bigint, price_per_unit:numeric, total_price:numeric, planet_id:uuid, status:text, created_at:timestamp with time zone, updated_at:timestamp with time zone, purchasable_at:timestamp with time zone
+== profiles cols
+id, username, email, avatar_url, dark_matter, points_total, points_buildings, points_research, points_fleet, points_defense, rank_position, is_admin, is_banned, vacation_mode, last_activity, created_at, updated_at, notify_attacks, notify_buildings, notify_research, notify_messages, battles_won, battles_draw, battles_lost, units_destroyed, units_lost, debris_metal_total, debris_crystal_total, rank_buildings, rank_research, rank_fleet, rank_defense, fxu_balance, referred_by, referral_code, is_hidden, vacation_mode_enabled_at, points_expedition, rank_expedition, email_verified, usdt_balance, vacation_remaining_research_seconds, is_bot, autopilot_eligible, autopilot_active, last_manual_action, autopilot_vip_boost, autopilot_vip_boost_expires_at, has_created_alliance, active_title, active_title_icon, active_badge, active_planet_effect, active_hero_skin, hide_records, daily_streak, last_daily_claim, tung_balance, can_view_financials, kyc_status, two_factor_login_enabled, tutorial_step, tutorial_completed, telegram_alerts_enabled
+== planets cols
+id:uuid, user_id:uuid, name:text, galaxy:integer, solar_system:integer, position:integer, planet_type:text, image_id:integer, diameter:integer, fields_used:integer, fields_max:integer, temp_min:integer, temp_max:integer, is_main_planet:boolean, is_destroyed:boolean, last_update:timestamp with time zone, created_at:timestamp with time zone, jump_gate_cooldown:timestamp with time zone, name_changed:boolean, autopilot_role:text, metal_deposit:bigint, crystal_deposit:bigint, deuterium_deposit:bigint, planet_status:text, depleted_at:timestamp with time zone, regenerates_at:timestamp with time zone, metal_initial_deposit:bigint, crystal_initial_deposit:bigint, deuterium_initial_deposit:bigint, dark_matter_stock:numeric, dark_matter_last_gen:timestamp with time zone, autopilot_enabled:boolean
+== battle_reports cols
+id:uuid, attacker_id:uuid, defender_id:uuid, planet_id:uuid, coordinates:text, result:text, rounds:integer, attacker_losses_metal:numeric, attacker_losses_crystal:numeric, defender_losses_metal:numeric, defender_losses_crystal:numeric, debris_metal:numeric, debris_crystal:numeric, loot_metal:numeric, loot_crystal:numeric, loot_deuterium:numeric, report_data:jsonb, created_at:timestamp with time zone, battle_type:text, galaxy:integer, solar_system:integer, position:integer, attacker_ships_initial:jsonb, defender_ships_initial:jsonb, attacker_ships_lost:jsonb, defender_ships_lost:jsonb, rounds_data:jsonb
+== messages cols
+id:uuid, sender_id:uuid, recipient_id:uuid, subject:text, body:text, message_type:text, is_read:boolean, created_at:timestamp with time zone
+== debris cols
+debris_fields: id:uuid, galaxy:integer, solar_system:integer, position:integer, metal:numeric, crystal:numeric, created_at:timestamp with time zone, updated_at:timestamp with time zone
+== fleet triggers
+fleet_ships trigger_fleet_ships_change_points CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+fleets trg_award_expedition_blueprint_drop CREATE TRIGGER trg_award_expedition_blueprint_drop AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION award_expedition_blueprint_drop()
+fleets trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_fleet()
+fleets trg_fleet_completed_daily_mission CREATE TRIGGER trg_fleet_completed_daily_mission AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION trg_fleet_completed_daily_mission()
+fleets trigger_fleet_change_points CREATE TRIGGER trigger_fleet_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleets FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet()
+fleets trigger_log_transport_interaction CREATE TRIGGER trigger_log_transport_interaction AFTER UPDATE ON public.fleets FOR EACH ROW WHEN (((new.is_completed = true) AND (old.is_completed = false))) EXECUTE FUNCTION log_transport_interaction()
+fleets trigger_notify_hostile_fleet CREATE TRIGGER trigger_notify_hostile_fleet AFTER INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION notify_hostile_fleet_incoming()
+planet_defenses protect_planet_defenses_trigger CREATE TRIGGER protect_planet_defenses_trigger BEFORE UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+planet_defenses trg_enforce_shield_dome_per_account CREATE TRIGGER trg_enforce_shield_dome_per_account BEFORE INSERT OR UPDATE OF quantity, defense_type_id ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION enforce_shield_dome_per_account()
+planet_defenses trigger_defense_points CREATE TRIGGER trigger_defense_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+planet_resources protect_planet_resources_trigger CREATE TRIGGER protect_planet_resources_trigger BEFORE UPDATE ON public.planet_resources FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+planet_resources trg_resource_collect_daily_mission CREATE TRIGGER trg_resource_collect_daily_mission AFTER UPDATE OF metal, crystal, deuterium, last_update ON public.planet_resources FOR EACH ROW WHEN ((new.last_update > old.last_update)) EXECUTE FUNCTION trg_resource_collect_daily_mission()
+planets protect_planets_trigger CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+planets trg_cancel_listings_on_planet_loss CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+planets trg_colony_sale_lock_autopilot CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+planets trg_default_autopilot CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+planets trg_planets_block_casino CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+planets trg_planets_block_sports CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+planets trg_set_initial_deposits CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+planets trigger_validate_fields_on_update CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+== srr
+postgres|t
+authenticated|f
+supabase_admin|t
+== realtime pub
+autopilot_events
+battle_reports
+messages
+public_chat_messages

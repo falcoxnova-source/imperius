@@ -1,0 +1,158 @@
+﻿fn _colony_listed_since(p_planet_id uuid) => timestamp with time zone secdef=true
+fn _internal_set_fxu_context() => void secdef=true
+fn apply_vip_time_bonus(p_user_id uuid, p_seconds integer) => integer secdef=true
+fn battle_units_diff(p_initial jsonb, p_remaining jsonb, p_filter text) => jsonb secdef=false
+fn calculate_planet_resources(p_planet_id uuid) => jsonb secdef=true
+fn contribute_to_jackpot(p_amount numeric, p_source text, p_user_id uuid) => numeric secdef=true
+fn fleet_calc_distance(p_origin_galaxy integer, p_origin_system integer, p_origin_position integer, p_target_galaxy integer, p_target_system integer, p_target_position integer) => integer secdef=true
+fn fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer) => integer secdef=true
+fn fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer, p_admiral_bonus numeric) => integer secdef=true
+fn fleet_calc_fuel(p_fleet_ships jsonb, p_distance integer, p_speed_percent integer) => bigint secdef=true
+fn fleet_calc_slowest_speed(p_fleet_ships jsonb, p_user_id uuid) => integer secdef=true
+fn format_unit_report(p_initial_units jsonb, p_remaining_units jsonb, p_side text) => text secdef=false
+fn get_game_speed() => integer secdef=true
+fn get_live_tung_price_usd() => numeric secdef=true
+fn get_user_daily_mission_speed_bonus(p_user_id uuid) => numeric secdef=true
+fn has_active_officer(p_user_id uuid, p_officer_code text) => boolean secdef=true
+fn is_user_plus(p_user_id uuid) => boolean secdef=true
+fn notify_hostile_fleet_incoming() => trigger secdef=true
+fn perform_acs_combat(p_acs_id uuid, p_target_planet_id uuid) => jsonb secdef=true
+fn perform_combat(p_attacker_fleet_id uuid, p_target_planet_id uuid) => jsonb secdef=true
+fn record_admin_revenue(p_revenue_type text, p_amount numeric, p_description text, p_related_user_id uuid, p_related_tx_id uuid, p_currency text) => uuid secdef=true
+fn sync_planet_resources(p_planet_id uuid) => jsonb secdef=true
+fn update_planet_resources(p_planet_id uuid) => void secdef=true
+cols admin_revenue: id:uuid!=gen_random_uuid() | revenue_type:text! | amount:numeric!=0 | description:text | related_user_id:uuid | related_tx_id:uuid | created_at:timestamp with time zone=now() | currency:text!='FXU'::text
+cols battle_reports: id:uuid!=gen_random_uuid() | attacker_id:uuid | defender_id:uuid | planet_id:uuid | coordinates:text! | result:text! | rounds:integer! | attacker_losses_metal:numeric=0 | attacker_losses_crystal:numeric=0 | defender_losses_metal:numeric=0 | defender_losses_crystal:numeric=0 | debris_metal:numeric=0 | debris_crystal:numeric=0 | loot_metal:numeric=0 | loot_crystal:numeric=0 | loot_deuterium:numeric=0 | report_data:jsonb! | created_at:timestamp with time zone=now() | battle_type:text | galaxy:integer | solar_system:integer | position:integer | attacker_ships_initial:jsonb='[]'::jsonb | defender_ships_initial:jsonb='[]'::jsonb | attacker_ships_lost:jsonb='[]'::jsonb | defender_ships_lost:jsonb='[]'::jsonb | rounds_data:jsonb='[]'::jsonb
+cols building_types: id:integer!=nextval('building_types_id_seq | code:text! | name:text! | description:text | category:text! | base_metal:integer=0 | base_crystal:integer=0 | base_deuterium:integer=0 | base_energy:integer=0 | cost_factor:numeric=1.5 | base_time_seconds:integer=60 | max_level:integer=50 | image_url:text
+cols debris_fields: id:uuid!=gen_random_uuid() | galaxy:integer! | solar_system:integer! | position:integer! | metal:numeric=0 | crystal:numeric=0 | created_at:timestamp with time zone=now() | updated_at:timestamp with time zone=now()
+cols defense_requirements: id:integer!=nextval('defense_requirements_ | defense_type_id:integer! | required_building_id:integer | required_building_level:integer=0 | required_tech_id:integer | required_tech_level:integer=0
+cols defense_types: id:integer!=nextval('defense_types_id_seq' | code:text! | name:text! | description:text | metal_cost:bigint=0 | crystal_cost:bigint=0 | deuterium_cost:bigint=0 | build_time_seconds:integer=60 | structural_integrity:bigint=100 | shield_power:bigint=0 | weapon_power:bigint=0 | image_url:text | max_per_planet:integer
+cols game_settings: id:integer!=nextval('game_settings_id_seq' | key:text! | value:text! | description:text | updated_at:timestamp with time zone=now()
+cols messages: id:uuid!=gen_random_uuid() | sender_id:uuid | recipient_id:uuid | subject:text! | body:text! | message_type:text='player'::text | is_read:boolean=false | created_at:timestamp with time zone=now()
+cols planet_buildings: id:uuid!=gen_random_uuid() | planet_id:uuid | building_type_id:integer | level:integer=0 | is_upgrading:boolean=false | upgrade_end_time:timestamp with time zone | created_at:timestamp with time zone=now()
+cols planet_defenses: id:uuid!=gen_random_uuid() | planet_id:uuid | defense_type_id:integer | quantity:integer=0 | in_construction:integer=0 | construction_end_time:timestamp with time zone | created_at:timestamp with time zone=now() | anti_ballistic_missiles:integer=0 | interplanetary_missiles:integer=0
+cols planet_resources: id:uuid!=gen_random_uuid() | planet_id:uuid | metal:numeric=500 | crystal:numeric=500 | deuterium:numeric=0 | energy_used:integer=0 | energy_max:integer=0 | metal_per_hour:numeric=30 | crystal_per_hour:numeric=15 | deuterium_per_hour:numeric=0 | metal_storage:numeric=10000 | crystal_storage:numeric=10000 | deuterium_storage:numeric=10000 | last_update:timestamp with time zone=now() | metal_mine_percent:smallint!=100 | crystal_mine_percent:smallint!=100 | deuterium_synth_percent:smallint!=100 | solar_plant_percent:smallint!=100 | fusion_reactor_percent:smallint!=100 | solar_satellite_percent:smallint!=100
+cols planet_ships: id:uuid!=gen_random_uuid() | planet_id:uuid | ship_type_id:integer | quantity:integer=0 | in_construction:integer=0 | construction_end_time:timestamp with time zone | created_at:timestamp with time zone=now()
+cols referral_commissions: id:uuid!=gen_random_uuid() | referrer_id:uuid! | seller_id:uuid! | transaction_id:uuid | commission_type:text! | resource_type:text | amount:bigint!=0 | created_at:timestamp with time zone=now() | fxu_amount:numeric=0
+cols ship_requirements: id:integer!=nextval('ship_requirements_id_ | ship_type_id:integer! | required_building_id:integer | required_building_level:integer=0 | required_tech_id:integer | required_tech_level:integer=0
+cols ship_types: id:integer!=nextval('ship_types_id_seq'::r | code:text! | name:text! | description:text | category:text! | metal_cost:integer=0 | crystal_cost:integer=0 | deuterium_cost:integer=0 | build_time_seconds:integer=60 | structural_integrity:integer=100 | shield_power:integer=0 | weapon_power:integer=0 | cargo_capacity:integer=0 | base_speed:integer=0 | fuel_consumption:integer=0 | rapid_fire:jsonb='{}'::jsonb | image_url:text
+cols technology_types: id:integer!=nextval('technology_types_id_s | code:text! | name:text! | description:text | category:text! | base_metal:integer=0 | base_crystal:integer=0 | base_deuterium:integer=0 | cost_factor:numeric=2.0 | base_time_seconds:integer=120 | max_level:integer=20 | image_url:text | energy_required:integer=0
+cols user_technologies: id:uuid!=gen_random_uuid() | user_id:uuid | technology_type_id:integer | level:integer=0 | is_researching:boolean=false | research_end_time:timestamp with time zone | research_planet_id:uuid | created_at:timestamp with time zone=now() | research_start_time:timestamp with time zone
+chk market_listings market_listings_listing_type_check CHECK ((listing_type = ANY (ARRAY['resource'::text, 'ship'::text, 'dark_matter'::text, 'blueprint'::text, 'colony'::text])))
+chk fleets fleets_mission_type_check CHECK ((mission_type = ANY (ARRAY['attack'::text, 'transport'::text, 'deploy'::text, 'colonize'::text, 'espionage'::text, 'recycle'::text, 'destroy'::text, 'expedition'::text, 'hold'::text, 'return'::text, 'harvest'::text])))
+chk admin_revenue admin_revenue_revenue_type_check CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+chk admin_revenue admin_revenue_amount_check CHECK ((amount >= (0)::numeric))
+chk admin_revenue admin_revenue_currency_check CHECK ((currency = ANY (ARRAY['FXU'::text, 'USDT'::text])))
+chk battle_reports battle_reports_result_check CHECK ((result = ANY (ARRAY['attacker_won'::text, 'defender_won'::text, 'draw'::text])))
+chk market_listings market_listings_price_per_unit_check CHECK ((price_per_unit > (0)::numeric))
+chk market_listings market_listings_quantity_check CHECK ((quantity > 0))
+chk market_listings market_listings_status_check CHECK ((status = ANY (ARRAY['active'::text, 'sold'::text, 'cancelled'::text])))
+chk market_listings market_listings_total_price_check CHECK ((total_price > (0)::numeric))
+chk messages messages_message_type_check CHECK ((message_type = ANY (ARRAY['player'::text, 'system'::text, 'battle'::text, 'espionage'::text, 'expedition'::text, 'alliance'::text, 'fleet_warning'::text, 'broadcast'::text])))
+chk ship_types ship_types_category_check CHECK ((category = ANY (ARRAY['civil'::text, 'combat'::text, 'special'::text])))
+set game_speed = 1.00
+set fleet_speed = 10.00
+set resource_speed = 1.00
+set vip_time_speed_multiplier = 2
+set hero_casino_base_speed = 10000
+cron 8 cleanup_old_broadcast_messages 0 3 * * * DELETE FROM public.messages WHERE message_type = 'broadcast' AND created_at < NO active=true
+cron 10 fetch-twitter-missions */5 * * * * 
+  SELECT net.http_post(
+    url := c.supabase_project_url || '/functions/v1/f active=true
+cron 13 cleanup-http-response 0 4 * * * DELETE FROM net._http_response WHERE created < now() - interval '24 hours' active=true
+cron 14 cleanup-old-completed-fleets 0 5 * * 0 DELETE FROM fleets WHERE is_completed = true AND arrival_time < now() - interval active=true
+cron 16 cleanup-cron-run-details 30 4 * * * DELETE FROM cron.job_run_details WHERE end_time < now() - interval '7 days' active=true
+cron 17 cleanup-old-game-messages 30 3 * * * DELETE FROM public.messages 
+    WHERE (
+      (message_type IN ('expedition', active=true
+cron 26 p2p_expire_offers_every_15min */15 * * * * SELECT public.p2p_expire_stale_offers(); active=true
+cron 27 auto-cancel-insufficient-listings */3 * * * * SELECT public.auto_cancel_insufficient_market_listings(); active=true
+cron 28 clean_expired_cosmetics_every_5min */5 * * * * SELECT public.clean_all_expired_cosmetics(); active=true
+cron 29 distribute-treasure-pool 5 0 * * * SELECT admin_distribute_treasure_pool() active=true
+cron 30 lottery-auto-draw 10 0 * * * SELECT public.cron_execute_lottery_draw(); active=true
+cron 31 distribute-top50-pool 15 0 * * * SELECT public.admin_distribute_monthly_pool() active=true
+cron 32 enforce-alliance-member-limits */10 * * * * SELECT public.cron_enforce_alliance_member_limits(); active=true
+cron 33 research-orphan-tick * * * * * SELECT public.cron_promote_orphan_research(); active=true
+cron 34 expire-market-offers-24h */5 * * * * SELECT public.cron_expire_market_offers(); active=true
+cron 35 bot_tick_worker 10 seconds SELECT public.bot_tick_worker(); active=true
+cron 36 raffle-auto-draw * * * * * SELECT public.cron_execute_raffle_draws(); active=true
+cron 37 update-player-rankings */5 * * * * SELECT public.update_all_rankings(); active=true
+cron 38 hero-duel-resolve * * * * * SELECT public.resolve_hero_duel(id) FROM public.hero_duels WHERE status = 'accep active=true
+cron 39 battleship-tick 10 seconds SELECT public.battleship_tick() active=true
+cron 40 sports-football-tick * * * * * SELECT public._sports_cron_tick() active=true
+cron 41 battleship-daily-pool 1 0 * * * SELECT public.battleship_daily_pool_payout() active=true
+ship 3 colony_ship Nave Colonizadora civil
+trg building_queue enforce_building_queue_limit CREATE TRIGGER enforce_building_queue_limit BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION check_building_queue_limit()
+trg building_queue protect_building_queue_trigger CREATE TRIGGER protect_building_queue_trigger BEFORE UPDATE ON public.building_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_defenses protect_planet_defenses_trigger CREATE TRIGGER protect_planet_defenses_trigger BEFORE UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_resources protect_planet_resources_trigger CREATE TRIGGER protect_planet_resources_trigger BEFORE UPDATE ON public.planet_resources FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_ships protect_planet_ships_trigger CREATE TRIGGER protect_planet_ships_trigger BEFORE UPDATE ON public.planet_ships FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planets protect_planets_trigger CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg shipyard_queue protect_shipyard_queue_trigger CREATE TRIGGER protect_shipyard_queue_trigger BEFORE UPDATE ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg fleets trg_award_expedition_blueprint_drop CREATE TRIGGER trg_award_expedition_blueprint_drop AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION award_expedition_blueprint_drop()
+trg planets trg_default_autopilot CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+trg planet_defenses trg_enforce_shield_dome_per_account CREATE TRIGGER trg_enforce_shield_dome_per_account BEFORE INSERT OR UPDATE OF quantity, defense_type_id ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION enforce_shield_dome_per_account()
+trg shipyard_queue trg_enforce_ship_blueprint_requirement CREATE TRIGGER trg_enforce_ship_blueprint_requirement BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION enforce_ship_blueprint_requirement()
+trg fleets trg_fleet_completed_daily_mission CREATE TRIGGER trg_fleet_completed_daily_mission AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION trg_fleet_completed_daily_mission()
+trg planet_resources trg_resource_collect_daily_mission CREATE TRIGGER trg_resource_collect_daily_mission AFTER UPDATE OF metal, crystal, deuterium, last_update ON public.planet_resources FOR EACH ROW WHEN ((new.last_update > old.last_update)) EXECUTE FUNCTION trg_resource_collect_daily_mission()
+trg planets trg_set_initial_deposits CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+trg fleets trigger_log_transport_interaction CREATE TRIGGER trigger_log_transport_interaction AFTER UPDATE ON public.fleets FOR EACH ROW WHEN (((new.is_completed = true) AND (old.is_completed = false))) EXECUTE FUNCTION log_transport_interaction()
+trg fleets trigger_notify_hostile_fleet CREATE TRIGGER trigger_notify_hostile_fleet AFTER INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION notify_hostile_fleet_incoming()
+trg planets trigger_validate_fields_on_update CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+trg fleet_ships trigger_fleet_ships_change_points CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+trg fleets trigger_fleet_change_points CREATE TRIGGER trigger_fleet_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleets FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet()
+trg planets trg_cancel_listings_on_planet_loss CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+trg planet_ships trigger_fleet_points CREATE TRIGGER trigger_fleet_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+trg planet_defenses trigger_defense_points CREATE TRIGGER trigger_defense_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+trg building_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg shipyard_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg fleets trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_fleet()
+trg planets trg_colony_sale_lock_autopilot CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+trg planets trg_planets_block_casino CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+trg planets trg_planets_block_sports CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+cnt_attack 1
+adminrev CREATE OR REPLACE FUNCTION public.record_admin_revenue(p_revenue_type text, p_amount numeric, p_description text DEFAULT NULL::text, p_related_user_id uuid DEFAULT NULL::uuid, p_related_tx_id uuid DEFAULT NULL::uuid, p_currency text DEFAULT 'FXU'::text)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_revenue_id uuid;
+  v_currency   text;
+BEGIN
+  IF p_amount <= 0 THEN
+    RETURN NULL;
+  END IF;
+
+  v_currency := UPPER(COALESCE(p_currency, 'FXU'));
+  IF v_currency NOT IN ('FXU', 'USDT') THEN
+    RAISE EXCEPTION 'Invalid currency for admin_revenue: %', v_currency;
+  END IF;
+
+  INSERT INTO public.admin_revenue (revenue_type, amount, currency, description, related_user_id, related_tx_id)
+  VALUES (p_revenue_type, p_amount, v_currency, p_description, p_related_user_id, p_related_tx_id)
+  RETURNING id INTO v_revenue_id;
+
+  -- Reparto a accionistas (no-op si no hay accionistas activos)
+  PERFORM public._distribute_shareholder_share(v_revenue_id, p_revenue_type, p_amount, v_currency, p_related_user_id);
+
+  RETURN v_revenue_id;
+END;
+$function$
+
+buid CREATE OR REPLACE FUNCTION public.battle_units_diff(p_initial jsonb, p_remaining jsonb, p_filter text DEFAULT 'all'::text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ IMMUTABLE
+AS $function$
+DECLARE
+  v_out jsonb := '[]'::jsonb;
+  v_unit jsonb;
+  v_rem jsonb;
+  v_idx integer := 0;
+  v_init_qty integer;
+  v_rem_qty integer;
+  v_is_def boolean;
+BEGIN
+  IF p_initial IS NULL OR jsonb_typeof(p_initial) <> 'array

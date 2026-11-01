@@ -1,0 +1,2 @@
+login_sessions.ip_address
+login_sessions.fingerprint

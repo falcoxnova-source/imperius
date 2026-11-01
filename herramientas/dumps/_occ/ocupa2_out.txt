@@ -1,0 +1,26 @@
+backup /root/backups/ocupa2_pre_20261008_180306.sql 9017
+SET
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+GRANT
+REVOKE
+GRANT
+psql:/tmp/ocupa2.sql:117: NOTICE:  [OCUPA2] texto actualizado
+DO
+=== grants ===
+_occ_try_start|f|f
+get_occupation_overview|f|t
+get_system_occupations|f|t
+=== msg text ===
+t
+=== active occupations ===
+0631a0dc-92d8-4abf-b540-1f0d440d6a58|2|271|8|d294ecf6-5dbd-4dea-a1ae-276de7959337|3f4d0031-10ac-483e-b4fb-db72d0408f20
+BEGIN
+NOTICE:  occupier sys: {"success": true, "occupations": [{"is_mine": true, "position": 8, "planet_id": "a7a39e82-f8fb-41e3-acf4-6315b59f88ee", "started_at": "2026-10-08T17:56:02.386132+00:00", "is_my_planet": false, "occupation_id": "0631a0dc-92d8-4abf-b540-1f0d440d6a58", "occupier_name": "ITACHI"}]}
+DO
+NOTICE:  occupier ov: [{"galaxy": 2, "image_id": 1, "position": 8, "temp_max": 57, "planet_id": "a7a39e82-f8fb-41e3-acf4-6315b59f88ee", "owner_name": "SUN GOD NIKA", "started_at": "2026-10-08T17:56:02.386132+00:00", "planet_name": "Colonia", "solar_system": 271, "occupation_id": "0631a0dc-92d8-4abf-b540-1f0d440d6a58", "garrison_ships": 553, "pending_builds": 0}]
+NOTICE:  owner sys: {"success": true, "occupations": [{"is_mine": false, "position": 8, "planet_id": "a7a39e82-f8fb-41e3-acf4-6315b59f88ee", "started_at": "2026-10-08T17:56:02.386132+00:00", "is_my_planet": true, "occupation_id": null, "occupier_name": "ITACHI"}]}
+NOTICE:  owner ov: [{"galaxy": 2, "image_id": 1, "position": 8, "temp_max": 57, "planet_id": "a7a39e82-f8fb-41e3-acf4-6315b59f88ee", "started_at": "2026-10-08T17:56:02.386132+00:00", "planet_name": "Colonia", "solar_system": 271, "occupation_id": "0631a0dc-92d8-4abf-b540-1f0d440d6a58", "occupier_name": "ITACHI"}]
+NOTICE:  anon: {"error": "No autenticado", "success": false}
+ROLLBACK

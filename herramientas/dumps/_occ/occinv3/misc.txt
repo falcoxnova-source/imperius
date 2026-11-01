@@ -1,0 +1,54 @@
+ship_types cols: id:integer:nextval('ship_types_id_seq'::regclass) | code:text: | name:text: | description:text: | category:text: | metal_cost:integer:0 | crystal_cost:integer:0 | deuterium_cost:integer:0 | build_time_seconds:integer:60 | structural_integrity:integer:100 | shield_power:integer:0 | weapon_power:integer:0 | cargo_capacity:integer:0 | base_speed:integer:0 | fuel_consumption:integer:0 | rapid_fire:jsonb:'{}'::jsonb | image_url:text:
+ship 3: {"id":3,"code":"colony_ship","name":"Nave Colonizadora","description":"Permite establecer nuevas colonias en planetas deshabitados.","category":"civil","metal_cost":10000,"crystal_cost":20000,"deuterium_cost":10000,"build_time_seconds":14400,"structural_integrity":21000,"shield_power":85,"weapon_power":75,"cargo_capacity":7500,"base_speed":2500,"fuel_consumption":1000,"rapid_fire":{"espionage_probe": 5, "solar_satellite": 5},"image_url":"/Imagenes/Naves/Colonizadores.webp"}
+max ship id: 22
+acs_fleets cols: id:uuid | main_fleet_id:uuid | alliance_id:uuid | name:text | target_galaxy:integer | target_system:integer | target_position:integer | arrival_time:timestamp with time zone | max_fleets:integer | is_active:boolean | created_at:timestamp with time zone | creator_id:uuid | status:text | current_participants:integer | invited_users:ARRAY
+acs_participants cols: id:uuid | acs_id:uuid | fleet_id:uuid | user_id:uuid | joined_at:timestamp with time zone
+battle_reports cols: id:uuid | attacker_id:uuid | defender_id:uuid | planet_id:uuid | coordinates:text | result:text | rounds:integer | attacker_losses_metal:numeric | attacker_losses_crystal:numeric | defender_losses_metal:numeric | defender_losses_crystal:numeric | debris_metal:numeric | debris_crystal:numeric | loot_metal:numeric | loot_crystal:numeric | loot_deuterium:numeric | report_data:jsonb | created_at:timestamp with time zone | battle_type:text | galaxy:integer | solar_system:integer | position:integer | attacker_ships_initial:jsonb | defender_ships_initial:jsonb | attacker_ships_lost:jsonb | defender_ships_lost:jsonb | rounds_data:jsonb
+planet_defenses cols: id:uuid | planet_id:uuid | defense_type_id:integer | quantity:integer | in_construction:integer | construction_end_time:timestamp with time zone | created_at:timestamp with time zone | anti_ballistic_missiles:integer | interplanetary_missiles:integer
+defense_types cols: id:integer | code:text | name:text | description:text | metal_cost:bigint | crystal_cost:bigint | deuterium_cost:bigint | build_time_seconds:integer | structural_integrity:bigint | shield_power:bigint | weapon_power:bigint | image_url:text | max_per_planet:integer
+referral_commissions cols: id:uuid | referrer_id:uuid | seller_id:uuid | transaction_id:uuid | commission_type:text | resource_type:text | amount:bigint | created_at:timestamp with time zone | fxu_amount:numeric
+cron: 8 0 3 * * * cleanup_old_broadcast_messages DELETE FROM public.messages WHERE message_type = 'broadcast' AND created_at < NOW() - INTERVAL '7 days'
+cron: 10 */5 * * * * fetch-twitter-missions 
+  SELECT net.http_post(
+    url := c.supabase_project_url || '/functions/v1/fetch-twitter-missions',
+    headers := 
+cron: 13 0 4 * * * cleanup-http-response DELETE FROM net._http_response WHERE created < now() - interval '24 hours'
+cron: 14 0 5 * * 0 cleanup-old-completed-fleets DELETE FROM fleets WHERE is_completed = true AND arrival_time < now() - interval '30 days'
+cron: 16 30 4 * * * cleanup-cron-run-details DELETE FROM cron.job_run_details WHERE end_time < now() - interval '7 days'
+cron: 17 30 3 * * * cleanup-old-game-messages DELETE FROM public.messages 
+    WHERE (
+      (message_type IN ('expedition', 'espionage') AND created_at < now() - i
+cron: 26 */15 * * * * p2p_expire_offers_every_15min SELECT public.p2p_expire_stale_offers();
+cron: 27 */3 * * * * auto-cancel-insufficient-listings SELECT public.auto_cancel_insufficient_market_listings();
+cron: 28 */5 * * * * clean_expired_cosmetics_every_5min SELECT public.clean_all_expired_cosmetics();
+cron: 29 5 0 * * * distribute-treasure-pool SELECT admin_distribute_treasure_pool()
+cron: 30 10 0 * * * lottery-auto-draw SELECT public.cron_execute_lottery_draw();
+cron: 31 15 0 * * * distribute-top50-pool SELECT public.admin_distribute_monthly_pool()
+cron: 32 */10 * * * * enforce-alliance-member-limits SELECT public.cron_enforce_alliance_member_limits();
+cron: 33 * * * * * research-orphan-tick SELECT public.cron_promote_orphan_research();
+cron: 34 */5 * * * * expire-market-offers-24h SELECT public.cron_expire_market_offers();
+cron: 35 10 seconds bot_tick_worker SELECT public.bot_tick_worker();
+cron: 36 * * * * * raffle-auto-draw SELECT public.cron_execute_raffle_draws();
+cron: 37 */5 * * * * update-player-rankings SELECT public.update_all_rankings();
+cron: 38 * * * * * hero-duel-resolve SELECT public.resolve_hero_duel(id) FROM public.hero_duels WHERE status = 'accepted' AND resolves_at <= now()
+cron: 39 10 seconds battleship-tick SELECT public.battleship_tick()
+cron: 40 * * * * * sports-football-tick SELECT public._sports_cron_tick()
+cron: 41 1 0 * * * battleship-daily-pool SELECT public.battleship_daily_pool_payout()
+rt pub: autopilot_events
+rt pub: battle_reports
+rt pub: messages
+rt pub: public_chat_messages
+admin_rev_check: CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+jackpot_src_check: admin_expenses_expense_type_check CHECK ((expense_type = ANY (ARRAY['jackpot_donation'::text, 'promotion'::text, 'refund'::text, 'other'::text, 'shareholder_payout'::text])))
+blueprints for ship: 32
+market listing_type check: market_listings_listing_type_check CHECK ((listing_type = ANY (ARRAY['resource'::text, 'ship'::text, 'dark_matter'::text, 'blueprint'::text, 'colony'::text])))
+market listing_type check: market_listings_price_per_unit_check CHECK ((price_per_unit > (0)::numeric))
+market listing_type check: market_listings_quantity_check CHECK ((quantity > 0))
+market listing_type check: market_listings_status_check CHECK ((status = ANY (ARRAY['active'::text, 'sold'::text, 'cancelled'::text])))
+market listing_type check: market_listings_total_price_check CHECK ((total_price > (0)::numeric))
+market cols: id:uuid | seller_id:uuid | listing_type:text | item_code:text | quantity:bigint | price_per_unit:numeric | total_price:numeric | planet_id:uuid | status:text | created_at:timestamp with time zone | updated_at:timestamp with time zone | purchasable_at:timestamp with time zone
+fleet_ship refs to ship code in funcs: bot_ai_tick
+fleet_ship refs to ship code in funcs: fleet_calc_ship_speed
+fleet_ship refs to ship code in funcs: process_expedition
+fleet_ship refs to ship code in funcs: process_fleet_arrival
+fleet_ship refs to ship code in funcs: secure_send_fleet

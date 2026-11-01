@@ -1,0 +1,43 @@
+building_queue|Users can delete from own building queues|DELETE|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = building_queue.planet_id) AND (planets.user_id = uid()))))
+building_queue|Users can update own building queues|UPDATE|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = building_queue.planet_id) AND (planets.user_id = uid()))))
+building_queue|Users can view own building queues|SELECT|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = building_queue.planet_id) AND (planets.user_id = uid()))))
+fleets|Users can view incoming attacks|SELECT|((is_returning = false) AND (mission_type = ANY (ARRAY['attack'::text, 'destroy'::text, 'acs_attack'::text, 'missile_attack'::text])) AND (EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.galaxy = fleets.target_galaxy) AND (planets.solar_system = fleets.target_system) AND (planets."position" = fleets.target_position) AND (planets.user_id = uid())))))
+fleets|Users can view own fleets|SELECT|(user_id = uid())
+planet_buildings|Service role can manage planet_buildings|ALL|true
+planet_buildings|Users can view own planet buildings|SELECT|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = planet_buildings.planet_id) AND (planets.user_id = uid()))))
+planet_defenses|Service role can manage planet_defenses|ALL|true
+planet_defenses|Users can view own planet defenses|SELECT|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = planet_defenses.planet_id) AND (planets.user_id = uid()))))
+planet_resources|Service role can manage planet_resources|ALL|true
+planet_resources|Users can view own planet resources|SELECT|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = planet_resources.planet_id) AND (planets.user_id = uid()))))
+planet_ships|Service role can manage planet_ships|ALL|true
+planet_ships|Users can view own planet ships|SELECT|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = planet_ships.planet_id) AND (planets.user_id = uid()))))
+planets|Users can delete own planets|DELETE|((user_id = uid()) AND (is_main_planet = false))
+planets|Users can insert own planets|INSERT|
+planets|Users can update own planets|UPDATE|(user_id = uid())
+planets|Users can view galaxy map|SELECT|true
+planets|Users can view own planets|SELECT|(user_id = uid())
+shipyard_queue|Users can delete from own planet shipyard queue|DELETE|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = shipyard_queue.planet_id) AND (planets.user_id = uid()))))
+shipyard_queue|Users can update own planet shipyard queue|UPDATE|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = shipyard_queue.planet_id) AND (planets.user_id = uid()))))
+shipyard_queue|Users can view own planet shipyard queue|SELECT|(EXISTS ( SELECT 1
+   FROM planets
+  WHERE ((planets.id = shipyard_queue.planet_id) AND (planets.user_id = uid()))))

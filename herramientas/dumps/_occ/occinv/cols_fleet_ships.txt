@@ -1,0 +1,4 @@
+id uuid gen_random_uuid()
+fleet_id uuid 
+ship_type_id integer 
+quantity integer 

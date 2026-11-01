@@ -1,0 +1,26 @@
+-- =====================================================================
+-- MIGRATION: Autopilot Knowledge Restriction (Fairness vs Manual Play)
+-- =====================================================================
+-- Problem: bot_ai_tick() runs as SECURITY DEFINER, so HUMAN autopilot
+-- accounts had full DB access to find optimal targets — unfair vs
+-- manual players who must spy/scan galaxy first.
+--
+-- Fix: Distinguish v_bot.is_bot (NPC, full access) vs human autopilot:
+--
+--   Phase E (espionage):
+--     • NPCs: unchanged (scan ANY enemy in galaxy ±15 systems)
+--     • Humans: can ONLY spy targets they've previously interacted with
+--       (sent fleet in last 30 days OR fought battle with them)
+--
+--   Phase F fallback (attack without spy):
+--     • NPCs: unchanged
+--     • Humans: DISABLED. Must have recent espionage report (Phase F main)
+--
+--   Phase G retaliation: unchanged (legitimate info via battle_reports)
+--
+-- The actual function body is kept in scripts/_bot_ai_tick_current.sql
+-- and applied via scripts/apply-miner-fixes.cjs. This migration file
+-- documents the change for version history.
+-- =====================================================================
+
+SELECT 'Autopilot knowledge restriction applied via apply-miner-fixes.cjs' AS note;

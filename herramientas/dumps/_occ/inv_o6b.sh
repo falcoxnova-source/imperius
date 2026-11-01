@@ -1,0 +1,17 @@
+#!/bin/bash
+Q() { docker exec -e PGCLIENTENCODING=UTF8 xnova-database psql -U postgres -d postgres -At -c "$1"; }
+echo "== perform_combat deploy/source"
+Q "select n||': '||l from pg_proc p, regexp_split_to_table(p.prosrc, E'\n') with ordinality t(l,n) where p.oid='public.perform_combat(uuid,uuid)'::regprocedure and l ~* 'deploy|source|OCUPA|_occ'"
+echo "== _occ_trg_hostile_warning"
+Q "select prosrc from pg_proc where proname='_occ_trg_hostile_warning'"
+Q "select tgname, tgrelid::regclass, tgenabled from pg_trigger where tgfoid='public._occ_trg_hostile_warning()'::regprocedure"
+echo "== notify_hostile_fleet_incoming"
+Q "select prosrc from pg_proc where proname='notify_hostile_fleet_incoming'"
+echo "== _occ_try_start"
+Q "select prosrc from pg_proc where proname='_occ_try_start'"
+echo "== _occ_trg_garrison_end"
+Q "select prosrc from pg_proc where proname='_occ_trg_garrison_end'"
+echo "== _occ_cron_tick"
+Q "select prosrc from pg_proc where proname='_occ_cron_tick'"
+echo "== pfa 640-760"
+Q "select n||': '||left(l,400) from pg_proc p, regexp_split_to_table(p.prosrc, E'\n') with ordinality t(l,n) where p.oid='public.process_fleet_arrival(uuid)'::regprocedure and n between 640 and 760"

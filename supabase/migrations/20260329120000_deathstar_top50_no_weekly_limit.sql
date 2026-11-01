@@ -1,0 +1,4 @@
+-- Deathstar top-50 bypass: APPLIED then REVERTED on 2026-03-29
+-- Originally: top 50 players could sell deathstars without weekly ship limit
+-- Reverted: deathstar now follows the same weekly ship value limit as all other ships
+-- All players are treated equally regardless of rank

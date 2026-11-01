@@ -1,0 +1,64 @@
+id uuid 
+username text 
+email text 
+avatar_url text 
+dark_matter integer 0
+points_total integer 0
+points_buildings integer 0
+points_research integer 0
+points_fleet integer 0
+points_defense integer 0
+rank_position integer 0
+is_admin boolean false
+is_banned boolean false
+vacation_mode boolean false
+last_activity timestamp with time zone now()
+created_at timestamp with time zone now()
+updated_at timestamp with time zone now()
+notify_attacks boolean true
+notify_buildings boolean true
+notify_research boolean true
+notify_messages boolean true
+battles_won integer 0
+battles_draw integer 0
+battles_lost integer 0
+units_destroyed bigint 0
+units_lost bigint 0
+debris_metal_total bigint 0
+debris_crystal_total bigint 0
+rank_buildings integer 0
+rank_research integer 0
+rank_fleet integer 0
+rank_defense integer 0
+fxu_balance numeric 1000
+referred_by uuid 
+referral_code text 
+is_hidden boolean false
+vacation_mode_enabled_at timestamp with time zone 
+points_expedition integer 0
+rank_expedition integer 0
+email_verified boolean false
+usdt_balance numeric 0
+vacation_remaining_research_seconds integer 0
+is_bot boolean false
+autopilot_eligible boolean false
+autopilot_active boolean false
+last_manual_action timestamp with time zone 
+autopilot_vip_boost boolean false
+autopilot_vip_boost_expires_at timestamp with time zone 
+has_created_alliance boolean false
+active_title text 
+active_title_icon text 
+active_badge text 
+active_planet_effect text 
+active_hero_skin text 
+hide_records boolean false
+daily_streak integer 0
+last_daily_claim timestamp with time zone 
+tung_balance numeric 0
+can_view_financials boolean false
+kyc_status text 'none'::text
+two_factor_login_enabled boolean false
+tutorial_step smallint 0
+tutorial_completed boolean false
+telegram_alerts_enabled boolean true

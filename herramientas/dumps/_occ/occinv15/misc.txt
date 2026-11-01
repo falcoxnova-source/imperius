@@ -1,0 +1,76 @@
+cols acs_fleets: id:uuid=gen_random_uuid() | main_fleet_id:uuid | alliance_id:uuid | name:text='ACS Attack'::text | target_galaxy:integer | target_system:integer | target_position:integer | arrival_time:timestamp with time zone | max_fleets:integer=5 | is_active:boolean=true | created_at:timestamp with time zone=now() | creator_id:uuid | status:text='waiting'::text | current_participants:integer=1 | invited_users:ARRAY=ARRAY[]::uuid[]
+cols building_queue: id:uuid=gen_random_uuid() | planet_id:uuid | building_type_id:integer | target_level:integer=1 | metal_cost:bigint=0 | crystal_cost:bigint=0 | deuterium_cost:bigint=0 | build_time:integer=0 | queue_position:integer=1 | start_time:timestamp with time zone | end_time:timestamp with time zone | created_at:timestamp with time zone=now() | status:text='building'::text
+cols fleet_ships: id:uuid=gen_random_uuid() | fleet_id:uuid | ship_type_id:integer | quantity:integer
+cols fleets: id:uuid=gen_random_uuid() | user_id:uuid | origin_planet_id:uuid | target_galaxy:integer | target_system:integer | target_position:integer | target_type:text='planet'::text | mission_type:text | cargo_metal:numeric=0 | cargo_crystal:numeric=0 | cargo_deuterium:numeric=0 | departure_time:timestamp with time zone | arrival_time:timestamp with time zone | return_time:timestamp with time zone | is_returning:boolean=false | is_completed:boolean=false | created_at:timestamp with time zone=now() | arrival_notified:boolean=false | acs_id:uuid | is_acs:boolean=false | accel_out:boolean=false | accel_ret:boolean=false | pending_dark_matter:numeric=0 | pending_fxu:numeric=0
+cols profiles: id:uuid | username:text | email:text | avatar_url:text | dark_matter:integer=0 | points_total:integer=0 | points_buildings:integer=0 | points_research:integer=0 | points_fleet:integer=0 | points_defense:integer=0 | rank_position:integer=0 | is_admin:boolean=false | is_banned:boolean=false | vacation_mode:boolean=false | last_activity:timestamp with time zone=now() | created_at:timestamp with time zone=now() | updated_at:timestamp with time zone=now() | notify_attacks:boolean=true | notify_buildings:boolean=true | notify_research:boolean=true | notify_messages:boolean=true | battles_won:integer=0 | battles_draw:integer=0 | battles_lost:integer=0 | units_destroyed:bigint=0 | units_lost:bigint=0 | debris_metal_total:bigint=0 | debris_crystal_total:bigint=0 | rank_buildings:integer=0 | rank_research:integer=0 | rank_fleet:integer=0 | rank_defense:integer=0 | fxu_balance:numeric=1000 | referred_by:uuid | referral_code:text | is_hidden:boolean=false | vacation_mode_enabled_at:timestamp with time zone | points_expedition:integer=0 | rank_expedition:integer=0 | email_verified:boolean=false | usdt_balance:numeric=0 | vacation_remaining_research_seconds:integer=0 | is_bot:boolean=false | autopilot_eligible:boolean=false | autopilot_active:boolean=false | last_manual_action:timestamp with time zone | autopilot_vip_boost:boolean=false | autopilot_vip_boost_expires_at:timestamp with time zone | has_created_alliance:boolean=false | active_title:text | active_title_icon:text | active_badge:text | active_planet_effect:text | active_hero_skin:text | hide_records:boolean=false | daily_streak:integer=0 | last_daily_claim:timestamp with time zone | tung_balance:numeric=0 | can_view_financials:boolean=false | kyc_status:text='none'::text | two_factor_login_enabled:boolean=false | tutorial_step:smallint=0 | tutorial_completed:boolean=false | telegram_alerts_enabled:boolean=true
+cols research_queue: id:uuid=gen_random_uuid() | user_id:uuid | technology_type_id:integer | target_level:integer=1 | metal_cost:bigint=0 | crystal_cost:bigint=0 | deuterium_cost:bigint=0 | research_time:integer=0 | queue_position:integer=1 | status:text='pending'::text | start_time:timestamp with time zone | end_time:timestamp with time zone | planet_id:uuid | created_at:timestamp with time zone=now()
+cols ship_blueprints: id:bigint=nextval('ship_blueprints_ | code:text | ship_type_id:integer | name:text | description:text=''::text | image_url:text | price_fxu:numeric | is_active:boolean=true | created_at:timestamp with time zone=now() | is_droppable:boolean=false | expedition_drop_chance:numeric=0 | drop_cooldown_seconds:integer=86400 | last_drop_at:timestamp with time zone | price_usd:numeric=0 | defense_type_id:integer | is_for_sale:boolean=true
+cols shipyard_queue: id:uuid=gen_random_uuid() | planet_id:uuid | item_type:text | ship_type_id:integer | defense_type_id:integer | quantity:integer | quantity_completed:integer=0 | metal_cost:bigint=0 | crystal_cost:bigint=0 | deuterium_cost:bigint=0 | build_time_per_unit:integer=0 | queue_position:integer=1 | start_time:timestamp with time zone | current_unit_end_time:timestamp with time zone | created_at:timestamp with time zone=now() | status:text='building'::text | blueprints_used:integer=0
+cols user_ship_blueprints: id:uuid=gen_random_uuid() | user_id:uuid | blueprint_id:bigint | acquired_at:timestamp with time zone=now() | source:text='shop'::text | metadata:jsonb='{}'::jsonb
+tables_like_blueprint expedition_blueprint_drop_config
+tables_like_blueprint expedition_blueprint_drops
+tables_like_blueprint ship_blueprints
+tables_like_blueprint user_ship_blueprints
+tables_like_blueprint blueprint_included_resources
+tables_like_blueprint blueprint_market_escrow
+bq_status building 326
+sq_sample {"id":"0527dca7-b918-4643-b639-3323fab07e8b","planet_id":"84fa4695-29c1-466d-bc0b-ffb9beb8e6a7","item_type":"ship","ship_type_id":9,"defense_type_id":null,"quantity":3,"quantity_completed":0,"metal_cost":60000,"crystal_cost":21000,"deuterium_cost":6000,"build_time_per_unit":4320,"queue_position":1,"start_time":"2026-10-08T15:20:37.82123+00:00","current_unit_end_time":"2026-10-08T16:32:37.82123+00:00","created_at":"2026-10-08T15:20:37.82123+00:00","status":"building","blueprints_used":0}
+sq_sample {"id":"9f35a9e1-1c17-40b2-874b-f1f277f2158a","planet_id":"b1ba7ca0-1a9e-46f6-993f-ac6ba82ec48b","item_type":"ship","ship_type_id":6,"defense_type_id":null,"quantity":1,"quantity_completed":0,"metal_cost":0,"crystal_cost":2000,"deuterium_cost":500,"build_time_per_unit":360,"queue_position":1,"start_time":"2026-10-08T15:18:49.300363+00:00","current_unit_end_time":"2026-10-08T15:24:49.300363+00:00","created_at":"2026-10-08T15:18:49.300363+00:00","status":"building","blueprints_used":0}
+bq_sample {"id":"db01e5be-bed2-47e5-9449-accb2f4001c8","planet_id":"a11b8614-b9e2-460c-9607-a52b57ec0d7c","building_type_id":2,"target_level":7,"metal_cost":805,"crystal_cost":402,"deuterium_cost":0,"build_time":217,"queue_position":3,"start_time":null,"end_time":null,"created_at":"2026-10-08T15:20:13.225049+00:00","status":"building"}
+bq_sample {"id":"3d257492-daf6-4c36-952c-60af60a5886a","planet_id":"a11b8614-b9e2-460c-9607-a52b57ec0d7c","building_type_id":3,"target_level":7,"metal_cost":2562,"crystal_cost":854,"deuterium_cost":0,"build_time":614,"queue_position":2,"start_time":null,"end_time":null,"created_at":"2026-10-08T15:20:11.350853+00:00","status":"building"}
+fn_with_queue _colony_sale_activity_block
+fn_with_queue admin_process_stuck_building_queues
+fn_with_queue admin_purge_inactive_account
+fn_with_queue bot_ai_tick
+fn_with_queue bot_process_queues
+fn_with_queue calculate_fxu_cost
+fn_with_queue calculate_fxu_cost_building
+fn_with_queue check_building_queue_limit
+fn_with_queue complete_building_queue_item
+fn_with_queue delete_user_account
+fn_with_queue get_stuck_items_diagnostics
+fn_with_queue global_process_all_expired_queues
+fn_with_queue instant_complete_building
+fn_with_queue optimized_global_queue_processor
+fn_with_queue process_all_user_building_queues
+fn_with_queue process_building_queue_internal
+fn_with_queue process_completed_building_queue
+fn_with_queue secure_abandon_colony
+fn_with_queue secure_activate_building_queue
+fn_with_queue secure_add_to_building_queue
+fn_with_queue secure_cancel_building_queue_item
+fn_with_queue secure_demolish_building
+fn_with_queue secure_start_research
+fn_with_queue toggle_vacation_mode
+fn_with_queue validate_building_fields
+fn_with_queue validate_building_queue
+fn_with_sq _colony_sale_activity_block
+fn_with_sq _shipyard_promote_next
+fn_with_sq admin_audit_suspicious_ships
+fn_with_sq admin_clean_fraudulent_ships
+fn_with_sq admin_process_stuck_shipyard_queues
+fn_with_sq admin_purge_inactive_account
+fn_with_sq bot_ai_tick
+fn_with_sq bot_process_queues
+fn_with_sq calculate_fxu_cost_shipyard
+fn_with_sq delete_user_account
+fn_with_sq get_stuck_items_diagnostics
+fn_with_sq global_process_all_expired_queues
+fn_with_sq instant_complete_shipyard
+fn_with_sq instant_complete_shipyard_item
+fn_with_sq optimized_global_queue_processor
+fn_with_sq process_all_user_shipyard_queues
+fn_with_sq process_shipyard_queue_core
+fn_with_sq secure_abandon_colony
+fn_with_sq secure_add_to_shipyard_queue
+fn_with_sq secure_add_to_shipyard_queue
+fn_with_sq secure_cancel_shipyard_queue_item
+fn_with_sq toggle_vacation_mode
+ostab deposit_gas_buffer_tung=100
+ostab tung_price_usd=0.007387
+ostab hero_repair_kit_price_25=500
+ostab hero_repair_kit_price_50=1500
+ostab hero_repair_kit_price_75=4000
+ostab hero_repair_kit_price_100=10000
+ostab depletion_refill_price_usdt=10
+ostab colony_min_price_usd=50

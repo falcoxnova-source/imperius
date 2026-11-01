@@ -1,0 +1,172 @@
+== validate_ship_requirements
+
+DECLARE
+  v_requirement RECORD;
+  v_current_level integer;
+  v_missing_reqs jsonb := '[]'::jsonb;
+  v_planet RECORD;
+BEGIN
+  SELECT * INTO v_planet FROM planets WHERE id = p_planet_id;
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('valid', false, 'error', 'Planet not found');
+  END IF;
+
+  FOR v_requirement IN
+    SELECT sr.*, 
+           bt.name as building_name, 
+           tt.name as tech_name
+    FROM ship_requirements sr
+    LEFT JOIN building_types bt ON bt.id = sr.required_building_id
+    LEFT JOIN technology_types tt ON tt.id = sr.required_tech_id
+    WHERE sr.ship_type_id = p_ship_type_id
+  LOOP
+    IF v_requirement.required_building_id IS NOT NULL THEN
+      SELECT COALESCE(pb.level, 0) INTO v_current_level
+      FROM planet_buildings pb
+      WHERE pb.planet_id = p_planet_id
+        AND pb.building_type_id = v_requirement.required_building_id;
+      
+      IF v_current_level IS NULL THEN v_current_level := 0; END IF;
+      
+      IF v_current_level < v_requirement.required_building_level THEN
+        v_missing_reqs := v_missing_reqs || jsonb_build_object(
+          'type', 'building',
+          'name', v_requirement.building_name,
+          'required', v_requirement.required_building_level,
+          'current', v_current_level
+        );
+      END IF;
+    END IF;
+
+    IF v_requirement.required_tech_id IS NOT NULL THEN
+      SELECT COALESCE(ut.level, 0) INTO v_current_level
+      FROM user_technologies ut
+      WHERE ut.user_id = v_planet.user_id
+        AND ut.technology_type_id = v_requirement.required_tech_id;
+      
+      IF v_current_level IS NULL THEN v_current_level := 0; END IF;
+      
+      IF v_current_level < v_requirement.required_tech_level THEN
+        v_missing_reqs := v_missing_reqs || jsonb_build_object(
+          'type', 'technology',
+          'name', v_requirement.tech_name,
+          'required', v_requirement.required_tech_level,
+          'current', v_current_level
+        );
+      END IF;
+    END IF;
+  END LOOP;
+
+  IF jsonb_array_length(v_missing_reqs) > 0 THEN
+    RETURN jsonb_build_object('valid', false, 'missing', v_missing_reqs);
+  END IF;
+
+  RETURN jsonb_build_object('valid', true);
+END;
+
+== validate_defense_requirements
+
+DECLARE
+  v_requirement RECORD;
+  v_current_level integer;
+  v_missing_reqs jsonb := '[]'::jsonb;
+  v_planet RECORD;
+BEGIN
+  SELECT * INTO v_planet FROM planets WHERE id = p_planet_id;
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('valid', false, 'error', 'Planet not found');
+  END IF;
+
+  FOR v_requirement IN
+    SELECT dr.*, 
+           bt.name as building_name, 
+           tt.name as tech_name
+    FROM defense_requirements dr
+    LEFT JOIN building_types bt ON bt.id = dr.required_building_id
+    LEFT JOIN technology_types tt ON tt.id = dr.required_tech_id
+    WHERE dr.defense_type_id = p_defense_type_id
+  LOOP
+    IF v_requirement.required_building_id IS NOT NULL THEN
+      SELECT COALESCE(pb.level, 0) INTO v_current_level
+      FROM planet_buildings pb
+      WHERE pb.planet_id = p_planet_id
+        AND pb.building_type_id = v_requirement.required_building_id;
+      
+      IF v_current_level IS NULL THEN v_current_level := 0; END IF;
+      
+      IF v_current_level < v_requirement.required_building_level THEN
+        v_missing_reqs := v_missing_reqs || jsonb_build_object(
+          'type', 'building',
+          'name', v_requirement.building_name,
+          'required', v_requirement.required_building_level,
+          'current', v_current_level
+        );
+      END IF;
+    END IF;
+
+    IF v_requirement.required_tech_id IS NOT NULL THEN
+== get_live_tung_price_usd volatility
+s|t
+== user_can_build_ship
+CREATE OR REPLACE FUNCTION public.user_can_build_ship(p_user_id uuid, p_ship_type_id integer)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_requirement record;
+  v_user_tech_level integer;
+  v_user_building_level integer;
+BEGIN
+  FOR v_requirement IN
+    SELECT sr.required_tech_id, sr.required_tech_level,
+           sr.required_building_id, sr.required_building_level
+    FROM ship_requirements sr
+    WHERE sr.ship_type_id = p_ship_type_id
+  LOOP
+    IF v_requirement.required_tech_id IS NOT NULL AND COALESCE(v_requirement.required_tech_level, 0) > 0 THEN
+      SELECT COALESCE(ut.level, 0) INTO v_user_tech_level
+      FROM user_technologies ut
+== enforce_ship_blueprint_requirement
+CREATE OR REPLACE FUNCTION public.enforce_ship_blueprint_requirement()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_owner_id       uuid;
+  v_blueprint_id   bigint;
+  v_unit_name      text;
+  v_shipyard_level integer;
+  v_owned          integer;
+  v_validation     jsonb;
+BEGIN
+  -- Solo naves o defensas
+  IF NEW.item_type NOT IN ('ship','defense') THEN
+    RETURN NEW;
+  END IF;
+  IF NEW.item_type = 'ship'    AND NEW.ship_type_id    IS NULL THEN RETURN NEW; END IF;
+  IF NEW.item_type = 'defense' AND NEW.defense_type_id IS NULL THEN RETURN NEW; END IF;
+== _bs_settle referral part
+46:  SELECT p.referred_by INTO v_referrer FROM public.profiles p WHERE p.id = v_loser;
+47-  IF v_referrer IS NOT NULL AND v_referrer <> v_loser
+48-     AND EXISTS (SELECT 1 FROM public.profiles WHERE id = v_referrer) THEN
+49-    v_ref_share := round(v_company * c_ref_rate, 8);
+--
+56:  SELECT id INTO v_admin_id FROM public.profiles WHERE is_admin = true ORDER BY created_at ASC LIMIT 1;
+57-  IF v_admin_share > 0 AND v_admin_id IS NOT NULL THEN
+58-    UPDATE public.profiles SET fxu_balance = fxu_balance + v_admin_share WHERE id = v_admin_id;
+59-  END IF;
+--
+63:    INSERT INTO public.referral_commissions (referrer_id, seller_id, transaction_id, commission_type, fxu_amount)
+64-    VALUES (v_referrer, v_loser, NULL, 'casino_battleship_referral', v_ref_share);
+65-  END IF;
+66-
+--
+73:    -- record_admin_revenue reparte la parte de los accionistas
+74:    PERFORM public.record_admin_revenue('casino_battleship', v_admin_share,
+75-      'Batalla de Naves: comision del perdedor', v_loser, p_match_id);
+76-  END IF;
+77-

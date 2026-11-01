@@ -1,0 +1,15 @@
+id uuid gen_random_uuid()
+main_fleet_id uuid 
+alliance_id uuid 
+name text 'ACS Attack'::text
+target_galaxy integer 
+target_system integer 
+target_position integer 
+arrival_time timestamp with time zone 
+max_fleets integer 5
+is_active boolean true
+created_at timestamp with time zone now()
+creator_id uuid 
+status text 'waiting'::text
+current_participants integer 1
+invited_users ARRAY ARRAY[]::uuid[]

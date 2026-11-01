@@ -1,0 +1,66 @@
+============================================================
+  RESPUESTAS PARA OKX TOKEN LISTING - GOOGLE FORM
+  Copia y pega cada campo en orden
+============================================================
+
+1. Project Name:
+   TUNG (Falco-X Universe)
+
+2. Project Sector:
+   Gaming / Meme Coin / DeFi / Web3
+
+3. One Sentence Intro About Your Project:
+   TUNG is the Sahur Meme Coin powering the NOVA Universe strategy MMO game on BNB Chain, featuring auto-staking rewards, burn mechanics, and a P2P marketplace.
+
+4. How to bring new users to your project?
+   Through the NOVA Universe browser game (tung.xnova.xyz), social media campaigns on X/Twitter and Telegram, PancakeSwap trading incentives, staking rewards at swap.falcox.net/staking, and community events.
+
+5. PitchDeck link [DocSend/G-Doc]:
+   https://tung.falcox.net/whitepaper
+
+6. Project Official Website/Twitter/Telegram/Discord:
+   Website: https://tung.falcox.net/
+   Twitter: https://x.com/TungeTungSahur
+   Telegram: https://t.me/TrungTungMeme
+   GitHub: https://github.com/falcoxcorp
+   Game: https://tung.xnova.xyz
+
+7. Founders' Contact info (TG/Email) - Prefer TG:
+   Telegram: @TrungTungMeme
+   Email: falcoxcorp@gmail.com
+
+8. Name, Background, and LinkedIn/Twitter links of 3 core team members:
+   1. Jennier Falco Selpa - Founder & Lead Developer
+      Twitter: @TungeTungSahur
+      GitHub: falcoxcorp
+   2. Available upon request
+   3. Available upon request
+
+9. Token Contract Link (if TGEd):
+   BSC: 0x09514EcF8270C12101D077B5e8B034B164F71C5f
+   PancakeSwap: https://pancakeswap.finance/swap?outputCurrency=0x09514EcF8270C12101D077B5e8B034B164F71C5f
+   BscScan: https://bscscan.com/token/0x09514EcF8270C12101D077B5e8B034B164F71C5f
+
+10. Tokenomics:
+    Total Supply: 21,000,000 TUNG
+    Tax: 3% passive holder rewards + 1.5% auto-burn per transaction
+    Liquidity: Locked 2 years on PinkSale
+    Utility: In-game purchases, staking rewards, P2P marketplace, officer rentals
+    DEX: PancakeSwap BSC
+    Staking: swap.falcox.net/staking
+
+11. Investor List:
+    Self-funded community project. No VC investors. LP lock verified on PinkSale.
+
+12. Any other information you'd love to share with us:
+    Live game at tung.xnova.xyz with active user base. GeckoTerminal listing in progress. 21M max supply, deflationary by design with 1.5% burn per transaction. Community-driven Sahur Meme on BNB Chain.
+
+============================================================
+  INSTRUCCIONES:
+  1. Click en el primer campo (Project Name)
+  2. Pega la respuesta #1
+  3. Presiona TAB para ir al siguiente campo
+  4. Repite hasta llenar todo
+  5. Marca el checkbox del email
+  6. Click SUBMIT
+============================================================

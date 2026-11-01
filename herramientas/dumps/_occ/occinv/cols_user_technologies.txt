@@ -1,0 +1,9 @@
+id uuid gen_random_uuid()
+user_id uuid 
+technology_type_id integer 
+level integer 0
+is_researching boolean false
+research_end_time timestamp with time zone 
+research_planet_id uuid 
+created_at timestamp with time zone now()
+research_start_time timestamp with time zone 

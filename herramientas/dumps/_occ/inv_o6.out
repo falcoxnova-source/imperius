@@ -1,0 +1,68 @@
+﻿== perform_combat deploy/source
+== pfa attack branch: source/deploy/occ
+178:       v_fortress_def_rem := v_fortress_combat->'defender_remaining';
+468:     UPDATE planet_resources SET metal = metal + fleet_record.cargo_metal, crystal = crystal + fleet_record.cargo_crystal, deuterium = deuterium + fleet_record.cargo_deuterium WHERE planet_id = fleet_record.origin_planet_id; IF COALESCE(fleet_record.pending_dark_matter,0) > 0 THEN UPDATE profiles SET dark_matter = COALESCE(dark_matter,0) + fleet_record.pending_dark_matter WHERE id = fleet_record.user_id; END IF; IF COALESCE(fleet_record.pending_fxu,0) > 0 THEN PERFORM _internal_set_fxu_context(); UPDATE profiles SET fxu_balance = fxu_balance + fleet_record.pending_fxu WHERE id = fleet_record.user_id; END IF;
+526:       UPDATE planet_resources SET metal = metal + fleet_record.cargo_metal, crystal = crystal + fleet_record.cargo_crystal, deuterium = deuterium + fleet_record.cargo_deuterium WHERE planet_id = target_planet.id;
+539:       UPDATE planet_resources SET metal = metal + fleet_record.cargo_metal, crystal = crystal + fleet_record.cargo_crystal, deuterium = deuterium + fleet_record.cargo_deuterium WHERE planet_id = target_planet.id;
+625:     INSERT INTO planet_resources (planet_id, metal, crystal, deuterium, metal_per_hour, crystal_per_hour, deuterium_per_hour)
+648:     IF public._occ_recovery_arrival(p_fleet_id) THEN RETURN; END IF; /* [OCUPA1-pfa1] */
+653:       v_defender_units_report := format_unit_report(combat_result->'initial_defender', combat_result->'defender_remaining', 'defender');
+656:         DECLARE v_avail_m NUMERIC; v_avail_c NUMERIC; v_avail_d NUMERIC; v_rem NUMERIC; BEGIN SELECT GREATEST(0, COALESCE(metal, 0)), GREATEST(0, COALESCE(crystal, 0)), GREATEST(0, COALESCE(deuterium, 0)) INTO v_avail_m, v_avail_c, v_avail_d FROM planet_resources WHERE planet_id = target_planet.id; loot_metal := LEAST(v_avail_m, FLOOR(total_cargo_capacity::numeric / 3)); loot_crystal := LEAST(v_avail_c, FLOOR(total_cargo_capacity::numeric / 3)); loot_deuterium := LEAST(v_avail_d, FLOOR(total_cargo_capacity::numeric / 3)); v_rem := total_cargo_capacity - (loot_metal + loot_crystal + loot_deuterium); IF v_rem > 0 THEN loot_metal := loot_metal + LEAST(v_avail_m - loot_metal, v_rem); v_rem := total_cargo_capacity - (loot_metal + loot_crystal + loot_deuterium); END IF; IF v_rem > 0 THEN loot_crystal := loot_crystal + LEAST(v_avail_c - loot_crystal, v_rem); v_rem := total_cargo_capacity - (loot_metal + loot_crystal + loot_deuterium); END IF; IF v_rem > 0 THEN loot_deuterium := loot_deuterium + LEAST(v_avail_d - loot_deuterium, v_rem); END IF; END;
+657:         UPDATE planet_resources SET metal = GREATEST(0, metal - loot_metal), crystal = GREATEST(0, crystal - loot_crystal), deuterium = GREATEST(0, deuterium - loot_deuterium) WHERE planet_id = target_planet.id;
+661:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF NOT (v_unit->>'is_defense')::boolean THEN IF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND ship_type_id = (v_unit->>'type_id')::integer; ELSIF (v_unit->>'source') NOT IN ('planet','defense') THEN /* [FLOTAS v17] quantity=0 viola fleet_ships_quantity_check y dejaba la flota atascada: si la pila queda vacia se borra la fila */ IF (v_unit->>'quantity')::integer > 0 THEN UPDATE fleet_ships SET quantity = (v_unit->>'quantity')::integer WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; ELSE DELETE FROM fleet_ships WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; END IF; END IF; END IF; END LOOP;
+674:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF (v_unit->>'is_defense')::boolean THEN UPDATE planet_defenses SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND defense_type_id = (v_unit->>'type_id')::integer; ELSIF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND ship_type_id = (v_unit->>'type_id')::integer; ELSIF (v_unit->>'source') NOT IN ('planet','defense') THEN /* [FLOTAS v17] quantity=0 viola fleet_ships_quantity_check y dejaba la flota atascada: si la pila queda vacia se borra la fila */ IF (v_unit->>'quantity')::integer > 0 THEN UPDATE fleet_ships SET quantity = (v_unit->>'quantity')::integer WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; ELSE DELETE FROM fleet_ships WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; END IF; END IF; END LOOP;
+682:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF (v_unit->>'is_defense')::boolean THEN UPDATE planet_defenses SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND defense_type_id = (v_unit->>'type_id')::integer; ELSIF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND ship_type_id = (v_unit->>'type_id')::integer; ELSIF (v_unit->>'source') NOT IN ('planet','defense') THEN /* [FLOTAS v17] quantity=0 viola fleet_ships_quantity_check y dejaba la flota atascada: si la pila queda vacia se borra la fila */ IF (v_unit->>'quantity')::integer > 0 THEN UPDATE fleet_ships SET quantity = (v_unit->>'quantity')::integer WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; ELSE DELETE FROM fleet_ships WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; END IF; END IF; END LOOP;
+687:       DELETE FROM fleet_ships WHERE quantity <= 0 AND fleet_id IN (SELECT (u->>'source')::uuid FROM jsonb_array_elements(combat_result->'defender_remaining') u WHERE (u->>'source') NOT IN ('planet','defense'));
+688:       UPDATE fleets SET is_completed = true WHERE mission_type = 'deploy' AND is_completed = false AND id IN (SELECT (u->>'source')::uuid FROM jsonb_array_elements(combat_result->'defender_remaining') u WHERE (u->>'source') NOT IN ('planet','defense')) AND NOT EXISTS (SELECT 1 FROM fleet_ships fs WHERE fs.fleet_id = fleets.id AND fs.quantity > 0);
+720:         'defender_ships', battle_units_diff(combat_result->'initial_defender', combat_result->'defender_remaining', 'ships'),
+721:         'defender_defenses', battle_units_diff(combat_result->'initial_defender', combat_result->'defender_remaining', 'defenses'),
+745:               SELECT DISTINCT (u->>'source')::uuid
+746:               FROM jsonb_array_elements(combat_result->'defender_remaining') u
+747:               WHERE (u->>'source') NOT IN ('planet', 'defense')
+752:       IF (combat_result->>'result') = 'attacker_won' AND public._occ_try_start(p_fleet_id, target_planet.id, loot_metal, loot_crystal, loot_deuterium) THEN RETURN; END IF; /* [OCUPA1-pfa2] */
+== get_incoming_attacks
+get_incoming_attacks(uuid)
+8:   FROM user_technologies ut
+10:   WHERE ut.user_id = p_user_id AND tt.code = 'espionage_tech';
+15:   FROM alliance_members
+16:   WHERE user_id = p_user_id
+21:   FROM (
+46:           FROM fleet_ships fs
+48:           WHERE fs.fleet_id = f.id
+54:     FROM fleets f
+62:     JOIN profiles attacker ON attacker.id = f.user_id
+63:     LEFT JOIN user_technologies attacker_spy ON attacker_spy.user_id = f.user_id
+65:         SELECT id FROM technology_types WHERE code = 'espionage_tech' LIMIT 1
+67:     WHERE f.is_completed = false
+69:       AND f.user_id != p_user_id
+70:       AND p_target.user_id = p_user_id
+99:           FROM fleet_ships fs
+101:           WHERE fs.fleet_id = f.id
+107:     FROM fleets f
+114:     JOIN profiles attacker ON attacker.id = f.user_id
+115:     LEFT JOIN user_technologies attacker_spy ON attacker_spy.user_id = f.user_id
+117:         SELECT id FROM technology_types WHERE code = 'espionage_tech' LIMIT 1
+119:     WHERE v_alliance_id IS NOT NULL
+122:       AND f.user_id != p_user_id
+130:             SELECT 1 FROM alliance_members am_att
+131:             WHERE am_att.user_id = f.user_id
+163:           FROM fleet_ships fs
+165:           WHERE fs.fleet_id = f.id
+171:     FROM fleets f
+178:     JOIN profiles attacker ON attacker.id = f.user_id
+179:     LEFT JOIN user_technologies attacker_spy ON attacker_spy.user_id = f.user_id
+181:         SELECT id FROM technology_types WHERE code = 'espionage_tech' LIMIT 1
+183:     WHERE v_alliance_id IS NOT NULL
+186:       AND f.user_id != p_user_id
+194:             SELECT 1 FROM alliance_members am_att
+195:             WHERE am_att.user_id = f.user_id
+== fleet_warning senders
+_occ_trg_hostile_warning()
+accelerate_fleet(uuid)
+notify_telegram_dm_on_message()
+notify_hostile_fleet_incoming()
+accelerate_acs(uuid)
+== secure_send_fleet warning lines
+37:   PERFORM public._occ_guard(p_origin_planet_id); /* [OCUPA1-g] */
+== active occupations
+0

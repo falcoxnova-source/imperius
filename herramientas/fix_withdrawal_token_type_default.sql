@@ -1,0 +1,14 @@
+-- Fix Bug #3: "No deja retirar" (Database error on TUNG withdrawal)
+-- Root cause: wallet_transactions.token_type column DEFAULT was still the stale
+-- pre-rebrand value 'FXU'. The check constraint wallet_transactions_token_type_check
+-- only allows ('TUNG','USDT'). public.request_withdrawal() inserts WITHOUT specifying
+-- token_type, so it used the default 'FXU' and violated the constraint ->
+-- "new row for relation wallet_transactions violates check constraint
+--  wallet_transactions_token_type_check" -> service returned 400 "Database error".
+--
+-- All other inserters (request_withdrawal_usdt, confirm_deposit, confirm_deposit_usdt)
+-- already set token_type explicitly, so changing the default only affects the TUNG
+-- withdrawal path, which is the correct asset.
+--
+-- Minimal, root-cause fix: set the default to a constraint-valid value.
+ALTER TABLE public.wallet_transactions ALTER COLUMN token_type SET DEFAULT 'TUNG';

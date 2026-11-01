@@ -1,0 +1,46 @@
+building_queue|id:uuid:gen_random_uuid(), planet_id:uuid:, building_type_id:integer:, target_level:integer:1, metal_cost:bigint:0, crystal_cost:bigint:0, deuterium_cost:bigint:0, build_time:integer:0, queue_position:integer:1, start_time:timestamp with time zone:, end_time:timestamp with time zone:, created_at:timestamp with time zone:now(), status:text:'building'::text
+debris_fields|id:uuid:gen_random_uuid(), galaxy:integer:, solar_system:integer:, position:integer:, metal:numeric:0, crystal:numeric:0, created_at:timestamp with time zone:now(), updated_at:timestamp with time zone:now()
+defense_types|id:integer:nextval('defense_types_id_seq'::regclass), code:text:, name:text:, description:text:, metal_cost:bigint:0, crystal_cost:bigint:0, deuterium_cost:bigint:0, build_time_seconds:integer:60, structural_integrity:bigint:100, shield_power:bigint:0, weapon_power:bigint:0, image_url:text:, max_per_planet:integer:
+market_listings|id:uuid:gen_random_uuid(), seller_id:uuid:, listing_type:text:, item_code:text:, quantity:bigint:, price_per_unit:numeric:, total_price:numeric:, planet_id:uuid:, status:text:'active'::text, created_at:timestamp with time zone:now(), updated_at:timestamp with time zone:now(), purchasable_at:timestamp with time zone:now()
+planet_defenses|id:uuid:gen_random_uuid(), planet_id:uuid:, defense_type_id:integer:, quantity:integer:0, in_construction:integer:0, construction_end_time:timestamp with time zone:, created_at:timestamp with time zone:now(), anti_ballistic_missiles:integer:0, interplanetary_missiles:integer:0
+planet_ships|id:uuid:gen_random_uuid(), planet_id:uuid:, ship_type_id:integer:, quantity:integer:0, in_construction:integer:0, construction_end_time:timestamp with time zone:, created_at:timestamp with time zone:now()
+referral_commissions|id:uuid:gen_random_uuid(), referrer_id:uuid:, seller_id:uuid:, transaction_id:uuid:, commission_type:text:, resource_type:text:, amount:bigint:0, created_at:timestamp with time zone:now(), fxu_amount:numeric:0
+research_queue|id:uuid:gen_random_uuid(), user_id:uuid:, technology_type_id:integer:, target_level:integer:1, metal_cost:bigint:0, crystal_cost:bigint:0, deuterium_cost:bigint:0, research_time:integer:0, queue_position:integer:1, status:text:'pending'::text, start_time:timestamp with time zone:, end_time:timestamp with time zone:, planet_id:uuid:, created_at:timestamp with time zone:now()
+shipyard_queue|id:uuid:gen_random_uuid(), planet_id:uuid:, item_type:text:, ship_type_id:integer:, defense_type_id:integer:, quantity:integer:, quantity_completed:integer:0, metal_cost:bigint:0, crystal_cost:bigint:0, deuterium_cost:bigint:0, build_time_per_unit:integer:0, queue_position:integer:1, start_time:timestamp with time zone:, current_unit_end_time:timestamp with time zone:, created_at:timestamp with time zone:now(), status:text:'building'::text, blueprints_used:integer:0
+
+  -- [COLMKT5]
+  SELECT min(ml.created_at)
+  FROM public.market_listings ml
+  WHERE ml.listing_type = 'colony'
+    AND ml.status = 'active'
+    AND ml.planet_id IN (
+      SELECT p_planet_id
+      UNION ALL
+      SELECT c.id
+      FROM public.planets t
+      JOIN public.planets c
+        ON c.user_id = t.user_id
+       AND c.galaxy = t.galaxy
+       AND c.solar_system = t.solar_system
+       AND c.position = t.position
+       AND c.planet_type = 'planet'
+      WHERE t.id = p_planet_id
+        AND t.planet_type = 'moon'
+    );
+
+apply_vip_time_bonus(uuid,integer)|integer
+is_user_plus(uuid)|boolean
+_colony_listed_since(uuid)|timestamp with time zone
+has_active_officer(uuid,text)|boolean
+calculate_and_sync_resources_internal(uuid,uuid)|jsonb
+fleet_calc_distance(integer,integer,integer,integer,integer,integer)|integer
+check_moon_creation(integer,integer,integer,numeric,numeric)|jsonb
+fleet_calc_flight_time(integer,integer,integer,numeric)|integer
+fleet_calc_fuel(jsonb,integer,integer)|bigint
+fleet_calc_slowest_speed(jsonb,uuid)|integer
+fleet_calc_flight_time(integer,integer,integer)|integer
+validate_ship_requirements(uuid,integer)|jsonb
+get_user_daily_mission_speed_bonus(uuid)|numeric
+validate_defense_requirements(uuid,integer)|jsonb
+battle_units_diff(jsonb,jsonb,text)|jsonb
+get_live_tung_price_usd()|numeric

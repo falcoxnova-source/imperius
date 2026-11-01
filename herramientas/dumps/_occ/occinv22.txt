@@ -1,0 +1,101 @@
+                    );
+                    PERFORM log_autopilot_event(v_bot.id, v_planet.id, 'building_queued',
+                      jsonb_build_object('building', v_custom_key, 'level', v_c_next_level, 'mode', 'custom'));
+                    v_custom_built := true;
+                    v_buildings_queued := v_buildings_queued + 1;
+                    SELECT * INTO v_resources FROM planet_resources WHERE planet_id = v_planet.id;
+                  END IF;
+                END;
+              END LOOP;
+            END IF;
+
+            -- CUSTOM SHIPS: construir cantidad pendiente y descontar
+            IF v_custom_orders.ships IS NOT NULL AND v_custom_orders.ships <> '{}'::jsonb THEN
+              FOR v_custom_key, v_custom_target IN
+                SELECT key, value::integer FROM jsonb_each_text(v_custom_orders.ships)
+              LOOP
+                IF v_custom_target <= 0 THEN CONTINUE; END IF;
+
+                SELECT st.id, st.code, st.metal_cost, st.crystal_cost, st.deuterium_cost
+                  INTO v_custom_st
+                  FROM ship_types st WHERE st.code = v_custom_key;
+                IF NOT FOUND THEN CONTINUE; END IF;
+
+                -- [CUSTOM v16/REQUISITOS] Validar ship_requirements (hangar, tecnologias).
+                -- Antes el modo personalizado creaba cruceros o destructores sin hangar
+                -- ni las tecnologias necesarias, cosa imposible para un jugador humano.
+                v_req_met := true;
+                FOR v_req IN SELECT sr.required_building_id, sr.required_building_level, sr.required_tech_id, sr.required_tech_level
+                             FROM ship_requirements sr WHERE sr.ship_type_id = v_custom_st.id LOOP
+                  IF v_req.required_building_id IS NOT NULL THEN
+                    SELECT COALESCE(pb.level, 0) INTO v_req_level FROM planet_buildings pb
+                      WHERE pb.planet_id = v_planet.id AND pb.building_type_id = v_req.required_building_id;
+                    v_req_level := COALESCE(v_req_level, 0);
+                    IF v_req_level < v_req.required_building_level THEN v_req_met := false; EXIT; END IF;
+                  END IF;
+                  IF v_req.required_tech_id IS NOT NULL THEN
+                    SELECT COALESCE(ut.level, 0) INTO v_req_level FROM user_technologies ut
+                      WHERE ut.user_id = v_bot.id AND ut.technology_type_id = v_req.required_tech_id;
+                    v_req_level := COALESCE(v_req_level, 0);
+                    IF v_req_level < v_req.required_tech_level THEN v_req_met := false; EXIT; END IF;
+                  END IF;
+                END LOOP;
+                IF NOT v_req_met THEN CONTINUE; END IF;
+
+                -- Apply cargo caps: max 20 small_cargo, 20 large_cargo per planet
+                IF v_custom_key = 'small_cargo' THEN
+                  v_custom_qty := LEAST(v_custom_target, 20 - (COALESCE((SELECT quantity FROM planet_ships WHERE planet_id = v_planet.id AND ship_type_id = v_custom_st.id), 0) + COALESCE((SELECT SUM(fs.quantity) FROM fleet_ships fs JOIN fleets f ON f.id = fs.fleet_id WHERE f.origin_planet_id = v_planet.id AND f.is_completed = false AND fs.ship_type_id = v_custom_st.id), 0) + COALESCE((SELECT SUM(sq.quantity - sq.quantity_completed) FROM shipyard_queue sq WHERE sq.planet_id = v_planet.id AND sq.item_type = 'ship' AND sq.ship_type_id = v_custom_st.id), 0)));
+                  IF v_custom_qty < 0 THEN v_custom_qty := 0; END IF;
+                ELSIF v_custom_key = 'large_cargo' THEN
+                  v_custom_qty := LEAST(v_custom_target, 20 - (COALESCE((SELECT quantity FROM planet_ships WHERE planet_id = v_planet.id AND ship_type_id = v_custom_st.id), 0) + COALESCE((SELECT SUM(fs.quantity) FROM fleet_ships fs JOIN fleets f ON f.id = fs.fleet_id WHERE f.origin_planet_id = v_planet.id AND f.is_completed = false AND fs.ship_type_id = v_custom_st.id), 0) + COALESCE((SELECT SUM(sq.quantity - sq.quantity_completed) FROM shipyard_queue sq WHERE sq.planet_id = v_planet.id AND sq.item_type = 'ship' AND sq.ship_type_id = v_custom_st.id), 0)));
+                  IF v_custom_qty < 0 THEN v_custom_qty := 0; END IF;
+                ELSE
+                  v_custom_qty := CASE WHEN v_custom_key = 'espionage_probe' THEN GREATEST(0, LEAST(v_custom_target, 5 - (COALESCE((SELECT quantity FROM planet_ships WHERE planet_id = v_planet.id AND ship_type_id = v_custom_st.id), 0) + COALESCE((SELECT SUM(sq.quantity - sq.quantity_completed) FROM shipyard_queue sq WHERE sq.planet_id = v_planet.id AND sq.item_type = 'ship' AND sq.ship_type_id = v_custom_st.id), 0)))) ELSE LEAST(v_custom_target, 10) END;
+                END IF;
+                v_custom_qty := LEAST(v_custom_qty,
+                  LEAST(
+                    CASE WHEN v_custom_st.metal_cost > 0 THEN floor(v_resources.metal / v_custom_st.metal_cost) ELSE 999999 END,
+                    CASE WHEN v_custom_st.crystal_cost > 0 THEN floor(v_resources.crystal / v_custom_st.crystal_cost) ELSE 999999 END,
+                    CASE WHEN v_custom_st.deuterium_cost > 0 THEN floor(v_resources.deuterium / v_custom_st.deuterium_cost) ELSE 999999 END
+                  )::integer
+                );
+
+                -- [CUSTOM COLA v20] No apilar mas de 5 lotes de naves en el hangar.
+                IF v_custom_qty > 0 AND (SELECT COUNT(*) FROM shipyard_queue sq
+                     WHERE sq.planet_id = v_planet.id AND sq.item_type = 'ship') >= 5 THEN
+                  CONTINUE;
+                END IF;
+
+                IF v_custom_qty > 0 THEN
+                  -- [CUSTOM COLA v20] Antes esto insertaba directo en planet_ships:
+                  -- construccion instantanea e invisible en la cola del hangar.
+                  -- Ahora entra a shipyard_queue como cualquier nave normal.
+                  BEGIN
+                    UPDATE planet_resources SET
+                      metal = metal - (v_custom_qty * v_custom_st.metal_cost),
+                      crystal = crystal - (v_custom_qty * v_custom_st.crystal_cost),
+                      deuterium = deuterium - (v_custom_qty * v_custom_st.deuterium_cost)
+                    WHERE planet_id = v_planet.id;
+
+                    INSERT INTO shipyard_queue (planet_id, item_type, ship_type_id, defense_type_id,
+                      quantity, quantity_completed, metal_cost, crystal_cost, deuterium_cost,
+                      build_time_per_unit, queue_position, start_time, current_unit_end_time)
+                    SELECT v_planet.id, 'ship', v_custom_st.id, NULL,
+                      v_custom_qty, 0,
+                      v_custom_st.metal_cost, v_custom_st.crystal_cost, v_custom_st.deuterium_cost,
+                      q.btime, q.maxpos + 1,
+                      CASE WHEN q.maxpos = 0 THEN now() ELSE NULL END,
+                      CASE WHEN q.maxpos = 0 THEN now() + (q.btime || ' seconds')::interval ELSE NULL END
+                    FROM (
+                      SELECT
+                        COALESCE((SELECT MAX(sq.queue_position) FROM shipyard_queue sq
+=====
+260:    EXCEPTION WHEN undefined_function THEN
+573:                  EXCEPTION WHEN OTHERS THEN
+718:                  EXCEPTION WHEN OTHERS THEN
+2547:            EXCEPTION WHEN OTHERS THEN
+=====
+549:                    INSERT INTO shipyard_queue (planet_id, item_type, ship_type_id, defense_type_id,
+694:                    INSERT INTO shipyard_queue (planet_id, item_type, ship_type_id, defense_type_id,
+2026:              INSERT INTO shipyard_queue (planet_id, item_type, ship_type_id, defense_type_id, quantity, quantity_completed, metal_cost, crystal_cost, deuterium_cost, build_time_per_unit, queue_position, start_time, current_unit_end_time)
+2180:              INSERT INTO shipyard_queue (planet_id, item_type, ship_type_id, defense_type_id, quantity, quantity_completed, metal_cost, crystal_cost, deuterium_cost, build_time_per_unit, queue_position, start_time, current_unit_end_time)

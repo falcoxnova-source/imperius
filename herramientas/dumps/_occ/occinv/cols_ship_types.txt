@@ -1,0 +1,17 @@
+id integer nextval('ship_types_id_seq'::regclass)
+code text 
+name text 
+description text 
+category text 
+metal_cost integer 0
+crystal_cost integer 0
+deuterium_cost integer 0
+build_time_seconds integer 60
+structural_integrity integer 100
+shield_power integer 0
+weapon_power integer 0
+cargo_capacity integer 0
+base_speed integer 0
+fuel_consumption integer 0
+rapid_fire jsonb '{}'::jsonb
+image_url text 

@@ -1,0 +1,364 @@
+== fns with planet uuid args
+admin_get_planet_inventory(uuid)
+admin_set_npc_planet_role(uuid,text)
+admin_set_planet_building(uuid,integer,integer)
+admin_set_planet_ship(uuid,integer,integer)
+calculate_and_sync_resources(uuid)
+calculate_irn_lab_level(uuid,uuid)
+calculate_planet_max_fields(uuid)
+calculate_planet_resources(uuid)
+cancel_market_listing(uuid,uuid)
+create_market_listing(text,text,bigint,numeric,uuid)
+deploy_to_fortress(integer,uuid,jsonb)
+diagnose_planet_fields(uuid)
+fulfill_buy_offer(uuid,bigint,uuid)
+full_reconnect_sync(uuid)
+galaxy_navigate(uuid,integer,integer)
+get_ai_custom_orders(uuid)
+get_autopilot_events(uuid,integer)
+get_missile_silo_capacity(uuid)
+get_planet_deposits(uuid)
+join_acs_with_fleet(uuid,uuid,jsonb,integer)
+launch_missiles(uuid,integer,integer,integer,integer,text)
+log_autopilot_event(uuid,uuid,text,jsonb)
+perform_acs_combat(uuid,uuid)
+perform_combat(uuid,uuid)
+perform_combat_acs(uuid,uuid)
+process_completed_building_queue(uuid)
+process_completed_shipyard_queue(uuid)
+process_next_shipyard_unit(uuid)
+purchase_market_listing(uuid,uuid)
+purchase_market_listing(uuid,integer,uuid)
+purchase_supply_box(text,uuid)
+rebuild_defenses_after_combat(uuid,jsonb)
+rebuild_destroyed_defenses(uuid,jsonb,uuid)
+recalculate_planet_fields(uuid)
+save_ai_custom_orders(uuid,jsonb,jsonb,jsonb,jsonb)
+secure_abandon_colony(uuid)
+secure_activate_building_queue(uuid)
+secure_add_to_building_queue(uuid,integer)
+secure_add_to_shipyard_queue(uuid,text,integer,integer)
+secure_demolish_building(uuid,integer)
+secure_rename_planet(uuid,text)
+secure_send_fleet(uuid,integer,integer,integer,text,jsonb,bigint,bigint,bigint,integer,text,uuid)
+secure_start_research(uuid,integer)
+send_fleet(uuid,integer,integer,integer,text,jsonb,numeric,numeric,numeric,integer)
+set_planet_autopilot_role(uuid,text)
+sync_planet_resources(uuid)
+update_planet_resources(uuid)
+update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint)
+validate_building_fields(uuid)
+validate_building_queue(uuid,integer)
+validate_building_requirements(uuid,integer)
+validate_building_requirements(uuid,uuid,integer)
+validate_defense_requirements(uuid,integer)
+validate_fleet_mission(uuid,uuid,integer,integer,integer,text,text)
+validate_research_requirements(uuid,uuid,integer)
+validate_ship_requirements(uuid,integer)
+get_colony_refill_info(uuid)
+refill_colony_resources(uuid)
+apply_attack_building_damage(uuid)
+admin_set_planet_defense(uuid,integer,integer)
+set_planet_autopilot_enabled(uuid,boolean)
+admin_get_planet_resources(uuid)
+admin_set_planet_resources(uuid,numeric,numeric,numeric)
+purchase_ship_blueprint(text,uuid)
+_shipyard_promote_next(uuid,text)
+process_shipyard_queue_core(uuid)
+purchase_instant_unit(text,uuid,integer)
+create_colony_listing(uuid,numeric)
+== sync_planet_resources
+
+DECLARE
+  v_calculated jsonb;
+  v_user_id uuid;
+BEGIN
+  -- Verify ownership
+  SELECT user_id INTO v_user_id FROM planets WHERE id = p_planet_id;
+  IF v_user_id IS NULL OR v_user_id != auth.uid() THEN
+    RETURN jsonb_build_object('error', 'Unauthorized');
+  END IF;
+  
+  -- Calculate current resources
+  v_calculated := calculate_planet_resources(p_planet_id);
+  
+  IF v_calculated ? 'error' THEN
+    RETURN v_calculated;
+  END IF;
+  
+  -- Update the database
+  UPDATE planet_resources
+  SET 
+    metal = (v_calculated->>'metal')::numeric,
+    crystal = (v_calculated->>'crystal')::numeric,
+    deuterium = (v_calculated->>'deuterium')::numeric,
+    metal_per_hour = (v_calculated->>'metal_per_hour')::numeric,
+    crystal_per_hour = (v_calculated->>'crystal_per_hour')::numeric,
+    deuterium_per_hour = (v_calculated->>'deuterium_per_hour')::numeric,
+    metal_storage = (v_calculated->>'metal_storage')::numeric,
+    crystal_storage = (v_calculated->>'crystal_storage')::numeric,
+    deuterium_storage = (v_calculated->>'deuterium_storage')::numeric,
+    energy_used = (v_calculated->>'energy_used')::numeric,
+    energy_max = (v_calculated->>'energy_max')::numeric,
+    last_update = now()
+  WHERE planet_id = p_planet_id;
+  
+  -- Return updated values with new timestamp
+  RETURN jsonb_build_object(
+    'metal', (v_calculated->>'metal')::numeric,
+    'crystal', (v_calculated->>'crystal')::numeric,
+    'deuterium', (v_calculated->>'deuterium')::numeric,
+    'metal_per_hour', (v_calculated->>'metal_per_hour')::numeric,
+    'crystal_per_hour', (v_calculated->>'crystal_per_hour')::numeric,
+    'deuterium_per_hour', (v_calculated->>'deuterium_per_hour')::numeric,
+    'metal_storage', (v_calculated->>'metal_storage')::numeric,
+    'crystal_storage', (v_calculated->>'crystal_storage')::numeric,
+    'deuterium_storage', (v_calculated->>'deuterium_storage')::numeric,
+    'energy_used', (v_calculated->>'energy_used')::numeric,
+    'energy_max', (v_calculated->>'energy_max')::numeric,
+    'last_update', now()
+  );
+END;
+
+== recall_deployed_fleet
+
+DECLARE
+  v_user_id uuid;
+  v_fleet RECORD;
+  v_now timestamptz;
+  v_original_flight_seconds numeric;
+  v_return_time timestamptz;
+BEGIN
+  v_user_id := auth.uid();
+
+  IF v_user_id IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'No autenticado');
+  END IF;
+
+  SELECT * INTO v_fleet
+  FROM fleets
+  WHERE id = p_fleet_id
+  FOR UPDATE;
+
+  IF v_fleet IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Flota no encontrada');
+  END IF;
+
+  IF v_fleet.user_id != v_user_id THEN
+    RETURN jsonb_build_object('success', false, 'error', 'No puedes retirar flotas de otros jugadores');
+  END IF;
+
+  IF v_fleet.is_completed THEN
+    RETURN jsonb_build_object('success', false, 'error', 'La flota ya completo su mision');
+  END IF;
+
+  IF v_fleet.is_returning THEN
+    RETURN jsonb_build_object('success', false, 'error', 'La flota ya esta regresando');
+  END IF;
+
+  IF v_fleet.mission_type != 'deploy' THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Solo se pueden retirar flotas en mision de estacionamiento');
+  END IF;
+
+  v_now := now();
+
+  -- Fleet must have already arrived (i.e. it's stationed, not in transit)
+  IF v_fleet.arrival_time > v_now THEN
+    RETURN jsonb_build_object('success', false, 'error', 'La flota aun no ha llegado. Usa cancelar flota en su lugar');
+  END IF;
+
+  -- Calculate return time = same duration as original flight
+  v_original_flight_seconds := EXTRACT(EPOCH FROM (v_fleet.arrival_time - v_fleet.departure_time));
+  IF v_original_flight_seconds < 10 THEN
+    v_original_flight_seconds := 10;
+  END IF;
+
+  v_return_time := v_now + (v_original_flight_seconds || ' seconds')::interval;
+
+  UPDATE fleets
+  SET is_returning = true,
+      arrival_time = v_now,
+      return_time = v_return_time
+  WHERE id = p_fleet_id;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'message', 'Flota retirada. Regresara en ' || CEIL(v_original_flight_seconds) || ' segundos',
+    'return_seconds', CEIL(v_original_flight_seconds)
+  );
+
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Error al retirar flota: ' || SQLERRM);
+END;
+
+== research_queue cols
+id:uuid, user_id:uuid, technology_type_id:integer, target_level:integer, metal_cost:bigint, crystal_cost:bigint, deuterium_cost:bigint, research_time:integer, queue_position:integer, status:text, start_time:timestamp with time zone, end_time:timestamp with time zone, planet_id:uuid, created_at:timestamp with time zone
+== _trg_colony_sale_lock_queue
+
+BEGIN
+  -- [COLMKT5] colas de edificios / hangar / investigacion
+  IF NEW.planet_id IS NOT NULL AND public._colony_listed_since(NEW.planet_id) IS NOT NULL THEN
+    RAISE EXCEPTION 'Esta colonia esta en venta en el mercado. Cancela la venta para poder usarla.';
+  END IF;
+  RETURN NEW;
+END
+
+== _trg_colony_sale_lock fleets
+trg_award_expedition_blueprint_drop|award_expedition_blueprint_drop
+trg_fleet_completed_daily_mission|trg_fleet_completed_daily_mission
+trigger_fleet_change_points|queue_points_update_for_fleet
+trigger_log_transport_interaction|log_transport_interaction
+trigger_notify_hostile_fleet|notify_hostile_fleet_incoming
+trg_colony_sale_lock|_trg_colony_sale_lock_fleet
+== admin_revenue check
+CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+CHECK ((amount >= (0)::numeric))
+CHECK ((currency = ANY (ARRAY['FXU'::text, 'USDT'::text])))
+== jackpot contribute src head
+
+DECLARE
+  v_expedition_amount numeric;
+  v_monthly_amount numeric;
+  v_plus_amount numeric;
+  v_destruction_amount numeric;
+  v_expedition_percent int;
+  v_monthly_percent int;
+  v_plus_percent int;
+  v_destruction_percent int;
+  v_new_total numeric;
+BEGIN
+  IF p_amount <= 0 THEN
+    RETURN 0;
+  END IF;
+
+  SELECT expedition_percent, monthly_percent, plus_percent, destruction_percent
+  INTO v_expedition_percent, v_monthly_percent, v_plus_percent, v_destruction_percent
+  FROM jackpot_pools WHERE id = 1;
+
+  IF v_expedition_percent IS NULL THEN
+    v_expedition_percent := 10;
+    v_monthly_percent := 10;
+    v_plus_percent := 50;
+    v_destruction_percent := 30;
+  END IF;
+  IF v_destruction_percent IS NULL THEN
+    v_destruction_percent := 40;
+  END IF;
+
+  v_expedition_amount := FLOOR(p_amount * v_expedition_percent / 100);
+  v_monthly_amount := FLOOR(p_amount * v_monthly_percent / 100);
+  v_plus_amount := FLOOR(p_amount * v_plus_percent / 100);
+  v_destruction_amount := FLOOR(p_amount * v_destruction_percent / 100);
+
+  UPDATE jackpot_pools
+  SET 
+    expedition_balance = expedition_balance + v_expedition_amount,
+    expedition_total = expedition_total + v_expedition_amount,
+    monthly_balance = monthly_balance + v_monthly_amount,
+    monthly_total = monthly_total + v_monthly_amount,
+    plus_balance = plus_balance + v_plus_amount,
+    plus_total = plus_total + v_plus_amount,
+    destruction_balance = destruction_balance + v_destructio
+== record_admin_revenue head
+
+DECLARE
+  v_revenue_id uuid;
+  v_currency   text;
+BEGIN
+  IF p_amount <= 0 THEN
+    RETURN NULL;
+  END IF;
+
+  v_currency := UPPER(COALESCE(p_currency, 'FXU'));
+  IF v_currency NOT IN ('FXU', 'USDT') THEN
+    RAISE EXCEPTION 'Invalid currency for admin_revenue: %', v_currency;
+  END IF;
+
+  INSERT INTO public.admin_revenue (revenue_type, amount, currency, description, related_user_id, related_tx_id)
+  VALUES (p_revenue_type, p_amount, v_currency, p_description, p_related_user_id, p_related_tx_id)
+  RETURNING id INTO v_revenue_id;
+
+  -- Reparto a accionistas (no-op si no hay accionistas activos)
+  PERFORM public._distribute_shareholder_share(v_revenue_id, p_revenue_type, p_amount, v_currency, p_related_user_id);
+
+  RETURN v_revenue_id;
+END;
+
+== get_live_tung_price_usd
+
+DECLARE
+  v_value   text;
+  v_updated timestamptz;
+  v_price   numeric;
+BEGIN
+  SELECT value, updated_at INTO v_value, v_updated
+  FROM game_settings
+  WHERE key = 'tung_price_usd';
+
+  IF v_value IS NULL THEN
+    RETURN NULL;
+  END IF;
+
+  -- Ventana de tolerancia: 12 horas.
+  -- Mejor un precio de hace unas horas que dejar el juego sin precios.
+  IF v_updated IS NULL OR v_updated < now() - interval '12 hours' THEN
+    RETURN NULL;
+  END IF;
+
+  BEGIN
+    v_price := v_value::numeric;
+  EXCEPTION WHEN others THEN
+    RETURN NULL;
+  END;
+
+  IF v_price IS NULL OR v_price <= 0 THEN
+    RETURN NULL;
+  END IF;
+
+  RETURN v_price;
+END;
+
+== planets protect fn
+protect_planets_trigger CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg_default_autopilot CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+trg_set_initial_deposits CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+trigger_validate_fields_on_update CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+trg_cancel_listings_on_planet_loss CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+trg_colony_sale_lock_autopilot CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+trg_planets_block_casino CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+trg_planets_block_sports CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+== protect_game_table_full
+
+DECLARE
+  v_cu text := current_user;
+BEGIN
+  -- Bypass para roles no expuestos al cliente (postgres, service_role, etc.)
+  IF v_cu NOT IN ('authenticated', 'anon') THEN
+    RETURN NEW;
+  END IF;
+
+  -- Bypass de emergencia compatible con el patr??n existente.
+  IF current_setting('fxu.allow_update_9x7k2m', true) = 'true' THEN
+    RETURN NEW;
+  END IF;
+
+  RAISE EXCEPTION
+    'SECURITY_VIOLATION: Direct UPDATE on % from client is not allowed. Use the proper RPC. Code: GAME001',
+    TG_TABLE_NAME
+    USING ERRCODE = 'insufficient_privilege';
+END;
+
+== fleet_ships triggers
+protect_planet_defenses_trigger CREATE TRIGGER protect_planet_defenses_trigger BEFORE UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+protect_planet_resources_trigger CREATE TRIGGER protect_planet_resources_trigger BEFORE UPDATE ON public.planet_resources FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg_award_expedition_blueprint_drop CREATE TRIGGER trg_award_expedition_blueprint_drop AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION award_expedition_blueprint_drop()
+trg_enforce_shield_dome_per_account CREATE TRIGGER trg_enforce_shield_dome_per_account BEFORE INSERT OR UPDATE OF quantity, defense_type_id ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION enforce_shield_dome_per_account()
+trg_fleet_completed_daily_mission CREATE TRIGGER trg_fleet_completed_daily_mission AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION trg_fleet_completed_daily_mission()
+trg_resource_collect_daily_mission CREATE TRIGGER trg_resource_collect_daily_mission AFTER UPDATE OF metal, crystal, deuterium, last_update ON public.planet_resources FOR EACH ROW WHEN ((new.last_update > old.last_update)) EXECUTE FUNCTION trg_resource_collect_daily_mission()
+trigger_log_transport_interaction CREATE TRIGGER trigger_log_transport_interaction AFTER UPDATE ON public.fleets FOR EACH ROW WHEN (((new.is_completed = true) AND (old.is_completed = false))) EXECUTE FUNCTION log_transport_interaction()
+trigger_notify_hostile_fleet CREATE TRIGGER trigger_notify_hostile_fleet AFTER INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION notify_hostile_fleet_incoming()
+trigger_fleet_ships_change_points CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+trigger_fleet_change_points CREATE TRIGGER trigger_fleet_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleets FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet()
+trigger_defense_points CREATE TRIGGER trigger_defense_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_fleet()

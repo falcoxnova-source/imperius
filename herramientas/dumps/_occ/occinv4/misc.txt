@@ -1,0 +1,105 @@
+gs cols: id:integer:nextval('game_settings_id_seq'::regclass) | key:text: | value:text: | description:text: | updated_at:timestamp with time zone:now()
+gs rls: true
+gs policy: Anyone can view game settings SELECT true
+ship_types grants: postgres INSERT
+ship_types grants: postgres SELECT
+ship_types grants: postgres UPDATE
+ship_types grants: postgres DELETE
+ship_types grants: postgres TRUNCATE
+ship_types grants: postgres REFERENCES
+ship_types grants: postgres TRIGGER
+ship_types grants: authenticator INSERT
+ship_types grants: authenticator SELECT
+ship_types grants: authenticator UPDATE
+ship_types grants: authenticator DELETE
+ship_types grants: authenticator TRUNCATE
+ship_types grants: authenticator REFERENCES
+ship_types grants: authenticator TRIGGER
+ship_types grants: anon SELECT
+ship_types grants: service_role INSERT
+ship_types grants: service_role SELECT
+ship_types grants: service_role UPDATE
+ship_types grants: service_role DELETE
+ship_types grants: service_role TRUNCATE
+ship_types grants: service_role REFERENCES
+ship_types grants: service_role TRIGGER
+ship_types grants: authenticated SELECT
+ship_types policy: Anyone can view ship types SELECT true
+ship_req cols: id:integer | ship_type_id:integer | required_building_id:integer | required_building_level:integer | required_tech_id:integer | required_tech_level:integer
+ship_req colony: {"id":14,"ship_type_id":3,"required_building_id":11,"required_building_level":4,"required_tech_id":null,"required_tech_level":0}
+ship_req colony: {"id":15,"ship_type_id":3,"required_building_id":null,"required_building_level":0,"required_tech_id":7,"required_tech_level":3}
+def_req cols: id:integer | defense_type_id:integer | required_building_id:integer | required_building_level:integer | required_tech_id:integer | required_tech_level:integer
+pb cols: id:uuid | planet_id:uuid | building_type_id:integer | level:integer | is_upgrading:boolean | upgrade_end_time:timestamp with time zone | created_at:timestamp with time zone
+bt codes: 1=metal_mine 2=crystal_mine 3=deuterium_synthesizer 4=solar_plant 5=fusion_reactor 6=metal_storage 7=crystal_storage 8=deuterium_tank 9=robotics_factory 10=nanite_factory 11=shipyard 12=research_lab 13=missile_silo 14=terraformer 15=lunar_base 16=sensor_phalanx 17=jump_gate 18=alliance_depot 21=university
+tt codes: 1=energy_tech 2=laser_tech 3=ion_tech 4=hyperspace_tech 5=plasma_tech 6=combustion_drive 7=impulse_drive 8=hyperspace_drive 9=weapons_tech 10=shielding_tech 11=armour_tech 12=espionage_tech 13=computer_tech 14=astrophysics 15=graviton_tech 16=intergalactic_research_network 21=expedition 22=metal_production 23=crystal_production 24=deuterium_production 25=matter_manipulation
+ut cols: id:uuid | user_id:uuid | technology_type_id:integer | level:integer | is_researching:boolean | research_end_time:timestamp with time zone | research_planet_id:uuid | created_at:timestamp with time zone | research_start_time:timestamp with time zone
+pr cols: id:uuid | planet_id:uuid | metal:numeric | crystal:numeric | deuterium:numeric | energy_used:integer | energy_max:integer | metal_per_hour:numeric | crystal_per_hour:numeric | deuterium_per_hour:numeric | metal_storage:numeric | crystal_storage:numeric | deuterium_storage:numeric | last_update:timestamp with time zone | metal_mine_percent:smallint | crystal_mine_percent:smallint | deuterium_synth_percent:smallint | solar_plant_percent:smallint | fusion_reactor_percent:smallint | solar_satellite_percent:smallint
+planets cols: id:uuid | user_id:uuid | name:text | galaxy:integer | solar_system:integer | position:integer | planet_type:text | image_id:integer | diameter:integer | fields_used:integer | fields_max:integer | temp_min:integer | temp_max:integer | is_main_planet:boolean | is_destroyed:boolean | last_update:timestamp with time zone | created_at:timestamp with time zone | jump_gate_cooldown:timestamp with time zone | name_changed:boolean | autopilot_role:text | metal_deposit:bigint | crystal_deposit:bigint | deuterium_deposit:bigint | planet_status:text | depleted_at:timestamp with time zone | regenerates_at:timestamp with time zone | metal_initial_deposit:bigint | crystal_initial_deposit:bigint | deuterium_initial_deposit:bigint | dark_matter_stock:numeric | dark_matter_last_gen:timestamp with time zone | autopilot_enabled:boolean
+msg cols: id:uuid:gen_random_uuid() | sender_id:uuid: | recipient_id:uuid: | subject:text: | body:text: | message_type:text:'player'::text | is_read:boolean:false | created_at:timestamp with time zone:now()
+msg checks: messages_message_type_check CHECK ((message_type = ANY (ARRAY['player'::text, 'system'::text, 'battle'::text, 'espionage'::text, 'expedition'::text, 'alliance'::text, 'fleet_warning'::text, 'broadcast'::text])))
+fleet checks: fleets_mission_type_check CHECK ((mission_type = ANY (ARRAY['attack'::text, 'transport'::text, 'deploy'::text, 'colonize'::text, 'espionage'::text, 'recycle'::text, 'destroy'::text, 'expedition'::text, 'hold'::text, 'return'::text, 'harvest'::text])))
+is_main col: is_main_planet
+is_main col: vacation_remaining_research_seconds
+refcomm cols: id:uuid | referrer_id:uuid | seller_id:uuid | transaction_id:uuid | commission_type:text | resource_type:text | amount:bigint | created_at:timestamp with time zone | fxu_amount:numeric
+trg on planets: protect_planets_trigger CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg on planets: trg_default_autopilot CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+trg on planets: trg_set_initial_deposits CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+trg on planets: trigger_validate_fields_on_update CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+trg on planets: trg_cancel_listings_on_planet_loss CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+trg on planets: trg_colony_sale_lock_autopilot CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+trg on planets: trg_planets_block_casino CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+trg on planets: trg_planets_block_sports CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+trg on fleets: trg_award_expedition_blueprint_drop CREATE TRIGGER trg_award_expedition_blueprint_drop AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION award_expedition_blueprint_drop()
+trg on fleets: trg_fleet_completed_daily_mission CREATE TRIGGER trg_fleet_completed_daily_mission AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION trg_fleet_completed_daily_mission()
+trg on fleets: trigger_fleet_change_points CREATE TRIGGER trigger_fleet_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleets FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet()
+trg on fleets: trigger_log_transport_interaction CREATE TRIGGER trigger_log_transport_interaction AFTER UPDATE ON public.fleets FOR EACH ROW WHEN (((new.is_completed = true) AND (old.is_completed = false))) EXECUTE FUNCTION log_transport_interaction()
+trg on fleets: trigger_notify_hostile_fleet CREATE TRIGGER trigger_notify_hostile_fleet AFTER INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION notify_hostile_fleet_incoming()
+trg on fleets: trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_fleet()
+trg on fleet_ships: trigger_fleet_ships_change_points CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+trg on planet_resources: protect_planet_resources_trigger CREATE TRIGGER protect_planet_resources_trigger BEFORE UPDATE ON public.planet_resources FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg on planet_resources: trg_resource_collect_daily_mission CREATE TRIGGER trg_resource_collect_daily_mission AFTER UPDATE OF metal, crystal, deuterium, last_update ON public.planet_resources FOR EACH ROW WHEN ((new.last_update > old.last_update)) EXECUTE FUNCTION trg_resource_collect_daily_mission()
+trg on planet_defenses: protect_planet_defenses_trigger CREATE TRIGGER protect_planet_defenses_trigger BEFORE UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg on planet_defenses: trg_enforce_shield_dome_per_account CREATE TRIGGER trg_enforce_shield_dome_per_account BEFORE INSERT OR UPDATE OF quantity, defense_type_id ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION enforce_shield_dome_per_account()
+trg on planet_defenses: trigger_defense_points CREATE TRIGGER trigger_defense_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+trg on shipyard_queue: protect_shipyard_queue_trigger CREATE TRIGGER protect_shipyard_queue_trigger BEFORE UPDATE ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg on shipyard_queue: trg_enforce_ship_blueprint_requirement CREATE TRIGGER trg_enforce_ship_blueprint_requirement BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION enforce_ship_blueprint_requirement()
+trg on shipyard_queue: trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg on building_queue: enforce_building_queue_limit CREATE TRIGGER enforce_building_queue_limit BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION check_building_queue_limit()
+trg on building_queue: protect_building_queue_trigger CREATE TRIGGER protect_building_queue_trigger BEFORE UPDATE ON public.building_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg on building_queue: trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+fns using ship_types: _raffle_deliver_prize
+fns using ship_types: admin_create_raffle
+fns using ship_types: admin_get_planet_inventory
+fns using ship_types: admin_raffle_catalog
+fns using ship_types: admin_set_planet_ship
+fns using ship_types: auto_cancel_insufficient_market_listings
+fns using ship_types: bot_ai_tick
+fns using ship_types: bot_farm_inactive_players
+fns using ship_types: calculate_fxu_cost_shipyard
+fns using ship_types: create_buy_offer
+fns using ship_types: create_market_listing
+fns using ship_types: fleet_calc_fuel
+fns using ship_types: fleet_calc_slowest_speed
+fns using ship_types: fulfill_buy_offer
+fns using ship_types: get_destruction_ranking
+fns using ship_types: get_universe_records
+fns using ship_types: instant_complete_shipyard
+fns using ship_types: instant_complete_shipyard_item
+fns using ship_types: join_acs_with_fleet
+fns using ship_types: preview_shipyard_fxu_cost
+fns using ship_types: process_espionage_mission
+fns using ship_types: process_expedition
+fns using ship_types: process_fleet_arrival
+fns using ship_types: purchase_instant_unit
+fns using ship_types: purchase_market_listing
+fns using ship_types: purchase_market_listing
+fns using ship_types: purchase_ship_blueprint
+fns using ship_types: resolve_fortress_attack
+fns using ship_types: resolve_treasure_planet_attack
+fns using ship_types: secure_add_to_shipyard_queue
+fns using ship_types: secure_add_to_shipyard_queue
+fns using ship_types: secure_send_fleet
+planet main sample: {"id":"19f6ac04-35df-4712-a694-da26c2454a70","user_id":null,"planet_type":"planet","created_at":"2026-06-15T15:07:35.641545+00:00"}
+planet main sample: {"id":"a63f40c5-375f-4ba9-bea1-51e0406ea1ab","user_id":null,"planet_type":"planet","created_at":"2026-06-15T15:07:36.74453+00:00"}
+cron extension: pg_cron
+cron user: postgres

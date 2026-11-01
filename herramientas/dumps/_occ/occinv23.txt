@@ -1,0 +1,54 @@
+284:    FROM planets
+292:      SELECT 1 FROM planets
+304:    FROM planets
+340:    FOR v_planet IN
+342:      FROM planets p
+2235:              FROM planets p2
+2297:            FROM planets tp
+2434:            FROM planets tp
+2627:              FROM planets tp
+2822:              FROM planets ap
+2915:            FROM planets op
+3052:               SELECT 1 FROM planets p_col
+3074:                SELECT 1 FROM planets p2
+3083:                  SELECT 1 FROM planets p2
+3100:                SELECT 1 FROM planets p2
+====
+340:    FOR v_planet IN
+341-      SELECT p.id, p.fields_used, p.fields_max, p.user_id, p.galaxy, p.solar_system, p.position, p.autopilot_role
+342-      FROM planets p
+343-      WHERE p.user_id = v_bot.id AND p.planet_type = 'planet' AND NOT p.is_destroyed AND COALESCE(p.autopilot_enabled, true)
+344-    LOOP
+345-      PERFORM calculate_and_sync_resources_internal(v_planet.id, v_planet.user_id);
+346-
+==== autopilot col
+autopilot_enabled
+autopilot_role
+
+BEGIN
+  -- [COLMKT5] colonia en venta: bloqueada hasta cancelar la venta
+  IF p_enabled AND public._colony_listed_since(p_planet_id) IS NOT NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Esta colonia esta en venta en el mercado. Cancela la venta para poder usarla.');
+  END IF;
+  IF auth.uid() IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
+  END IF;
+
+  IF NOT has_autopilot_access(auth.uid()) THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Necesitas el Oficial Androide activo o habilitacion del admin');
+  END IF;
+
+  UPDATE public.planets
+  SET autopilot_enabled = p_enabled
+  WHERE id = p_planet_id
+    AND user_id = auth.uid()
+    AND planet_type = 'planet'
+    AND NOT is_destroyed;
+
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('success', false, 'error', 'Planeta no encontrado');
+  END IF;
+
+  RETURN jsonb_build_object('success', true, 'enabled', p_enabled);
+END;
+

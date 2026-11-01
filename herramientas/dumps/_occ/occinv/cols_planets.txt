@@ -1,0 +1,32 @@
+id uuid gen_random_uuid()
+user_id uuid 
+name text 'Planeta'::text
+galaxy integer 
+solar_system integer 
+position integer 
+planet_type text 'planet'::text
+image_id integer 1
+diameter integer 12800
+fields_used integer 0
+fields_max integer 163
+temp_min integer '-40'::integer
+temp_max integer 30
+is_main_planet boolean false
+is_destroyed boolean false
+last_update timestamp with time zone now()
+created_at timestamp with time zone now()
+jump_gate_cooldown timestamp with time zone 
+name_changed boolean false
+autopilot_role text 'balanced'::text
+metal_deposit bigint 
+crystal_deposit bigint 
+deuterium_deposit bigint 
+planet_status text 'active'::text
+depleted_at timestamp with time zone 
+regenerates_at timestamp with time zone 
+metal_initial_deposit bigint 
+crystal_initial_deposit bigint 
+deuterium_initial_deposit bigint 
+dark_matter_stock numeric 0
+dark_matter_last_gen timestamp with time zone now()
+autopilot_enabled boolean true

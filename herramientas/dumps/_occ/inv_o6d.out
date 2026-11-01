@@ -1,0 +1,162 @@
+﻿== occupations cols
+id uuid
+planet_id uuid
+owner_id uuid
+occupier_id uuid
+garrison_fleet_id uuid
+origin_planet_id uuid
+status text
+started_at timestamp with time zone
+ended_at timestamp with time zone
+end_reason text
+prev_autopilot boolean
+frozen_building jsonb
+frozen_shipyard jsonb
+frozen_at timestamp with time zone
+== _occ_end
+
+DECLARE
+  o public.occupations%ROWTYPE;
+  v_planet record;
+  v_shift interval;
+  r jsonb;
+  v_m numeric := 0;
+  v_c numeric := 0;
+  v_d numeric := 0;
+  v_restored integer := 0;
+  v_failed integer := 0;
+  v_coords text;
+  v_owner_name text;
+  v_occ_name text;
+  v_subj_owner text;
+  v_body_owner text;
+  v_subj_occ text;
+  v_body_occ text;
+  v_rem numeric;
+BEGIN
+  SELECT * INTO o FROM public.occupations WHERE id = p_occupation_id FOR UPDATE;
+  IF NOT FOUND OR o.status <> 'active' THEN
+    RETURN false;
+  END IF;
+
+  PERFORM public._occ_process_builds(o.id);
+  IF p_reason = 'recovered' THEN -- [OCUPA5]
+    DELETE FROM public.fleet_ships
+    WHERE fleet_id = o.garrison_fleet_id
+      AND ship_type_id IN (SELECT id FROM public.ship_types WHERE code = 'occupation_ship');
+  END IF;
+
+  UPDATE public.occupations
+  SET status = 'ended', ended_at = now(), end_reason = p_reason
+  WHERE id = o.id;
+
+  -- Reembolso de lo que el ocupante no llego a construir (queda en el planeta)
+  SELECT COALESCE(SUM((quantity - quantity_done) * metal_cost), 0),
+         COALESCE(SUM((quantity - quantity_done) * crystal_cost), 0),
+         COALESCE(SUM((quantity - quantity_done) * deuterium_cost), 0)
+  INTO v_m, v_c, v_d
+  FROM public.occupation_build_queue
+  WHERE occupation_id = o.id AND status = 'pending';
+
+  UPDATE public.occupation_build_queue SET status = 'cancelled'
+  WHERE occupation_id = o.id AND status = 'pending';
+
+  IF v_m + v_c + v_d > 0 THEN
+    UPDATE public.planet_resources
+    SET metal = metal + v_m, crystal = crystal + v_c, deuterium = deuterium + v_d
+    WHERE planet_id = o.planet_id;
+  END IF;
+
+  SELECT * INTO v_planet FROM public.planets WHERE id = o.planet_id;
+
+  -- Restaurar colas congeladas (tiempos desplazados por la duracion de la ocupacion)
+  IF FOUND AND NOT COALESCE(v_planet.is_destroyed, false) AND v_planet.user_id = o.owner_id THEN
+    v_shift := now() - o.frozen_at;
+    PERFORM set_config('occ.restoring', '1', true);
+
+    FOR r IN SELECT value FROM jsonb_array_elements(o.frozen_building) LOOP
+      BEGIN
+        INSERT INTO public.building_queue
+        SELECT * FROM jsonb_populate_record(NULL::public.building_queue,
+          r || jsonb_build_object(
+            'start_time', CASE WHEN r->>'start_time' IS NULL THEN NULL ELSE ((r->>'start_time')::timestamptz + v_shift) END,
+            'end_time',   CASE WHEN r->>'end_time'   IS NULL THEN NULL ELSE ((r->>'end_time')::timestamptz + v_shift) END));
+        v_restored := v_restored + 1;
+      EXCEPTION WHEN OTHERS THEN
+        UPDATE public.planet_resources
+        SET metal = metal + COALESCE((r->>'metal_cost')::numeric, 0),
+            crystal = crystal + COALESCE((r->>'crystal_cost')::numeric, 0),
+            deuterium = deuterium + COALESCE((r->>'deuterium_cost')::numeric, 0)
+        WHERE planet_id = o.planet_id;
+        v_failed := v_failed + 1;
+      END;
+    END LOOP;
+
+    FOR r IN SELECT value FROM jsonb_array_elements(o.frozen_shipyard) LOOP
+      BEGIN
+        INSERT INTO public.shipyard_queue
+        SELECT * FROM jsonb_populate_record(NULL::public.shipyard_queue,
+          r || jsonb_build_object(
+            'start_time', CASE WHEN r->>'start_time' IS NULL THEN NULL ELSE ((r->>'start_time')::timestamptz + v_shift) END,
+            'current_unit_end_time', CASE WHEN r->>'current_unit_end_time' IS NULL THEN NULL ELSE ((r->>'current_unit_end_time')::timestamptz + v_shift) END));
+        v_restored := v_restored + 1;
+      EXCEPTION WHEN OTHERS THEN
+        v_rem := GREATEST(0, COALESCE((r->>'quantity')::numeric, 0) - COALESCE((r->>'quantity_completed')::numeric, 0))
+                 / GREATEST(COALESCE((r->>'quantity')::numeric, 1), 1);
+        UPDATE public.planet_resources
+        SET metal = metal + FLOOR(COALESCE((r->>'metal_cost')::numeric, 0) * v_rem),
+            crystal = crystal + FLOOR(COALESCE((r->>'crystal_cost')::numeric, 0) * v_rem),
+            deuterium = deuterium + FLOOR(COALESCE((r->>'deuterium_cost')::numeric, 0) * v_rem)
+        WHERE planet_id = o.planet_id;
+        v_failed := v_failed + 1;
+      END;
+    END LOOP;
+
+    PERFORM set_config('occ.restoring', '0', true);
+
+    IF o.prev_autopilot IS NOT NULL THEN
+      UPDATE public.planets SET autopilot_enabled = o.prev_autopilot WHERE id = o.planet_id;
+    END IF;
+  END IF;
+
+  -- Mensajes
+  v_coords := COALESCE('[' || v_planet.galaxy || ':' || v_planet.solar_system || ':' || v_planet.position || ']', '');
+  SELECT username INTO v_owner_name FROM public.profiles WHERE id = o.owner_id;
+  SELECT username INTO v_occ_name FROM public.profiles WHERE id = o.occupier_id;
+
+  IF p_reason = 'recovered' THEN
+    v_subj_owner := '┬íPlaneta recuperado!';
+    v_body_owner := format('Has derrotado a la guarnici├│n de %s y recuperado tu planeta %s %s. Tus colas de construcci├│n y hangar se han reanudado.', COALESCE(v_occ_name, 'el ocupante'), COALESCE(v_planet.name, ''), v_coords);
+    v_subj_occ := 'Ocupaci├│n perdida';
+    v_body_occ := format('%s ha recuperado su planeta %s %s. Tu ocupaci├│n ha terminado y tu Nave de Ocupaci├│n ha sido destruida.', COALESCE(v_owner_name, 'El due├▒o'), COALESCE(v_planet.name, ''), v_coords);
+  ELSIF p_reason = 'abandoned' THEN
+    v_subj_owner := 'El ocupante se ha retirado';
+    v_body_owner := format('%s ha abandonado la ocupaci├│n de tu planeta %s %s. Vuelves a tener el control y tus colas se han reanudado.', COALESCE(v_occ_name, 'El ocupante'), COALESCE(v_planet.name, ''), v_coords);
+    v_subj_occ := 'Ocupaci├│n abandonada';
+    v_body_occ := format('Has abandonado la ocupaci├│n de %s %s. Tu guarnici├│n regresa a casa.', COALESCE(v_planet.name, ''), v_coords);
+  ELSIF p_reason = 'liberated' THEN
+    v_subj_owner := '┬íPlaneta liberado!';
+    v_body_owner := format('La guarnici├│n de %s en tu planeta %s %s ha sido destruida. Vuelves a tener el control y tus colas se han reanudado.', COALESCE(v_occ_name, 'el ocupante'), COALESCE(v_planet.name, ''), v_coords);
+    v_subj_occ := 'Guarnici├│n destruida';
+    v_body_occ := format('Tu guarnici├│n en %s %s ha sido destruida. La ocupaci├│n ha terminado.', COALESCE(v_planet.name, ''), v_coords);
+  ELSE
+    v_subj_owner := 'Ocupaci├│n finalizada';
+    v_body_owner := format('La ocupaci├│n de tu planeta %s %s ha finalizado.', COALESCE(v_planet.name, ''), v_coords);
+    v_subj_occ := 'Ocupaci├│n finalizada';
+    v_body_occ := format('Tu ocupaci├│n de %s %s ha finalizado.', COALESCE(v_planet.name, ''), v_coords);
+  END IF;
+
+  IF v_failed > 0 THEN
+    v_body_owner := v_body_owner || format(' (%s elemento(s) de cola no se pudieron restaurar y sus recursos fueron devueltos al planeta.)', v_failed);
+  END IF;
+
+  INSERT INTO public.messages (sender_id, recipient_id, subject, body, message_type)
+  VALUES (NULL, o.owner_id, v_subj_owner, v_body_owner, 'system');
+  INSERT INTO public.messages (sender_id, recipient_id, subject, body, message_type)
+  VALUES (NULL, o.occupier_id, v_subj_occ, v_body_occ, 'system');
+
+  RETURN true;
+END
+
+== occ stats
+ended|abandoned|1

@@ -1,0 +1,32 @@
+1|iu_destruccion_masiva|ship|20||Destruccion Masiva|||3000|1000|t|20|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+2|iu_destroyer|ship|13||Destructor|||75|1000|t|13|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+3|iu_colony_ship|ship|3||Nave Colonizadora|||20|1000|t|3|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+4|iu_small_cargo|ship|1||Nave Pequena de Carga|||1|1000|t|1|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+5|iu_large_cargo|ship|2||Nave Grande de Carga||/Imagenes/Naves/Fragatas Medianas.webp|30|1000|t|2|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+6|iu_nova|ship|18||Nova|||1500|1000|t|18|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+7|iu_large_frigate|ship|19||Fragata Grande|||100|1000|t|19|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+8|iu_falco_x_clasica|ship|17||Falco-X Clasica||/Imagenes/Naves/falcox_class.png|250|1000|f|17|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+9|iu_light_fighter|ship|7||Cazador Ligero|||15|1000|t|7|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+10|iu_heavy_fighter|ship|8||Cazador Pesado|||2|1000|t|8|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+11|iu_recycler|ship|4||Reciclador|||15|1000|t|4|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+12|iu_solar_satellite|ship|6||Satelite Solar|||0.1|1000|t|6|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+13|iu_espionage_probe|ship|5||Sonda de Espionaje|||10|1000|t|5|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+14|iu_deathstar|ship|14||Estrella de la Muerte|||150|1000|t|14|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+15|iu_cruiser|ship|9||Crucero|||20|1000|t|9|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+16|iu_mega_recycler|ship|21||Mega Reciclador|||150|1000|t|21|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+17|iu_battlecruiser|ship|11||Acorazado|||75|1000|t|11|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+18|iu_battleship|ship|10||Nave de Batalla|||40|1000|t|10|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+19|iu_bomber|ship|12||Bombardero|||80|1000|t|12|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+20|iu_small_shield_dome|defense||7|Cupula Pequena de Escudo|||35|1|t|7|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+21|iu_large_shield_dome|defense||8|Cupula Grande de Escudo|||65|1|t|8|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+22|iu_outer_protection_dome|defense||11|Cupula externa de proteccion|||300|1|t|11|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+23|iu_orbital_defense_platform|defense||13|Plataforma de Defensa Orbital|||6000|1|t|13|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+24|iu_rocket_launcher|defense||1|Lanzamisiles|||1|1000|t|1|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+25|iu_light_laser|defense||2|Laser Ligero|||3|1000|t|2|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+26|iu_heavy_laser|defense||3|Laser Pesado|||8|1000|t|3|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+27|iu_gauss_cannon|defense||4|Canon de Gauss|||18|1000|t|4|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+28|iu_plasma_turret|defense||6|Torreta de Plasma|||45|1000|t|6|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+29|iu_graviton_cannon|defense||15|Cañón de Gravitón|||500|1000|t|15|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+30|iu_ion_cannon|defense||5|Canon Ionico|||12|1000|t|5|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+31|iu_anti_ballistic_missile|defense||9|Misil de Intercepcion|||5|1000|t|9|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00
+32|iu_interplanetary_missile|defense||10|Misil Interplanetario|||25|1000|t|10|2026-10-01 19:05:57.393652+00|2026-10-02 16:10:39.610296+00

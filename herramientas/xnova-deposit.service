@@ -1,0 +1,15 @@
+[Unit]
+Description=XNova Deposit Verification Service
+After=network.target docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /root/xnova/deposit_service.py 9001
+Restart=always
+RestartSec=5
+WorkingDirectory=/root/xnova
+StandardOutput=append:/var/log/xnova-deposit.log
+StandardError=append:/var/log/xnova-deposit.log
+
+[Install]
+WantedBy=multi-user.target

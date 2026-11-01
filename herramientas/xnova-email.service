@@ -1,0 +1,16 @@
+[Unit]
+Description=XNova Email Service (Resend)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=/root/xnova
+ExecStart=/usr/bin/python3 /root/xnova/email_service.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/xnova-email.log
+StandardError=append:/var/log/xnova-email.log
+
+[Install]
+WantedBy=multi-user.target

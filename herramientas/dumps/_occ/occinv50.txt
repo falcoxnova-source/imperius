@@ -1,0 +1,56 @@
+﻿=== cols ===
+building_types|id:integer, code:text, name:text, description:text, category:text, base_metal:integer, base_crystal:integer, base_deuterium:integer, base_energy:integer, cost_factor:numeric, base_time_seconds:integer, max_level:integer, image_url:text
+occupations|id:uuid, planet_id:uuid, owner_id:uuid, occupier_id:uuid, garrison_fleet_id:uuid, origin_planet_id:uuid, status:text, started_at:timestamp with time zone, ended_at:timestamp with time zone, end_reason:text, prev_autopilot:boolean, frozen_building:jsonb, frozen_shipyard:jsonb, frozen_at:timestamp with time zone
+planet_buildings|id:uuid, planet_id:uuid, building_type_id:integer, level:integer, is_upgrading:boolean, upgrade_end_time:timestamp with time zone, created_at:timestamp with time zone
+planet_defenses|id:uuid, planet_id:uuid, defense_type_id:integer, quantity:integer, in_construction:integer, construction_end_time:timestamp with time zone, created_at:timestamp with time zone, anti_ballistic_missiles:integer, interplanetary_missiles:integer
+planet_resources|id:uuid, planet_id:uuid, metal:numeric, crystal:numeric, deuterium:numeric, energy_used:integer, energy_max:integer, metal_per_hour:numeric, crystal_per_hour:numeric, deuterium_per_hour:numeric, metal_storage:numeric, crystal_storage:numeric, deuterium_storage:numeric, last_update:timestamp with time zone, metal_mine_percent:smallint, crystal_mine_percent:smallint, deuterium_synth_percent:smallint, solar_plant_percent:smallint, fusion_reactor_percent:smallint, solar_satellite_percent:smallint
+planets|id:uuid, user_id:uuid, name:text, galaxy:integer, solar_system:integer, position:integer, planet_type:text, image_id:integer, diameter:integer, fields_used:integer, fields_max:integer, temp_min:integer, temp_max:integer, is_main_planet:boolean, is_destroyed:boolean, last_update:timestamp with time zone, created_at:timestamp with time zone, jump_gate_cooldown:timestamp with time zone, name_changed:boolean, autopilot_role:text, metal_deposit:bigint, crystal_deposit:bigint, deuterium_deposit:bigint, planet_status:text, depleted_at:timestamp with time zone, regenerates_at:timestamp with time zone, metal_initial_deposit:bigint, crystal_initial_deposit:bigint, deuterium_initial_deposit:bigint, dark_matter_stock:numeric, dark_matter_last_gen:timestamp with time zone, autopilot_enabled:boolean
+=== building_types ===
+1|metal_mine|Mina de Metal|50|/Imagenes/edificios/MINA DE METAL.webp
+2|crystal_mine|Mina de Cristal|50|/Imagenes/edificios/MINA DE CRYSTAL.webp
+3|deuterium_synthesizer|Sintetizador de Deuterio|50|/Imagenes/edificios/SINTETISADOR DE DEUTERIO.webp
+4|solar_plant|Planta de Energia Solar|50|/Imagenes/edificios/PLANTA DE ENERGIA SOLAR.webp
+5|fusion_reactor|Reactor de Fusion|50|/Imagenes/edificios/PLANTA DE FUSION.webp
+6|metal_storage|Almacen de Metal|50|/Imagenes/edificios/ALMACEN DE METAL.webp
+7|crystal_storage|Almacen de Cristal|50|/Imagenes/edificios/ALMACEND DE CRISTAL .webp
+8|deuterium_tank|Deposito de Deuterio|50|/Imagenes/edificios/Almacen de de Deuterio.webp
+9|robotics_factory|Fabrica de Robots|50|/Imagenes/edificios/FABRICA DE ROBOT.webp
+10|nanite_factory|Fabrica de Nanobots|50|/Imagenes/edificios/FABRICA DE NANOBOT.webp
+11|shipyard|Hangar|50|/Imagenes/edificios/HANGAR.webp
+12|research_lab|Laboratorio de Investigacion|50|/Imagenes/edificios/LABORATORIO DE INVESTIGACION.webp
+13|missile_silo|Silo de Misiles|50|/Imagenes/edificios/Silo.webp
+14|terraformer|Terraformador|50|/Imagenes/edificios/Terraformer.webp
+15|lunar_base|Base Lunar|8|/Imagenes/edificios/Base Lunar.webp
+16|sensor_phalanx|Sensor Phalanx|7|/Imagenes/edificios/Sensor Phalanx.webp
+17|jump_gate|Portal de Salto|1|/Imagenes/edificios/Salto Cuantico.webp
+18|alliance_depot|Deposito de la Alianza|10|/Imagenes/edificios/Embajada.webp
+21|university|Universidad|12|/Imagenes/edificios/Universidad.webp
+=== occ planet ===
+0631a0dc-92d8-4abf-b540-1f0d440d6a58|a7a39e82-f8fb-41e3-acf4-6315b59f88ee|ce303d4d-f449-45ba-9add-912df580210e
+=== occ buildings ===
+metal_mine|15
+crystal_mine|13
+deuterium_synthesizer|12
+solar_plant|14
+fusion_reactor|3
+metal_storage|5
+crystal_storage|5
+deuterium_tank|5
+robotics_factory|6
+shipyard|4
+research_lab|4
+=== occ defenses ===
+50a157cc-f968-435e-8e87-09965276545a|a7a39e82-f8fb-41e3-acf4-6315b59f88ee|2|7|0||2026-10-04 15:00:09.526595+00|0|0
+=== occ res ===
+b0347499-479f-4710-947a-7027659e4048|a7a39e82-f8fb-41e3-acf4-6315b59f88ee|8797.48|22695.75|42063.90|1452|1183|3224.71|1566.35|693.52|320000.00|320000.00|320000.00|2026-10-08 20:11:44.964+00|100|100|100|100|100|100
+=== existing fn ===
+get_occupation_detail
+get_occupation_overview
+get_occupation_ranking
+get_occupation_ship_info
+get_system_occupations
+occupation_abandon
+occupation_build
+occupation_cancel_build
+occupation_transport
+purchase_occupation_ship

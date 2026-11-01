@@ -1,0 +1,16 @@
+BEGIN
+SET
+psql:/tmp/ocupa1_body.sql:744: NOTICE:  trigger "trg_occ_garrison_end_upd" for relation "public.fleets" does not exist, skipping
+psql:/tmp/ocupa1_body.sql:751: NOTICE:  trigger "trg_occ_garrison_end_del" for relation "public.fleets" does not exist, skipping
+psql:/tmp/ocupa1_body.sql:771: NOTICE:  trigger "trg_occ_block_fleet" for relation "public.fleets" does not exist, skipping
+psql:/tmp/ocupa1_body.sql:796: NOTICE:  trigger "trg_occ_block_queue" for relation "public.building_queue" does not exist, skipping
+psql:/tmp/ocupa1_body.sql:799: NOTICE:  trigger "trg_occ_block_queue" for relation "public.shipyard_queue" does not exist, skipping
+psql:/tmp/ocupa1_body.sql:802: NOTICE:  trigger "trg_occ_block_queue" for relation "public.research_queue" does not exist, skipping
+psql:/tmp/ocupa1_body.sql:843: NOTICE:  trigger "trg_occ_hostile_warning" for relation "public.fleets" does not exist, skipping
+COMMIT
+NOTIFY
+== verify
+0
+24|occupation_ship
+occupation-build-tick|* * * * *
+32

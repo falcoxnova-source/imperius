@@ -1,0 +1,57 @@
+-- =====================================================================
+-- MIGRATION: Phase G VENGEANCE MODE + Cross-Planet Retaliation Trigger
+-- =====================================================================
+-- User request: "que sea muy vengativa en modo militar" +
+-- "que ataque si tiene algun planeta en militar"
+--
+-- TRIGGER (cuándo dispara Phase G):
+--   ANTES: solo planetas con v_planet_role = 'military'
+--   AHORA: cualquier planeta del bot dispara si:
+--          • v_planet_role = 'military' (igual que antes), O
+--          • v_has_military_planet = true (imperio tiene >= 1 militar)
+--   → Un balanced/research con naves puede vengarse si el imperio
+--     tiene vocación militar en alguna parte.
+--
+-- NAVES MÍNIMAS para vengarse:
+--   ANTES: >= 6 naves en el planeta
+--   AHORA: >= 3 naves (responde incluso con flota pequeña)
+--
+-- MEMORIA de agresores:
+--   ANTES: battle_reports últimas 24h
+--   AHORA: battle_reports últimas 72h
+--          + espionajes recibidos últimos 48h (te miran raro → pagas)
+--
+-- VÍCTIMAS por tick:
+--   ANTES: LIMIT 3
+--   AHORA: LIMIT 8 (caza en serie)
+--
+-- UMBRALES de ataque:
+--   ANTES: full si attacker >= 1.10 * defender, raid si >= 0.70
+--   AHORA: full si attacker >= 0.95 * defender, raid si >= 0.50
+--   → Ataca incluso en inferioridad notable (kamikaze vengativo)
+--
+-- ATAQUES REPETIDOS al mismo objetivo (24h):
+--   ANTES: máx 2
+--   AHORA: máx 5 (acoso sostenido, asedio)
+--
+-- PORCENTAJE DE FLOTA ENVIADA:
+--   RAID:
+--     ANTES: 20% LF, 20% HF, 45% CR, 30% BS, 55% BC, 0% BO, 25% DE
+--     AHORA: 35% LF, 35% HF, 60% CR, 50% BS, 70% BC, 30% BO, 45% DE
+--   FULL:
+--     ANTES: 60% LF/HF/CR/BS, 65% BC, 50% BO, 50% DE
+--     AHORA: 85% LF/HF/CR/BS, 90% BC, 80% BO, 80% DE (casi todo)
+--
+-- Efecto esperado:
+--   ✓ Jugadores que atacan/espían al bot reciben respuesta dura
+--   ✓ Bot no olvida agresiones por 3 días completos
+--   ✓ Puede vengar desde planetas no militares si tiene estrategia bélica
+--   ✓ Ataques en oleadas (hasta 5/día por target) — acoso psicológico
+--   ✓ Pega casi con todo cuando es claramente superior
+--
+-- Alliance filter y noob protection: MANTENIDOS (no ataca aliados ni novatos)
+--
+-- Aplicado vía: scripts/apply-miner-fixes.cjs
+-- =====================================================================
+
+SELECT 'Phase G VENGEANCE MODE + cross-planet trigger applied' AS note;

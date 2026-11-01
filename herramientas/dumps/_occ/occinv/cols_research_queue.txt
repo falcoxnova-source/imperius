@@ -1,0 +1,14 @@
+id uuid gen_random_uuid()
+user_id uuid 
+technology_type_id integer 
+target_level integer 1
+metal_cost bigint 0
+crystal_cost bigint 0
+deuterium_cost bigint 0
+research_time integer 0
+queue_position integer 1
+status text 'pending'::text
+start_time timestamp with time zone 
+end_time timestamp with time zone 
+planet_id uuid 
+created_at timestamp with time zone now()

@@ -1,0 +1,39 @@
+-- =====================================================================
+-- MIGRATION: Military Fortress Build Order (NPC/Autopilot)
+-- =====================================================================
+-- Problem: Planetas militares subían demasiadas minas y solar_plant
+-- antes de construir infraestructura militar. Consumían campos y
+-- recursos que deberían ir a shipyard/robotics/nanite.
+--
+-- Fix: Nueva wish list para v_planet_role = 'military':
+--
+--   MINAS DE ARRANQUE (muy bajas):
+--     • metal_mine < 4, crystal_mine < 3, deut_synth < 3
+--     • Solar solo para sostener esas minas mínimas
+--     • Los mineros alimentan al militar vía transportes
+--
+--   PRIORIDAD ABSOLUTA (infraestructura de guerra):
+--     1. robotics_factory (rampa 2→4→6)
+--     2. shipyard (rampa 4→8→12→14)
+--     3. storages grandes (hasta 7) — reciben transportes masivos
+--     4. research_lab (hasta 8) — desbloquear tecnologías militares
+--     5. nanite_factory (cuando robotics >= 10) — naves capitales
+--
+--   MINAS OCASIONALES:
+--     • Solo suben cuando shipyard >= 8 y las minas siguen por debajo
+--       de 8/6/6 respectivamente (upgrade lento y secundario)
+--
+--   ENERGÍA CRÍTICA:
+--     • Solo si energy_balance <= 5 se fuerza solar_plant al inicio
+--       (evita paralizar producción de naves)
+--
+-- Efecto esperado:
+--   • Militar fabrica naves mucho antes
+--   • Naves capitales (bomber/destroyer/deathstar) desbloqueadas más rápido
+--   • Mineros transportan recursos → storages grandes los absorben
+--   • Menos campos gastados en minas, más en hangar/robotica/nanita
+--
+-- Aplicado vía: scripts/apply-miner-fixes.cjs
+-- =====================================================================
+
+SELECT 'Military fortress build order applied via apply-miner-fixes.cjs' AS note;

@@ -1,0 +1,53 @@
+﻿admin_get_planet_inventory L30:   -- Naves: TODOS los ship_types con la cantidad actual (0 si no existe)
+admin_get_planet_inventory L38:   FROM ship_types st
+bot_ai_tick L83:   v_ship_types_queued_this_tick integer := 0;
+bot_ai_tick L84:   v_max_ship_types_per_tick integer := 3;
+bot_ai_tick L214:   SELECT id INTO v_probe_ship_type_id FROM ship_types WHERE code = 'espionage_probe';
+bot_ai_tick L215:   SELECT id INTO v_light_fighter_type_id FROM ship_types WHERE code = 'light_fighter';
+bot_ai_tick L216:   SELECT id INTO v_heavy_fighter_type_id FROM ship_types WHERE code = 'heavy_fighter';
+bot_ai_tick L217:   SELECT id INTO v_cruiser_type_id FROM ship_types WHERE code = 'cruiser';
+bot_ai_tick L218:   SELECT id INTO v_battleship_type_id FROM ship_types WHERE code = 'battleship';
+bot_ai_tick L219:   SELECT id INTO v_battlecruiser_type_id FROM ship_types WHERE code = 'battlecruiser';
+bot_ai_tick L220:   SELECT id INTO v_bomber_type_id FROM ship_types WHERE code = 'bomber';
+bot_ai_tick L221:   SELECT id INTO v_destroyer_type_id FROM ship_types WHERE code = 'destroyer';
+bot_ai_tick L222:   SELECT id INTO v_deathstar_type_id FROM ship_types WHERE code = 'deathstar';
+bot_ai_tick L223:   SELECT id INTO v_nova_type_id FROM ship_types WHERE code = 'nova';
+bot_ai_tick L224:   SELECT id INTO v_falco_type_id FROM ship_types WHERE code = 'falco_x_clasica';
+bot_ai_tick L225:   SELECT id INTO v_small_cargo_type_id FROM ship_types WHERE code = 'small_cargo';
+bot_ai_tick L226:   SELECT id INTO v_large_cargo_type_id FROM ship_types WHERE code = 'large_cargo';
+bot_ai_tick L227:   SELECT id INTO v_recycler_type_id FROM ship_types WHERE code = 'recycler';
+bot_ai_tick L228:   SELECT id INTO v_colony_ship_type_id FROM ship_types WHERE code = 'colony_ship';
+bot_ai_tick L229:   SELECT COALESCE(cargo_capacity, 5000) INTO v_cargo_ship_capacity FROM ship_types WHERE code = 'small_cargo';
+bot_ai_tick L495:                   FROM ship_types st WHERE st.code = v_custom_key;
+bot_ai_tick L1655:           v_ship_types_queued_this_tick := 0;
+bot_ai_tick L1659:             v_max_ship_types_per_tick := CASE
+bot_ai_tick L1682:             v_max_ship_types_per_tick := 3;
+bot_ai_tick L1690:             v_max_ship_types_per_tick := 0;
+bot_ai_tick L1695:             v_max_ship_types_per_tick := 2;
+bot_ai_tick L1701:             v_max_ship_types_per_tick := CASE
+bot_ai_tick L1777:             v_max_ship_types_per_tick := GREATEST(v_max_ship_types_per_tick, 2);
+bot_ai_tick L1786:             v_max_ship_types_per_tick := GREATEST(v_max_ship_types_per_tick, 2);
+bot_ai_tick L1796:             SELECT * INTO v_ship FROM ship_types WHERE code = v_ship_priority[i];
+bot_ai_tick L2036:               v_ship_types_queued_this_tick := v_ship_types_queued_this_tick + 1;
+bot_ai_tick L2037:               IF v_ship_types_queued_this_tick >= v_max_ship_types_per_tick THEN EXIT; END IF;
+bot_farm_inactive_players L41:   SELECT id INTO v_small_cargo_type_id FROM ship_types WHERE code = 'small_cargo' LIMIT 1;
+bot_farm_inactive_players L42:   SELECT id INTO v_large_cargo_type_id FROM ship_types WHERE code = 'large_cargo' LIMIT 1;
+bot_farm_inactive_players L43:   SELECT id INTO v_light_fighter_type_id FROM ship_types WHERE code = 'light_fighter' LIMIT 1;
+bot_farm_inactive_players L44:   SELECT id INTO v_heavy_fighter_type_id FROM ship_types WHERE code = 'heavy_fighter' LIMIT 1;
+bot_farm_inactive_players L45:   SELECT id INTO v_cruiser_type_id FROM ship_types WHERE code = 'cruiser' LIMIT 1;
+bot_farm_inactive_players L46:   SELECT id INTO v_battleship_type_id FROM ship_types WHERE code = 'battleship' LIMIT 1;
+bot_farm_inactive_players L47:   SELECT id INTO v_battlecruiser_type_id FROM ship_types WHERE code = 'battlecruiser' LIMIT 1;
+bot_farm_inactive_players L48:   SELECT id INTO v_bomber_type_id FROM ship_types WHERE code = 'bomber' LIMIT 1;
+bot_farm_inactive_players L49:   SELECT id INTO v_destroyer_type_id FROM ship_types WHERE code = 'destroyer' LIMIT 1;
+bot_farm_inactive_players L59:         AND EXISTS (SELECT 1 FROM planet_ships ps WHERE ps.planet_id = p.id AND ps.ship_type_id IN (v_light_fighter_type_id, (SELECT id FROM ship_types WHERE code = 'heavy_fighter' LIMIT 1)))
+bot_farm_inactive_players L66:         AND ps.ship_type_id IN (SELECT id FROM ship_types WHERE code IN ('light_fighter','heavy_fighter','cruiser','battleship','battlecruiser','bomber','destroyer','nova','falco_x'));
+get_destruction_ranking L38:   FROM ship_types WHERE category = 'civil';
+get_universe_records L62:     FROM ship_types st
+process_expedition L54: SELECT id INTO v_probe_type_id FROM ship_types WHERE code = 'espionage_probe';
+process_expedition L122: JOIN ship_types st ON fs.ship_type_id = st.id
+process_expedition L131: JOIN ship_types st ON fs.ship_type_id = st.id
+process_expedition L164: JOIN ship_types st ON fs.ship_type_id = st.id
+process_expedition L196: JOIN ship_types st ON fs.ship_type_id = st.id
+process_expedition L228: JOIN ship_types st ON fs.ship_type_id = st.id
+process_expedition L315: FROM ship_types st
+botfns bot_ai_tick,bot_farm_inactive_players,bot_military_pro_tick,bot_process_queues,bot_use_sensor_phalanx,bot_launch_ipm_attacks,bot_tick_worker

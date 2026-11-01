@@ -1,0 +1,477 @@
+﻿== perform_combat deploy/source
+54:       'source', 'planet'
+70:     WHERE ps.planet_id = p_target_planet_id AND ps.quantity > 0 AND NOT public._occ_is_recovery_fleet(p_attacker_fleet_id, p_target_planet_id) /* [OCUPA1-pc1] */
+91:       'source', 'planet'
+101:     WHERE pd.planet_id = p_target_planet_id AND pd.quantity > 0 AND NOT public._occ_is_recovery_fleet(p_attacker_fleet_id, p_target_planet_id) /* [OCUPA1-pc2] */
+123:       'source', 'defense'
+127:   -- === ALLIED STATIONED FLEETS (deployed on this planet via Alliance Depot) ===
+128:   -- FIX: Was 'hold', must be 'deploy' (that's how fleets are stored)
+135:       AND f.mission_type = 'deploy'
+150:     -- Add this ally's ships as defender units, tagged with fleet_id as source
+177:         'source', v_allied_fleet.fleet_id::text
+== _occ_trg_hostile_warning
+
+DECLARE
+  v_occupier uuid;
+  v_pname text;
+  v_attacker text;
+BEGIN
+  IF NEW.mission_type IN ('attack', 'espionage', 'destroy') AND NOT COALESCE(NEW.is_returning, false)
+     AND COALESCE(NEW.target_type, 'planet') = 'planet' THEN
+    BEGIN
+      SELECT o.occupier_id, p.name INTO v_occupier, v_pname
+      FROM public.planets p
+      JOIN public.occupations o ON o.planet_id = p.id AND o.status = 'active'
+      WHERE p.galaxy = NEW.target_galaxy AND p.solar_system = NEW.target_system
+        AND p.position = NEW.target_position AND p.planet_type = 'planet'
+      LIMIT 1;
+      IF v_occupier IS NOT NULL AND v_occupier <> NEW.user_id THEN
+        SELECT username INTO v_attacker FROM public.profiles WHERE id = NEW.user_id;
+        INSERT INTO public.messages (sender_id, recipient_id, subject, body, message_type)
+        VALUES (NULL, v_occupier,
+          CASE WHEN NEW.mission_type = 'espionage' THEN 'Espionaje hacia tu planeta ocupado' ELSE '┬íFlota hostil hacia tu planeta ocupado!' END,
+          format('%s ha enviado una misi├│n de %s hacia %s [%s:%s:%s], planeta que tienes ocupado. Llegada: %s.',
+            COALESCE(v_attacker, 'Un jugador'),
+            CASE NEW.mission_type WHEN 'attack' THEN 'ataque' WHEN 'espionage' THEN 'espionaje' ELSE 'destrucci├│n' END,
+            COALESCE(v_pname, 'tu planeta ocupado'), NEW.target_galaxy, NEW.target_system, NEW.target_position,
+            to_char(NEW.arrival_time AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') || ' UTC'),
+          'fleet_warning');
+      END IF;
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING '[OCUPA1] hostile warning failed: %', SQLERRM;
+    END;
+  END IF;
+  RETURN NULL;
+END
+
+trg_occ_hostile_warning|fleets|O
+== notify_hostile_fleet_incoming
+
+DECLARE
+  target_planet RECORD;
+  attacker_profile RECORD;
+  attacker_planet RECORD;
+  mission_text TEXT;
+  time_remaining INTERVAL;
+BEGIN
+  -- Only notify for hostile missions (attack, espionage, destroy)
+  IF NEW.mission_type NOT IN ('attack', 'espionage', 'destroy') THEN
+    RETURN NEW;
+  END IF;
+  
+  -- Find the target planet and its owner
+  SELECT p.*, pr.username as owner_name
+  INTO target_planet
+  FROM planets p
+  LEFT JOIN profiles pr ON p.user_id = pr.id
+  WHERE p.galaxy = NEW.target_galaxy
+    AND p.solar_system = NEW.target_system
+    AND p.position = NEW.target_position
+    AND p.planet_type = COALESCE(NEW.target_type, 'planet');
+  
+  -- Only notify if target belongs to another player
+  IF NOT FOUND OR target_planet.user_id IS NULL OR target_planet.user_id = NEW.user_id THEN
+    RETURN NEW;
+  END IF;
+  
+  -- Get attacker info
+  SELECT username INTO attacker_profile FROM profiles WHERE id = NEW.user_id;
+  SELECT galaxy, solar_system, position INTO attacker_planet FROM planets WHERE id = NEW.origin_planet_id;
+  
+  -- Set mission text based on type
+  CASE NEW.mission_type
+    WHEN 'attack' THEN mission_text := 'atacando';
+    WHEN 'espionage' THEN mission_text := 'espiando';
+    WHEN 'destroy' THEN mission_text := 'destruyendo';
+    ELSE mission_text := 'enviando flota a';
+  END CASE;
+  
+  -- Calculate time remaining
+  time_remaining := NEW.arrival_time - NOW();
+  
+  -- Send notification message to defender
+  INSERT INTO messages (
+    sender_id,
+    recipient_id,
+    subject,
+    body,
+    message_type
+  ) VALUES (
+    NULL,
+    target_planet.user_id,
+    'Flota hostil detectada!',
+    format('El jugador %s [%s:%s:%s] te esta %s en %s [%s:%s:%s]. Tiempo estimado de llegada: %s',
+      COALESCE(attacker_profile.username, 'Desconocido'),
+      COALESCE(attacker_planet.galaxy, 0),
+      COALESCE(attacker_planet.solar_system, 0),
+      COALESCE(attacker_planet.position, 0),
+      mission_text,
+      target_planet.name,
+      NEW.target_galaxy,
+      NEW.target_system,
+      NEW.target_position,
+      CASE 
+        WHEN time_remaining < interval '1 minute' THEN 'menos de 1 minuto'
+        WHEN time_remaining < interval '1 hour' THEN floor(extract(epoch from time_remaining) / 60) || ' minutos'
+        ELSE floor(extract(epoch from time_remaining) / 3600) || ' horas ' || 
+             floor(mod(extract(epoch from time_remaining), 3600) / 60) || ' minutos'
+      END
+    ),
+    'fleet_warning'
+  );
+  
+  RETURN NEW;
+END;
+
+== _occ_try_start
+
+DECLARE
+  v_ship_id integer;
+  f public.fleets%ROWTYPE;
+  p public.planets%ROWTYPE;
+  v_occ_qty bigint;
+  v_others bigint;
+  v_fail text;
+  v_coords text;
+  v_fb jsonb;
+  v_fs jsonb;
+  v_main uuid;
+  v_redirected integer := 0;
+  v_occ_name text;
+  v_note text := '';
+BEGIN
+  SELECT id INTO v_ship_id FROM public.ship_types WHERE code = 'occupation_ship';
+  IF v_ship_id IS NULL THEN
+    RETURN false;
+  END IF;
+
+  SELECT * INTO f FROM public.fleets WHERE id = p_fleet_id;
+  IF NOT FOUND OR COALESCE(f.is_acs, false) OR f.acs_id IS NOT NULL OR f.mission_type <> 'attack' THEN
+    RETURN false;
+  END IF;
+
+  SELECT COALESCE(SUM(quantity), 0) INTO v_occ_qty
+  FROM public.fleet_ships WHERE fleet_id = p_fleet_id AND ship_type_id = v_ship_id AND quantity > 0;
+  IF v_occ_qty = 0 THEN
+    RETURN false;
+  END IF;
+
+  SELECT * INTO p FROM public.planets WHERE id = p_planet_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RETURN false;
+  END IF;
+  v_coords := '[' || p.galaxy || ':' || p.solar_system || ':' || p.position || ']';
+
+  SELECT COALESCE(SUM(quantity), 0) INTO v_others
+  FROM public.fleet_ships WHERE fleet_id = p_fleet_id AND quantity > 0;
+  v_others := v_others - 1;
+  IF p.user_id IS NOT NULL THEN
+    PERFORM pg_advisory_xact_lock(hashtext('occ4:' || f.user_id::text || ':' || p.user_id::text)); -- [OCUPA4]
+  END IF;
+
+  v_fail := CASE
+    WHEN p.planet_type <> 'planet' OR COALESCE(f.target_type, 'planet') <> 'planet'
+      THEN 'Solo se pueden ocupar planetas (las lunas no se pueden ocupar).'
+    WHEN COALESCE(p.is_main_planet, false)
+      THEN 'El planeta principal de un jugador no se puede ocupar. Solo sus colonias.'
+    WHEN COALESCE(p.is_destroyed, false) OR p.user_id IS NULL OR p.user_id = f.user_id
+      THEN 'El objetivo no es v├ílido para ocupar.'
+    WHEN v_others < 1
+      THEN 'La Nave de Ocupaci├│n necesita al menos otra nave superviviente que quede como guarnici├│n.'
+    WHEN EXISTS (SELECT 1 FROM public.occupations WHERE planet_id = p.id AND status = 'active')
+      THEN 'Este planeta ya est├í ocupado.'
+    WHEN (SELECT count(*) FROM public.occupations WHERE occupier_id = f.user_id AND owner_id = p.user_id AND status = 'active') >= 3 -- [OCUPA4]
+      THEN 'Ya tienes ocupadas 3 colonias de este jugador (m├íximo 3 por jugador).'
+    WHEN public._colony_listed_since(p.id) IS NOT NULL
+      THEN 'Esta colonia est├í en venta en el mercado y no se puede ocupar.'
+    ELSE NULL
+  END;
+
+  IF v_fail IS NOT NULL THEN
+    INSERT INTO public.messages (sender_id, recipient_id, subject, body, message_type)
+    VALUES (NULL, f.user_id, 'Ocupaci├│n fallida',
+      format('Tu flota gan├│ la batalla en %s %s, pero no pudo ocuparlo: %s La flota regresa a casa.', COALESCE(p.name, ''), v_coords, v_fail),
+      'system');
+    RETURN false;
+  END IF;
+
+  -- [OCUPA5] La Nave de Ocupacion ya no se consume: se queda en la guarnicion
+  IF v_occ_qty > 1 THEN
+    NULL;
+  ELSE
+    NULL;
+  END IF;
+
+  -- El botin se queda en el planeta ocupado (el ocupante lo controla)
+  UPDATE public.fleets
+  SET cargo_metal = GREATEST(0, cargo_metal - COALESCE(p_loot_metal, 0)),
+      cargo_crystal = GREATEST(0, cargo_crystal - COALESCE(p_loot_crystal, 0)),
+      cargo_deuterium = GREATEST(0, cargo_deuterium - COALESCE(p_loot_deuterium, 0)),
+      mission_type = 'deploy',
+      is_returning = false,
+      is_completed = false
+  WHERE id = p_fleet_id;
+  UPDATE public.planet_resources
+  SET metal = metal + COALESCE(p_loot_metal, 0),
+      crystal = crystal + COALESCE(p_loot_crystal, 0),
+      deuterium = deuterium + COALESCE(p_loot_deuterium, 0)
+  WHERE planet_id = p.id;
+
+  -- Congelar colas del dueno
+  SELECT COALESCE(jsonb_agg(to_jsonb(b) ORDER BY b.queue_position, b.created_at), '[]'::jsonb) INTO v_fb
+  FROM public.building_queue b WHERE b.planet_id = p.id;
+  SELECT COALESCE(jsonb_agg(to_jsonb(s) ORDER BY s.item_type, s.queue_position, s.created_at), '[]'::jsonb) INTO v_fs
+  FROM public.shipyard_queue s WHERE s.planet_id = p.id;
+  DELETE FROM public.building_queue WHERE planet_id = p.id;
+  DELETE FROM public.shipyard_queue WHERE planet_id = p.id;
+
+  -- Fuera del bot/autopiloto mientras dure
+  UPDATE public.planets SET autopilot_enabled = false WHERE id = p.id;
+
+  -- Ofertas de mercado vinculadas al planeta
+  UPDATE public.market_listings SET status = 'cancelled', updated_at = now()
+  WHERE planet_id = p.id AND status = 'active';
+
+  -- Transportes / despliegues de terceros en camino: regresan
+  UPDATE public.fleets
+  SET is_returning = true,
+      arrival_time = now(),
+      return_time = now() + GREATEST(interval '10 seconds', now() - departure_time)
+  WHERE target_galaxy = p.galaxy AND target_system = p.solar_system AND target_position = p.position
+    AND COALESCE(target_type, 'planet') = 'planet'
+    AND mission_type IN ('transport', 'deploy', 'hold')
+    AND NOT is_returning AND NOT is_completed
+    AND user_id <> f.user_id
+    AND id <> p_fleet_id;
+
+  -- Flotas del dueno con origen en este planeta: vuelven a su planeta principal
+  SELECT id INTO v_main FROM public.planets
+  WHERE user_id = p.user_id AND is_main_planet AND planet_type = 'planet'
+    AND NOT COALESCE(is_destroyed, false) AND id <> p.id
+  ORDER BY created_at LIMIT 1;
+  IF v_main IS NOT NULL THEN
+    UPDATE public.fleets SET origin_planet_id = v_main
+    WHERE origin_planet_id = p.id AND user_id = p.user_id AND NOT COALESCE(is_completed, false);
+    GET DIAGNOSTICS v_redirected = ROW_COUNT;
+    UPDATE public.fortress_ships SET origin_planet_id = v_main WHERE origin_planet_id = p.id AND user_id = p.user_id;
+    UPDATE public.treasure_planet_ships SET origin_planet_id = v_main WHERE origin_planet_id = p.id AND user_id = p.user_id;
+    IF v_redirected > 0 THEN
+      v_note := format(' %s flota(s) tuya(s) que salieron de este planeta regresar├ín a tu planeta principal.', v_redirected);
+    END IF;
+  END IF;
+
+  INSERT INTO public.occupations (planet_id, owner_id, occupier_id, garrison_fleet_id, origin_planet_id,
+    prev_autopilot, frozen_building, frozen_shipyard, frozen_at)
+  VALUES (p.id, p.user_id, f.user_id, p_fleet_id, f.origin_planet_id,
+    p.autopilot_enabled, v_fb, v_fs, now());
+
+  SELECT username INTO v_occ_name FROM public.profiles WHERE id = f.user_id;
+
+  INSERT INTO public.messages (sender_id, recipient_id, subject, body, message_type)
+  VALUES (NULL, f.user_id, '┬íPlaneta ocupado!',
+    format('Tu Nave de Ocupaci├│n ha tomado %s %s. Tu flota se queda como guarnici├│n: mientras sobreviva controlas la producci├│n, el hangar y los recursos del planeta. Gesti├│nalo desde el men├║ Ocupaciones o desde tu selector de planetas.', COALESCE(p.name, ''), v_coords),
+    'system');
+  INSERT INTO public.messages (sender_id, recipient_id, subject, body, message_type)
+  VALUES (NULL, p.user_id, '┬íTu colonia ha sido ocupada!',
+    format('%s ha ocupado tu colonia %s %s. Tus colas de construcci├│n y hangar quedan congeladas hasta que la recuperes. Para recuperarla, ataca la guarnici├│n enemiga (solo o con un ACS creado por ti).%s', COALESCE(v_occ_name, 'Un jugador'), COALESCE(p.name, ''), v_coords, v_note),
+    'system');
+
+  RETURN true;
+END
+
+== _occ_trg_garrison_end
+
+DECLARE
+  v_fid uuid;
+  v_reason text;
+  v_occ uuid;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    v_fid := OLD.id;
+    v_reason := 'liberated';
+  ELSE
+    v_fid := NEW.id;
+    v_reason := CASE WHEN NEW.is_returning AND NOT NEW.is_completed THEN 'abandoned' ELSE 'liberated' END;
+  END IF;
+  SELECT id INTO v_occ FROM public.occupations WHERE garrison_fleet_id = v_fid AND status = 'active';
+  IF v_occ IS NOT NULL THEN
+    BEGIN
+      PERFORM public._occ_end(v_occ, v_reason);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING '[OCUPA1] garrison end % failed: %', v_occ, SQLERRM;
+    END;
+  END IF;
+  RETURN NULL;
+END
+
+== _occ_cron_tick
+
+DECLARE
+  r record;
+  v_n integer := 0;
+BEGIN
+  FOR r IN
+    SELECT o.id, o.garrison_fleet_id,
+      CASE
+        WHEN p.id IS NULL OR COALESCE(p.is_destroyed, false) OR p.user_id IS DISTINCT FROM o.owner_id THEN 'planet_lost'
+        WHEN f.id IS NULL THEN 'liberated'
+        WHEN f.is_returning AND NOT f.is_completed THEN 'abandoned'
+        ELSE 'liberated'
+      END AS reason
+    FROM public.occupations o
+    LEFT JOIN public.planets p ON p.id = o.planet_id
+    LEFT JOIN public.fleets f ON f.id = o.garrison_fleet_id
+    WHERE o.status = 'active'
+      AND (p.id IS NULL OR COALESCE(p.is_destroyed, false) OR p.user_id IS DISTINCT FROM o.owner_id
+           OR f.id IS NULL OR f.is_completed OR f.is_returning OR f.mission_type <> 'deploy'
+           OR NOT EXISTS (SELECT 1 FROM public.fleet_ships fs WHERE fs.fleet_id = f.id AND fs.quantity > 0))
+  LOOP
+    BEGIN
+      PERFORM public._occ_end(r.id, r.reason);
+      IF r.reason = 'planet_lost' THEN
+        UPDATE public.fleets
+        SET is_returning = true, arrival_time = now(),
+            return_time = now() + GREATEST(interval '10 seconds', arrival_time - departure_time)
+        WHERE id = r.garrison_fleet_id AND NOT is_returning AND NOT is_completed;
+      END IF;
+      UPDATE public.fleets SET is_completed = true
+      WHERE id = r.garrison_fleet_id AND NOT is_completed AND NOT is_returning
+        AND NOT EXISTS (SELECT 1 FROM public.fleet_ships fs WHERE fs.fleet_id = fleets.id AND fs.quantity > 0);
+      v_n := v_n + 1;
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING '[OCUPA1] cron end % failed: %', r.id, SQLERRM;
+    END;
+  END LOOP;
+
+  FOR r IN SELECT id FROM public.occupations WHERE status = 'active' LOOP
+    BEGIN
+      PERFORM public._occ_process_builds(r.id);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING '[OCUPA1] cron builds % failed: %', r.id, SQLERRM;
+    END;
+  END LOOP;
+  RETURN v_n;
+END
+
+== pfa 640-760
+640:     END IF;
+641:     END IF;
+642:     END;
+643:     END IF;
+644:     IF NOT v_colonization_success THEN
+645:     UPDATE fleets SET is_returning = true WHERE id = p_fleet_id;
+646:     END IF;
+647:   WHEN 'attack' THEN
+648:     IF public._occ_recovery_arrival(p_fleet_id) THEN RETURN; END IF; /* [OCUPA1-pfa1] */
+649:     SELECT p.* INTO target_planet FROM planets p WHERE p.galaxy = fleet_record.target_galaxy AND p.solar_system = fleet_record.target_system AND p.position = fleet_record.target_position AND p.planet_type = COALESCE(fleet_record.target_type, 'planet');
+650:     IF FOUND AND target_planet.user_id IS NOT NULL AND target_planet.user_id != fleet_record.user_id THEN
+651:       combat_result := perform_combat(p_fleet_id, target_planet.id);
+652:       v_attacker_units_report := format_unit_report(combat_result->'initial_attacker', combat_result->'attacker_remaining', 'attacker');
+653:       v_defender_units_report := format_unit_report(combat_result->'initial_defender', combat_result->'defender_remaining', 'defender');
+654:       IF (combat_result->>'result') = 'attacker_won' THEN
+655:         SELECT COALESCE(SUM((unit->>'quantity')::integer * (SELECT cargo_capacity FROM ship_types WHERE id = (unit->>'type_id')::integer)), 0) INTO total_cargo_capacity FROM jsonb_array_elements(combat_result->'attacker_remaining') AS unit WHERE (unit->>'quantity')::integer > 0;
+656:         DECLARE v_avail_m NUMERIC; v_avail_c NUMERIC; v_avail_d NUMERIC; v_rem NUMERIC; BEGIN SELECT GREATEST(0, COALESCE(metal, 0)), GREATEST(0, COALESCE(crystal, 0)), GREATEST(0, COALESCE(deuterium, 0)) INTO v_avail_m, v_avail_c, v_avail_d FROM planet_resources WHERE planet_id = target_planet.id; loot_metal := LEAST(v_avail_m, FLOOR(total_cargo_capacity::numeric / 3)); loot_crystal := LEAST(v_av
+657:         UPDATE planet_resources SET metal = GREATEST(0, metal - loot_metal), crystal = GREATEST(0, crystal - loot_crystal), deuterium = GREATEST(0, deuterium - loot_deuterium) WHERE planet_id = target_planet.id;
+658:         UPDATE fleets SET cargo_metal = cargo_metal + loot_metal, cargo_crystal = cargo_crystal + loot_crystal, cargo_deuterium = cargo_deuterium + loot_deuterium WHERE id = p_fleet_id;
+659:         DELETE FROM fleet_ships WHERE fleet_id = p_fleet_id;
+660:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'attacker_remaining') LOOP IF (v_unit->>'quantity')::integer > 0 THEN INSERT INTO fleet_ships (fleet_id, ship_type_id, quantity) VALUES (p_fleet_id, (v_unit->>'type_id')::integer, (v_unit->>'quantity')::integer); END IF; END LOOP;
+661:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF NOT (v_unit->>'is_defense')::boolean THEN IF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND ship_type_id = (v_unit->>'type_id')::integer; ELSIF (v_unit->>'source') NOT IN ('planet','defen
+662:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'destroyed_defenses') LOOP DECLARE v_dq INTEGER := (v_unit->>'quantity')::integer; v_rq INTEGER := 0; v_i INTEGER; BEGIN FOR v_i IN 1..v_dq LOOP IF random() < 0.7 THEN v_rq := v_rq + 1; END IF; END LOOP; UPDATE planet_defenses SET quantity = GREATEST(0, quantity - v_dq + v_rq) WHERE planet_id = target_planet.id AND defense_typ
+663:         UPDATE profiles SET battles_won = battles_won + 1, units_destroyed = units_destroyed + COALESCE((combat_result->>'defender_losses_metal')::bigint / 1000, 0) WHERE id = fleet_record.user_id;
+664:         UPDATE profiles SET battles_lost = battles_lost + 1, units_lost = units_lost + COALESCE((combat_result->>'defender_losses_metal')::bigint / 1000, 0) WHERE id = target_planet.user_id;
+665:         -- Anti-farmeo: cuando el atacante GANA (destruye toda la flota y defensa,
+666:         -- o el planeta estaba sin defensa), SIEMPRE se dana un edificio para forzar
+667:         -- a los jugadores a defender sus planetas.
+668:         v_building_damage := apply_attack_building_damage(target_planet.id);
+669:         IF v_building_damage IS NOT NULL AND (v_building_damage->>'damaged')::boolean THEN
+670:           v_bdmg_note := chr(10) || chr(10) || 'Da├▒o estructural: ' || (v_building_damage->>'building_name') || ' del planeta ' || target_planet.name || ' baj├│ al nivel ' || (v_building_damage->>'new_level') || '.';
+671:         END IF;
+672:       ELSIF (combat_result->>'result') = 'defender_won' THEN
+673:         DELETE FROM fleet_ships WHERE fleet_id = p_fleet_id;
+674:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF (v_unit->>'is_defense')::boolean THEN UPDATE planet_defenses SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND defense_type_id = (v_unit->>'type_id')::integer; ELSIF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->
+675:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'destroyed_defenses') LOOP DECLARE v_dq INTEGER := (v_unit->>'quantity')::integer; v_rq INTEGER := 0; v_i INTEGER; BEGIN FOR v_i IN 1..v_dq LOOP IF random() < 0.7 THEN v_rq := v_rq + 1; END IF; END LOOP; UPDATE planet_defenses SET quantity = quantity + v_rq WHERE planet_id = target_planet.id AND defense_type_id = (v_unit->>'de
+676:         UPDATE profiles SET battles_lost = battles_lost + 1 WHERE id = fleet_record.user_id;
+677:         UPDATE profiles SET battles_won = battles_won + 1 WHERE id = target_planet.user_id;
+678:         loot_metal := 0; loot_crystal := 0; loot_deuterium := 0;
+679:       ELSE
+680:         DELETE FROM fleet_ships WHERE fleet_id = p_fleet_id;
+681:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'attacker_remaining') LOOP IF (v_unit->>'quantity')::integer > 0 THEN INSERT INTO fleet_ships (fleet_id, ship_type_id, quantity) VALUES (p_fleet_id, (v_unit->>'type_id')::integer, (v_unit->>'quantity')::integer); END IF; END LOOP;
+682:         FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF (v_unit->>'is_defense')::boolean THEN UPDATE planet_defenses SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND defense_type_id = (v_unit->>'type_id')::integer; ELSIF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->
+683:         UPDATE profiles SET battles_draw = battles_draw + 1 WHERE id = fleet_record.user_id;
+684:         UPDATE profiles SET battles_draw = battles_draw + 1 WHERE id = target_planet.user_id;
+685:         loot_metal := 0; loot_crystal := 0; loot_deuterium := 0;
+686:       END IF;
+687:       DELETE FROM fleet_ships WHERE quantity <= 0 AND fleet_id IN (SELECT (u->>'source')::uuid FROM jsonb_array_elements(combat_result->'defender_remaining') u WHERE (u->>'source') NOT IN ('planet','defense'));
+688:       UPDATE fleets SET is_completed = true WHERE mission_type = 'deploy' AND is_completed = false AND id IN (SELECT (u->>'source')::uuid FROM jsonb_array_elements(combat_result->'defender_remaining') u WHERE (u->>'source') NOT IN ('planet','defense')) AND NOT EXISTS (SELECT 1 FROM fleet_ships fs WHERE fs.fleet_id = fleets.id AND fs.quantity > 0);
+689:       v_debris_metal := COALESCE((combat_result->>'debris_metal')::numeric, 0);
+690:       v_debris_crystal := COALESCE((combat_result->>'debris_crystal')::numeric, 0);
+691:       IF v_debris_metal > 0 OR v_debris_crystal > 0 THEN
+692:         INSERT INTO debris_fields (galaxy, solar_system, position, metal, crystal) VALUES (fleet_record.target_galaxy, fleet_record.target_system, fleet_record.target_position, v_debris_metal, v_debris_crystal) ON CONFLICT (galaxy, solar_system, position) DO UPDATE SET metal = debris_fields.metal + EXCLUDED.metal, crystal = debris_fields.crystal + EXCLUDED.crystal, updated_at = NOW();
+693:         UPDATE profiles SET debris_metal_total = debris_metal_total + v_debris_metal, debris_crystal_total = debris_crystal_total + v_debris_crystal WHERE id = fleet_record.user_id;
+694:       END IF;
+695:       -- Formacion de luna a partir del campo de escombros (ya existia en la BD, ahora si se invoca)
+696:       BEGIN
+697:         v_moon_result := check_moon_creation(fleet_record.target_galaxy, fleet_record.target_system, fleet_record.target_position, COALESCE(v_debris_metal, 0), COALESCE(v_debris_crystal, 0));
+698:       EXCEPTION WHEN OTHERS THEN
+699:         v_moon_result := NULL;
+700:       END;
+701:       -- Log battle report so the destruction ranking (get_destruction_ranking) can compute points
+702:       INSERT INTO battle_reports (attacker_id, defender_id, planet_id, coordinates, result, rounds, debris_metal, debris_crystal, loot_metal, loot_crystal, loot_deuterium, report_data, battle_type, galaxy, solar_system, position, created_at)
+703:       VALUES (fleet_record.user_id, target_planet.user_id, target_planet.id, fleet_record.target_galaxy || ':' || fleet_record.target_system || ':' || fleet_record.target_position, combat_result->>'result', COALESCE((combat_result->>'rounds')::integer, 0), v_debris_metal, v_debris_crystal, COALESCE(loot_metal, 0), COALESCE(loot_crystal, 0), COALESCE(loot_deuterium, 0), combat_result, 'attack', fle
+704:       v_atk_name := COALESCE((SELECT pr.username FROM profiles pr WHERE pr.id = fleet_record.user_id), 'Desconocido');
+705:       v_def_name := COALESCE((SELECT pr.username FROM profiles pr WHERE pr.id = target_planet.user_id), 'Desconocido');
+706:       v_atk_origin := COALESCE((SELECT op.galaxy || ':' || op.solar_system || ':' || op.position FROM planets op WHERE op.id = fleet_record.origin_planet_id), '?:?:?');
+707:       v_battle_report := jsonb_build_object(
+708:         'version', 2,
+709:         'battle_type', 'attack',
+710:         'attacker', v_atk_name,
+711:         'defender', v_def_name,
+712:         'planet_name', target_planet.name,
+713:         'target_type', COALESCE(fleet_record.target_type, 'planet'),
+714:         'attacker_origin', v_atk_origin,
+715:         'coordinates', fleet_record.target_galaxy || ':' || fleet_record.target_system || ':' || fleet_record.target_position,
+716:         'result', combat_result->>'result',
+717:         'rounds', COALESCE((combat_result->>'rounds')::integer, 0),
+718:         'rounds_data', COALESCE(combat_result->'rounds_data', '[]'::jsonb),
+719:         'attacker_ships', battle_units_diff(combat_result->'initial_attacker', combat_result->'attacker_remaining', 'ships'),
+720:         'defender_ships', battle_units_diff(combat_result->'initial_defender', combat_result->'defender_remaining', 'ships'),
+721:         'defender_defenses', battle_units_diff(combat_result->'initial_defender', combat_result->'defender_remaining', 'defenses'),
+722:         'attacker_losses', jsonb_build_object('metal', FLOOR(COALESCE((combat_result->>'attacker_losses_metal')::numeric, 0)), 'crystal', FLOOR(COALESCE((combat_result->>'attacker_losses_crystal')::numeric, 0))),
+723:         'defender_losses', jsonb_build_object('metal', FLOOR(COALESCE((combat_result->>'defender_losses_metal')::numeric, 0)), 'crystal', FLOOR(COALESCE((combat_result->>'defender_losses_crystal')::numeric, 0))),
+724:         'debris', jsonb_build_object('metal', FLOOR(COALESCE(v_debris_metal, 0)), 'crystal', FLOOR(COALESCE(v_debris_crystal, 0))),
+725:         'loot', jsonb_build_object('metal', FLOOR(COALESCE(loot_metal, 0)), 'crystal', FLOOR(COALESCE(loot_crystal, 0)), 'deuterium', FLOOR(COALESCE(loot_deuterium, 0))),
+726:         'moon', COALESCE(v_moon_result, jsonb_build_object('moon_created', false, 'moon_chance', 0)),
+727:         'building_damage', v_building_damage
+728:       );
+729:       INSERT INTO messages (sender_id, recipient_id, subject, body, message_type) VALUES (NULL, fleet_record.user_id, format('Reporte de Combate - %s', CASE (combat_result->>'result') WHEN 'attacker_won' THEN 'Victoria' WHEN 'defender_won' THEN 'Derrota' ELSE 'Empate' END), (v_battle_report || jsonb_build_object('perspective', 'attacker'))::text, 'battle');
+730:       INSERT INTO messages (sender_id, recipient_id, subject, body, message_type) VALUES (NULL, target_planet.user_id, format('Tu planeta %s fue atacado - %s', target_planet.name, CASE (combat_result->>'result') WHEN 'attacker_won' THEN 'Derrota' WHEN 'defender_won' THEN 'Victoria' ELSE 'Empate' END), (v_battle_report || jsonb_build_object('perspective', 'defender'))::text, 'battle');
+731:       -- [DEPOSITO ALIANZA] Copia del reporte para los aliados cuyas flotas
+732:       -- estacionadas participaron en la defensa del planeta.
+733:       INSERT INTO messages (sender_id, recipient_id, subject, body, message_type)
+734:       SELECT NULL,
+735:              f.user_id,
+736:              format('Tu flota defendio %s - %s', target_planet.name,
+737:                CASE (combat_result->>'result')
+738:                  WHEN 'attacker_won' THEN 'Derrota'
+739:                  WHEN 'defender_won' THEN 'Victoria'
+740:                  ELSE 'Empate' END),
+741:              (v_battle_report || jsonb_build_object('perspective', 'defender'))::text,
+742:              'battle'
+743:       FROM fleets f
+744:       WHERE f.id IN (
+745:               SELECT DISTINCT (u->>'source')::uuid
+746:               FROM jsonb_array_elements(combat_result->'defender_remaining') u
+747:               WHERE (u->>'source') NOT IN ('planet', 'defense')
+748:             )
+749:         AND f.user_id <> target_planet.user_id
+750:         AND f.user_id <> fleet_record.user_id
+751:       GROUP BY f.user_id;
+752:       IF (combat_result->>'result') = 'attacker_won' AND public._occ_try_start(p_fleet_id, target_planet.id, loot_metal, loot_crystal, loot_deuterium) THEN RETURN; END IF; /* [OCUPA1-pfa2] */
+753:       IF EXISTS (SELECT 1 FROM fleet_ships WHERE fleet_id = p_fleet_id AND quantity > 0) THEN
+754:         UPDATE fleets SET is_returning = true WHERE id = p_fleet_id;
+755:       ELSE
+756:         UPDATE fleets SET is_completed = true WHERE id = p_fleet_id;
+757:       END IF;
+758:     ELSE
+759:       UPDATE fleets SET is_returning = true WHERE id = p_fleet_id;
+760:     END IF;

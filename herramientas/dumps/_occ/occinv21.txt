@@ -1,0 +1,191 @@
+=== bot_ai_tick
+209:  SELECT id INTO v_probe_ship_type_id FROM ship_types WHERE code = 'espionage_probe';
+210:  SELECT id INTO v_light_fighter_type_id FROM ship_types WHERE code = 'light_fighter';
+211:  SELECT id INTO v_heavy_fighter_type_id FROM ship_types WHERE code = 'heavy_fighter';
+212:  SELECT id INTO v_cruiser_type_id FROM ship_types WHERE code = 'cruiser';
+213:  SELECT id INTO v_battleship_type_id FROM ship_types WHERE code = 'battleship';
+214:  SELECT id INTO v_battlecruiser_type_id FROM ship_types WHERE code = 'battlecruiser';
+215:  SELECT id INTO v_bomber_type_id FROM ship_types WHERE code = 'bomber';
+216:  SELECT id INTO v_destroyer_type_id FROM ship_types WHERE code = 'destroyer';
+217:  SELECT id INTO v_deathstar_type_id FROM ship_types WHERE code = 'deathstar';
+218:  SELECT id INTO v_nova_type_id FROM ship_types WHERE code = 'nova';
+219:  SELECT id INTO v_falco_type_id FROM ship_types WHERE code = 'falco_x_clasica';
+220:  SELECT id INTO v_small_cargo_type_id FROM ship_types WHERE code = 'small_cargo';
+221:  SELECT id INTO v_large_cargo_type_id FROM ship_types WHERE code = 'large_cargo';
+222:  SELECT id INTO v_recycler_type_id FROM ship_types WHERE code = 'recycler';
+223:  SELECT id INTO v_colony_ship_type_id FROM ship_types WHERE code = 'colony_ship';
+224:  SELECT COALESCE(cargo_capacity, 5000) INTO v_cargo_ship_capacity FROM ship_types WHERE code = 'small_cargo';
+232-  WHERE autopilot_vip_boost = true
+490:                  FROM ship_types st WHERE st.code = v_custom_key;
+498-                             FROM ship_requirements sr WHERE sr.ship_type_id = v_custom_st.id LOOP
+1791:            SELECT * INTO v_ship FROM ship_types WHERE code = v_ship_priority[i];
+1795-            FOR v_req IN SELECT sr.required_building_id, sr.required_building_level, sr.required_tech_id, sr.required_tech_level FROM ship_requirements sr WHERE sr.ship_type_id = v_ship.id LOOP
+1797-                SELECT COALESCE(pb.level, 0) INTO v_req_level FROM planet_buildings pb WHERE pb.planet_id = v_planet.id AND pb.building_type_id = v_req.required_building_id;
+=== process_fleet_arrival
+613:    SELECT id INTO colony_ship_type_id FROM ship_types WHERE code = 'colony_ship';
+614-    SELECT quantity INTO v_colony_ship_quantity FROM fleet_ships WHERE fleet_id = p_fleet_id AND ship_type_id = colony_ship_type_id;
+622-    'planet', false, 12800 + floor(random() * 5000)::integer, 163 + floor(random() * 50)::integer,
+623-    -20 + floor(random() * 40)::integer, 20 + floor(random() * 60)::integer)
+654:        SELECT COALESCE(SUM((unit->>'quantity')::integer * (SELECT cargo_capacity FROM ship_types WHERE id = (unit->>'type_id')::integer)), 0) INTO total_cargo_capacity FROM jsonb_array_elements(combat_result->'attacker_remaining') AS unit WHERE (unit->>'quantity')::integer > 0;
+655-        DECLARE v_avail_m NUMERIC; v_avail_c NUMERIC; v_avail_d NUMERIC; v_rem NUMERIC; BEGIN SELECT GREATEST(0, COALESCE(metal, 0)), GREATEST(0, COALESCE(crystal, 0)), GREATEST(0, COALESCE(deuterium, 0)) INTO v_avail_m, v_avail_c, v_avail_d FROM planet_resources WHERE planet_id = target_planet.id; loot_metal := LEAST(v_avail_m, FLOOR(total_cargo_capacity::numeric / 3)); loot_crystal := LEAST(v_avail_c, FLOOR(total_cargo_capacity::numeric / 3)); loot_deuterium := LEAST(v_avail_d, FLOOR(total_cargo_capacity::numeric / 3)); v_rem := total_cargo_capacity - (loot_metal + loot_crystal + loot_deuterium); IF v_rem > 0 THEN loot_metal := loot_metal + LEAST(v_avail_m - loot_metal, v_rem); v_rem := total_cargo_capacity - (loot_metal + loot_crystal + loot_deuterium); END IF; IF v_rem > 0 THEN loot_crystal := loot_crystal + LEAST(v_avail_c - loot_crystal, v_rem); v_rem := total_cargo_capacity - (loot_metal + loot_crystal + loot_deuterium); END IF; IF v_rem > 0 THEN loot_deuterium := loot_deuterium + LEAST(v_avail_d - loot_deuterium, v_rem); END IF; END;
+656-        UPDATE planet_resources SET metal = GREATEST(0, metal - loot_metal), crystal = GREATEST(0, crystal - loot_crystal), deuterium = GREATEST(0, deuterium - loot_deuterium) WHERE planet_id = target_planet.id;
+657-        UPDATE fleets SET cargo_metal = cargo_metal + loot_metal, cargo_crystal = cargo_crystal + loot_crystal, cargo_deuterium = cargo_deuterium + loot_deuterium WHERE id = p_fleet_id;
+658-        DELETE FROM fleet_ships WHERE fleet_id = p_fleet_id;
+660-        FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'defender_remaining') LOOP IF NOT (v_unit->>'is_defense')::boolean THEN IF COALESCE(v_unit->>'source','planet') = 'planet' THEN UPDATE planet_ships SET quantity = (v_unit->>'quantity')::integer WHERE planet_id = target_planet.id AND ship_type_id = (v_unit->>'type_id')::integer; ELSIF (v_unit->>'source') NOT IN ('planet','defense') THEN /* [FLOTAS v17] quantity=0 viola fleet_ships_quantity_check y dejaba la flota atascada: si la pila queda vacia se borra la fila */ IF (v_unit->>'quantity')::integer > 0 THEN UPDATE fleet_ships SET quantity = (v_unit->>'quantity')::integer WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; ELSE DELETE FROM fleet_ships WHERE fleet_id = (v_unit->>'source')::uuid AND ship_type_id = (v_unit->>'type_id')::integer; END IF; END IF; END IF; END LOOP;
+661-        FOR v_unit IN SELECT * FROM jsonb_array_elements(combat_result->'destroyed_defenses') LOOP DECLARE v_dq INTEGER := (v_unit->>'quantity')::integer; v_rq INTEGER := 0; v_i INTEGER; BEGIN FOR v_i IN 1..v_dq LOOP IF random() < 0.7 THEN v_rq := v_rq + 1; END IF; END LOOP; UPDATE planet_defenses SET quantity = GREATEST(0, quantity - v_dq + v_rq) WHERE planet_id = target_planet.id AND defense_type_id = (v_unit->>'defense_type_id')::integer; END; END LOOP;
+662-        UPDATE profiles SET battles_won = battles_won + 1, units_destroyed = units_destroyed + COALESCE((combat_result->>'defender_losses_metal')::bigint / 1000, 0) WHERE id = fleet_record.user_id;
+663-        UPDATE profiles SET battles_lost = battles_lost + 1, units_lost = units_lost + COALESCE((combat_result->>'defender_losses_metal')::bigint / 1000, 0) WHERE id = target_planet.user_id;
+=== process_expedition
+49:SELECT id INTO v_probe_type_id FROM ship_types WHERE code = 'espionage_probe';
+56-WHERE fs.fleet_id = p_fleet_id;
+310:FROM ship_types st
+311-WHERE st.code NOT IN ('deathstar', 'colony_ship', 'star_destroyer', 'black_moon', 'espionage_probe', 'solar_satellite', 'falco_x_clasica')
+313-AND user_can_build_ship(v_user_id, st.id)
+314-ORDER BY random()
+315-LIMIT 1;
+318-v_ship_quantity := 1 + floor(random() * LEAST(3, 1 + v_astrophysics_level / 3))::integer;
+=== calculate_and_sync_resources_internal
+distribute_spend_fee(numeric,text,text,uuid,text,uuid)|void
+calculate_planet_resources(uuid)|jsonb
+has_active_officer(uuid,text)|boolean
+calculate_and_sync_resources_internal(uuid,uuid)|jsonb
+=== calculate_planet_resources auth
+=== notify_hostile_fleet_incoming
+
+DECLARE
+  target_planet RECORD;
+  attacker_profile RECORD;
+  attacker_planet RECORD;
+  mission_text TEXT;
+  time_remaining INTERVAL;
+BEGIN
+  -- Only notify for hostile missions (attack, espionage, destroy)
+  IF NEW.mission_type NOT IN ('attack', 'espionage', 'destroy') THEN
+    RETURN NEW;
+  END IF;
+  
+  -- Find the target planet and its owner
+  SELECT p.*, pr.username as owner_name
+  INTO target_planet
+  FROM planets p
+  LEFT JOIN profiles pr ON p.user_id = pr.id
+  WHERE p.galaxy = NEW.target_galaxy
+    AND p.solar_system = NEW.target_system
+    AND p.position = NEW.target_position
+    AND p.planet_type = COALESCE(NEW.target_type, 'planet');
+  
+  -- Only notify if target belongs to another player
+  IF NOT FOUND OR target_planet.user_id IS NULL OR target_planet.user_id = NEW.user_id THEN
+    RETURN NEW;
+  END IF;
+  
+  -- Get attacker info
+  SELECT username INTO attacker_profile FROM profiles WHERE id = NEW.user_id;
+  SELECT galaxy, solar_system, position INTO attacker_planet FROM planets WHERE id = NEW.origin_planet_id;
+  
+  -- Set mission text based on type
+  CASE NEW.mission_type
+    WHEN 'attack' THEN mission_text := 'atacando';
+    WHEN 'espionage' THEN mission_text := 'espiando';
+    WHEN 'destroy' THEN mission_text := 'destruyendo';
+    ELSE mission_text := 'enviando flota a';
+  END CASE;
+  
+  -- Calculate time remaining
+  time_remaining := NEW.arrival_time - NOW();
+  
+  -- Send notification message to defender
+  INSERT INTO messages (
+    sender_id,
+    recipient_id,
+    subject,
+    body,
+    message_type
+  ) VALUES (
+    NULL,
+    target_planet.user_id,
+    'Flota hostil detectada!',
+    format('El jugador %s [%s:%s:%s] te esta %s en %s [%s:%s:%s]. Tiempo estimado de llegada: %s',
+      COALESCE(attacker_profile.username, 'Desconocido'),
+      COALESCE(attacker_planet.galaxy, 0),
+      COALESCE(attacker_planet.solar_system, 0),
+      COALESCE(attacker_planet.position, 0),
+      mission_text,
+      target_planet.name,
+      NEW.target_galaxy,
+      NEW.target_system,
+      NEW.target_position,
+      CASE 
+        WHEN time_remaining < interval '1 minute' THEN 'menos de 1 minuto'
+        WHEN time_remaining < interval '1 hour' THEN floor(extract(epoch from time_remaining) / 60) || ' minutos'
+        ELSE floor(extract(epoch from time_remaining) / 3600) || ' horas ' || 
+             floor(mod(extract(epoch from time_remaining), 3600) / 60) || ' minutos'
+      END
+    ),
+    'fleet_warning'
+  );
+  
+  RETURN NEW;
+END;
+
+=== enforce_ship_blueprint_requirement head
+
+DECLARE
+  v_owner_id       uuid;
+  v_blueprint_id   bigint;
+  v_unit_name      text;
+  v_shipyard_level integer;
+  v_owned          integer;
+  v_validation     jsonb;
+BEGIN
+  -- Solo naves o defensas
+  IF NEW.item_type NOT IN ('ship','defense') THEN
+    RETURN NEW;
+  END IF;
+  IF NEW.item_type = 'ship'    AND NEW.ship_type_id    IS NULL THEN RETURN NEW; END IF;
+  IF NEW.item_type = 'defense' AND NEW.defense_type_id IS NULL THEN RETURN NEW; END IF;
+
+  SELECT p.user_id INTO v_owner_id FROM planets p WHERE p.id = NEW.planet_id;
+  IF v_owner_id IS NULL THEN
+    RETURN NEW;
+  EN
+=== _trg_colony_sale_lock_fleet
+
+BEGIN
+  -- [COLMKT5] flotas que salen de la colonia o flotas propias hacia ella.
+  -- Los regresos (is_returning) siempre se permiten.
+  IF COALESCE(NEW.is_returning, false) THEN
+    RETURN NEW;
+  END IF;
+  IF public._colony_listed_since(NEW.origin_planet_id) IS NOT NULL
+     OR EXISTS (
+       SELECT 1
+       FROM public.planets c
+       JOIN public.market_listings ml
+         ON ml.planet_id = c.id AND ml.listing_type = 'colony' AND ml.status = 'active'
+       WHERE c.user_id = NEW.user_id
+         AND c.galaxy = NEW.target_galaxy
+         AND c.solar_system = NEW.target_system
+         AND c.position = NEW.target_position)
+  THEN
+    RAISE EXCEPTION 'Esta colonia esta en venta en el mercado. Cancela la venta para poder usarla.';
+  END IF;
+  RETURN NEW;
+END
+
+=== check_single_research
+
+BEGIN
+IF NEW.is_researching = true AND (OLD.is_researching IS NULL OR OLD.is_researching = false) THEN
+IF EXISTS (
+SELECT 1 FROM public.user_technologies
+WHERE user_id = NEW.user_id
+AND is_researching = true
+AND id != NEW.id
+) THEN
+RAISE EXCEPTION 'User already has a research in progress';
+END IF;
+END IF;
+RETURN NEW;
+END;
+

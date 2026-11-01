@@ -1,0 +1,85 @@
+# =============================================================================
+# XNOVA - HTTPS SERVER CONFIGURATION (Port 443)
+# =============================================================================
+# Este archivo es OPCIONAL. Para habilitar HTTPS:
+#   1. Genera certificados SSL en nginx/ssl/
+#   2. Renombra este archivo de .template a .conf
+#   3. Reconstruye el contenedor: docker compose build frontend
+#
+# Para desarrollo local con certs autofirmados:
+#   docker run --rm -v ./nginx/ssl:/ssl alpine sh -c "apk add openssl && openssl req -x509 -newkey rsa:2048 -keyout /ssl/privkey.pem -out /ssl/fullchain.pem -days 3650 -nodes -subj '/CN=localhost'"
+# =============================================================================
+
+server {
+    # Escuchar en 443 con SSL y HTTP/2
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name _;
+
+    # -------------------------------------------------------------------------
+    # CERTIFICADOS SSL
+    # -------------------------------------------------------------------------
+    ssl_certificate /etc/nginx/ssl/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+
+    # -------------------------------------------------------------------------
+    # TLS MODERNO
+    # -------------------------------------------------------------------------
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # HSTS (fuerza HTTPS por 2 años)
+    add_header Strict-Transport-Security "max-age=63072000" always;
+
+    # -------------------------------------------------------------------------
+    # SERVICIO WEB (igual que HTTP)
+    # -------------------------------------------------------------------------
+    root /usr/share/nginx/html;
+    index index.html;
+
+    limit_req zone=req_limit burst=20 nodelay;
+    limit_conn conn_limit 10;
+
+    location /health {
+        access_log off;
+        limit_req zone=req_limit burst=1000 nodelay;
+        limit_conn conn_limit 100;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    location = /sw.js {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+        try_files $uri =404;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    }
+
+    error_page 404 /index.html;
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}

@@ -1,0 +1,1218 @@
+/**
+ * ShipyardPage - Pagina del Hangar (construccion de naves)
+ *
+ * Implementa el sistema de construccion de naves al estilo XNova/OGame:
+ * - Requiere nivel de Hangar para desbloquear
+ * - Las naves se construyen una por una en la cola
+ * - La cola de naves es independiente de la de defensas
+ * - El tiempo se reduce con Hangar y Nanite Factory
+ * - La cola de naves es independiente de la de defensas
+ * - Completar instantaneamente con TUNG
+ */
+
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Rocket,
+  Package,
+  Swords,
+  Star,
+  Clock,
+  AlertCircle,
+  Lock,
+  X,
+  Shield,
+  Target,
+  Truck,
+  Gauge,
+  Crosshair,
+  Coins,
+} from 'lucide-react';
+import { useGameStore } from '../../store/gameStore';
+import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
+import { useIsUserPlus } from '../../hooks/useIsUserPlus';
+import { ShipIcon } from '../../components/ui/ShipIcon';
+import { MediaDisplay } from '../../components/ui/MediaDisplay';
+import { ShipyardQueuePanel, CostItem } from '../../components/game';
+import { calculateShipyardTime, calculateShipSpeedWithBonus } from '../../lib/formulas';
+import { formatNumber, formatTime } from '../../lib/utils';
+import { useI18n, translateEntityName, translateShipName } from '../../lib/i18n';
+import type { ShipType } from '../../types/game';
+
+/**
+ * Iconos para cada categoria de naves
+ */
+const categoryIcons: Record<string, React.ReactNode> = {
+  civil: <Package className="w-5 h-5" />,
+  combat: <Swords className="w-5 h-5" />,
+  special: <Star className="w-5 h-5" />,
+};
+
+export function ShipyardPage() {
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const {
+    ships,
+    shipTypes,
+    shipRequirements,
+    buildings,
+    technologies,
+    resources,
+    currentPlanet,
+    shipyardQueue,
+    isLoadingShipRequirements,
+    fetchShipTypes,
+    fetchShipRequirements,
+    fetchResources,
+    addToShipyardQueue,
+    cancelShipyardQueueItem,
+  } = useGameStore();
+  const { profile, refreshProfile } = useAuthStore();
+  const isPlus = useIsUserPlus();
+  const isVacation = profile?.vacation_mode === true;
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('civil');
+  const [buildQuantities, setBuildQuantities] = useState<Record<number, number>>({});
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedShipInfo, setSelectedShipInfo] = useState<ShipType | null>(null);
+
+  // Mapa: ship_type_id -> { code, quantity, priceUsd }
+  // Solo contiene entradas para naves que tienen plano definido.
+  const [blueprintMap, setBlueprintMap] = useState<Record<number, { code: string; quantity: number; priceUsd: number }>>({});
+  // Precio en vivo de TUNG (USD) para mostrar el coste del plano
+  const [tungPrice, setTungPrice] = useState<number | null>(null);
+  // ship_type_id que se esta comprando ahora mismo (para deshabilitar el boton)
+  const [buyingBlueprint, setBuyingBlueprint] = useState<number | null>(null);
+
+  const reloadBlueprints = useCallback(async () => {
+    try {
+      const { data: bps } = await supabase
+        .from('ship_blueprints')
+        .select('code, ship_type_id, is_active, price_usd')
+        .eq('is_active', true);
+      const { data: { user } } = await supabase.auth.getUser();
+      const counts = new Map<number, number>();
+      if (user && bps) {
+        const { data: mine } = await supabase
+          .from('user_ship_blueprints')
+          .select('blueprint_id, ship_blueprints!inner(ship_type_id)')
+          .eq('user_id', user.id);
+        if (mine) {
+          for (const row of mine as any[]) {
+            const stid = row.ship_blueprints?.ship_type_id;
+            if (typeof stid === 'number') {
+              counts.set(stid, (counts.get(stid) || 0) + 1);
+            }
+          }
+        }
+      }
+      const map: Record<number, { code: string; quantity: number; priceUsd: number }> = {};
+      for (const bp of (bps as any[]) || []) {
+        map[bp.ship_type_id] = { code: bp.code, quantity: counts.get(bp.ship_type_id) || 0, priceUsd: Number(bp.price_usd) || 0 };
+      }
+      setBlueprintMap(map);
+    } catch (e) {
+      console.error('Error loading blueprints:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    reloadBlueprints();
+  }, [reloadBlueprints, profile?.id]);
+
+  // Cargar el precio en vivo de TUNG para estimar el coste del plano
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await supabase.rpc('get_live_tung_price_usd');
+        if (typeof data === 'number' && data > 0) setTungPrice(data);
+      } catch {
+        /* precio no disponible: el boton mostrara solo "Comprar plano" */
+      }
+    })();
+  }, []);
+
+  // Coste estimado del plano en TUNG (o null si no se puede calcular todavia)
+  const getBlueprintCostTung = useCallback((shipTypeId: number): number | null => {
+    const bp = blueprintMap[shipTypeId];
+    if (!bp) return null;
+    if (bp.priceUsd > 0) {
+      if (!tungPrice || tungPrice <= 0) return null;
+      return Math.ceil(bp.priceUsd / tungPrice);
+    }
+    return null;
+  }, [blueprintMap, tungPrice]);
+
+  // Comprar un plano (consumible): se apila en el inventario y se gasta al construir
+  const handleBuyBlueprint = useCallback(async (shipTypeId: number) => {
+    const bp = blueprintMap[shipTypeId];
+    if (!bp || buyingBlueprint !== null) return;
+    setBuyingBlueprint(shipTypeId);
+    try {
+      const { data, error } = await supabase.rpc('purchase_ship_blueprint', { p_blueprint_code: bp.code });
+      if (error) {
+        window.alert('No se pudo comprar el plano: ' + error.message);
+        return;
+      }
+      if (data && data.success === false) {
+        window.alert(data.error || 'No se pudo comprar el plano');
+        return;
+      }
+      await reloadBlueprints();
+      if (currentPlanet) await fetchResources(currentPlanet.id);
+      await refreshProfile();
+      const cost = data?.cost ? formatNumber(Number(data.cost)) : '';
+      window.alert(cost ? `Plano comprado por ${cost} TUNG` : 'Plano comprado');
+    } finally {
+      setBuyingBlueprint(null);
+    }
+  }, [blueprintMap, buyingBlueprint, reloadBlueprints, currentPlanet, fetchResources, refreshProfile]);
+
+  const categoryNames: Record<string, string> = {
+    civil: t.shipyard.civilShips,
+    combat: t.shipyard.combatShips,
+    special: t.shipyard.specialShips,
+  };
+
+  useEffect(() => {
+    fetchShipTypes();
+    fetchShipRequirements();
+  }, [fetchShipTypes, fetchShipRequirements]);
+
+  const categories = [...new Set(shipTypes.map((st) => st.category))];
+  const filteredShips = shipTypes.filter((st) => st.category === selectedCategory);
+
+  /**
+   * Obtener cantidad actual de naves de un tipo
+   */
+  const getShipQuantity = (shipTypeId: number): number => {
+    const ship = ships.find((s) => s.ship_type_id === shipTypeId);
+    return ship?.quantity || 0;
+  };
+
+  /**
+   * Obtener nivel del hangar (afecta tiempo de construccion)
+   */
+  const getShipyardLevel = () =>
+    buildings.find((b) => b.building_type?.code === 'shipyard')?.level || 0;
+
+  const techLevels = {
+    combustionLevel: technologies.find(t => t.technology_type?.code === 'combustion_drive')?.level || 0,
+    impulseLevel: technologies.find(t => t.technology_type?.code === 'impulse_drive')?.level || 0,
+    hyperspaceLevel: technologies.find(t => t.technology_type?.code === 'hyperspace_drive')?.level || 0,
+  };
+
+  const getShipSpeedWithBonus = (shipType: ShipType): number => {
+    return calculateShipSpeedWithBonus(shipType.code, shipType.base_speed, techLevels);
+  };
+
+  /**
+   * Calcular bonos de combate (arma, escudo, blindaje)
+   */
+  const getCombatBonuses = () => {
+    const weaponLevel = technologies.find(t => t.technology_type?.code === 'weapons_tech')?.level || 0;
+    const shieldLevel = technologies.find(t => t.technology_type?.code === 'shielding_tech')?.level || 0;
+    const armorLevel = technologies.find(t => t.technology_type?.code === 'armour_tech')?.level || 0;
+
+    return {
+      weapon: weaponLevel * 0.10,
+      shield: shieldLevel * 0.10,
+      armor: armorLevel * 0.10,
+    };
+  };
+
+  /**
+   * Obtener nivel de Nanite Factory (reduce tiempo drasticamente)
+   */
+  const getNaniteLevel = () =>
+    buildings.find((b) => b.building_type?.code === 'nanite_factory')?.level || 0;
+
+  /**
+   * Verificar requisitos de edificios y tecnologias para una nave
+   */
+  const checkRequirements = (shipTypeId: number): { met: boolean; missing: string[] } => {
+    const requirements = shipRequirements.filter((r) => r.ship_type_id === shipTypeId);
+    const missing: string[] = [];
+
+    for (const req of requirements) {
+      if (req.required_building_id && req.required_building) {
+        const building = buildings.find((b) => b.building_type_id === req.required_building_id);
+        const currentLevel = building?.level || 0;
+        if (currentLevel < req.required_building_level) {
+          missing.push(
+            `${translateEntityName(t, req.required_building.code, req.required_building.name)} ${t.common.level}.${req.required_building_level}`
+          );
+        }
+      }
+      if (req.required_tech_id && req.required_tech) {
+        const tech = technologies.find((t) => t.technology_type_id === req.required_tech_id);
+        const currentLevel = tech?.level || 0;
+        if (currentLevel < req.required_tech_level) {
+          missing.push(`${translateEntityName(t, req.required_tech.code, req.required_tech.name)} ${t.common.level}.${req.required_tech_level}`);
+        }
+      }
+    }
+
+    return { met: missing.length === 0, missing };
+  };
+
+  /**
+   * Obtener lista completa de requisitos con estado (cumplido/pendiente)
+   */
+  const getAllRequirements = (
+    shipTypeId: number
+  ): { name: string; level: number; met: boolean }[] => {
+    const requirements = shipRequirements.filter((r) => r.ship_type_id === shipTypeId);
+    const result: { name: string; level: number; met: boolean }[] = [];
+
+    for (const req of requirements) {
+      if (req.required_building_id && req.required_building) {
+        const building = buildings.find((b) => b.building_type_id === req.required_building_id);
+        const currentLevel = building?.level || 0;
+        result.push({
+          name: translateEntityName(t, req.required_building.code, req.required_building.name),
+          level: req.required_building_level,
+          met: currentLevel >= req.required_building_level,
+        });
+      }
+      if (req.required_tech_id && req.required_tech) {
+        const tech = technologies.find((t) => t.technology_type_id === req.required_tech_id);
+        const currentLevel = tech?.level || 0;
+        result.push({
+          name: translateEntityName(t, req.required_tech.code, req.required_tech.name),
+          level: req.required_tech_level,
+          met: currentLevel >= req.required_tech_level,
+        });
+      }
+    }
+
+    return result;
+  };
+
+  /**
+   * Verificar si se puede construir una cantidad de naves
+   */
+  const canBuildShip = (
+    shipType: ShipType,
+    quantity: number
+  ): { allowed: boolean; reason?: string; missingReqs?: string[] } => {
+    if (isVacation) return { allowed: false, reason: t.settings.vacationModeBlocked };
+    if (!resources || !currentPlanet) return { allowed: false, reason: t.common.noResources };
+    if (isLoadingShipRequirements) return { allowed: false, reason: t.common.loading };
+
+    // Reglas consumibles:
+    // - Si hay planos suficientes para la cantidad, se puede construir (bypass requisitos).
+    // - Si no hay planos suficientes, deben cumplirse requisitos completos.
+    const bp = blueprintMap[shipType.id];
+    const hasEnoughBlueprints = !!bp && bp.quantity >= quantity;
+
+    if (!hasEnoughBlueprints) {
+      const reqCheck = checkRequirements(shipType.id);
+      if (!reqCheck.met) {
+        return { allowed: false, reason: t.common.requirementsNotMet, missingReqs: reqCheck.missing };
+      }
+    }
+
+    const totalCost = {
+      metal: shipType.metal_cost * quantity,
+      crystal: shipType.crystal_cost * quantity,
+      deuterium: shipType.deuterium_cost * quantity,
+    };
+
+    if (resources.metal < totalCost.metal) {
+      return { allowed: false, reason: t.resources.insufficientMetal };
+    }
+    if (resources.crystal < totalCost.crystal) {
+      return { allowed: false, reason: t.resources.insufficientCrystal };
+    }
+    if (resources.deuterium < totalCost.deuterium) {
+      return { allowed: false, reason: t.resources.insufficientDeuterium };
+    }
+
+    return { allowed: true };
+  };
+
+  /**
+   * Agregar naves a la cola de construccion
+   */
+  const handleBuildShip = useCallback(
+    async (shipTypeId: number) => {
+      if (isProcessing || !currentPlanet) return;
+      setIsProcessing(true);
+      try {
+        const quantity = buildQuantities[shipTypeId] || 1;
+        const success = await addToShipyardQueue('ship', shipTypeId, quantity);
+        if (success) {
+          setBuildQuantities((prev) => ({ ...prev, [shipTypeId]: 1 }));
+          await fetchResources(currentPlanet.id);
+          await reloadBlueprints();
+        }
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [isProcessing, currentPlanet, buildQuantities, addToShipyardQueue, fetchResources, reloadBlueprints]
+  );
+
+  /**
+   * Actualizar cantidad a construir
+   */
+  const updateQuantity = (shipTypeId: number, delta: number) => {
+    setBuildQuantities((prev) => ({
+      ...prev,
+      [shipTypeId]: Math.max(1, (prev[shipTypeId] || 1) + delta),
+    }));
+  };
+
+  /**
+   * Establecer cantidad maxima que se puede pagar
+   */
+  const setMaxQuantity = (shipType: ShipType) => {
+    if (!resources) return;
+
+    const bpInfo = blueprintMap[shipType.id];
+    const reqCheck = checkRequirements(shipType.id);
+    const canByReqs = reqCheck.met;
+    const maxByBlueprint = bpInfo?.quantity || 0;
+
+    if (!canByReqs && maxByBlueprint <= 0) return;
+
+    const maxByMetal =
+      shipType.metal_cost > 0 ? Math.floor(resources.metal / shipType.metal_cost) : Infinity;
+    const maxByCrystal =
+      shipType.crystal_cost > 0 ? Math.floor(resources.crystal / shipType.crystal_cost) : Infinity;
+    const maxByDeuterium =
+      shipType.deuterium_cost > 0
+        ? Math.floor(resources.deuterium / shipType.deuterium_cost)
+        : Infinity;
+
+    const maxByResources = Math.max(1, Math.min(maxByMetal, maxByCrystal, maxByDeuterium));
+    const maxQuantity = canByReqs
+      ? maxByResources
+      : Math.max(1, Math.min(maxByResources, maxByBlueprint));
+
+    setBuildQuantities((prev) => ({ ...prev, [shipType.id]: maxQuantity }));
+  };
+
+  const shipQueue = shipyardQueue.filter((q) => q.item_type === 'ship');
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <h1 className="font-orbitron text-xl sm:text-2xl text-white flex items-center gap-2 sm:gap-3">
+          <Rocket className="w-6 h-6 sm:w-8 sm:h-8 text-cyber-orange flex-shrink-0" />
+          {t.shipyard.title}
+        </h1>
+        <div className="text-sm text-gray-400">
+          {t.shipyard.shipyardLevel} {getShipyardLevel()}
+        </div>
+      </div>
+
+      {/* Mensaje si no hay hangar */}
+      {getShipyardLevel() === 0 && (
+        <div className="card-glass p-4 border-l-4 border-cyber-orange">
+          <div className="flex items-center gap-3">
+            <Lock className="w-6 h-6 text-cyber-orange" />
+            <div>
+              <p className="text-white font-semibold">{t.shipyard.shipyardRequired}</p>
+              <p className="text-sm text-gray-400">{t.shipyard.buildShipyardMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cola de construccion */}
+      {shipyardQueue.length > 0 && (
+        <ShipyardQueuePanel
+          queue={shipyardQueue.filter(q => q.item_type === 'ship')}
+          onCancel={cancelShipyardQueueItem}
+          isProcessing={isProcessing}
+          accentColor="orange"
+        />
+      )}
+
+      {/* Tabs de categorias */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap ${
+              selectedCategory === category
+                ? 'bg-cyber-orange text-white'
+                : 'bg-space-700 text-gray-400 hover:bg-space-600'
+            }`}
+          >
+            {categoryIcons[category]}
+            {categoryNames[category]}
+          </button>
+        ))}
+        <button
+          onClick={() => navigate('/game/lottery')}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold whitespace-nowrap bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 text-purple-300 hover:border-purple-400/50 hover:text-purple-200 transition-all group"
+        >
+          <img
+            src="https://photos.pinksale.finance/file/pinksale-logo-upload/1775067036507-327d40aa0444bcab4ac5ca7406f0eb5e.png"
+            alt="Lotería"
+            className="w-4 h-4 rounded object-cover"
+          />
+          <span>Lotería</span>
+          <span className="text-amber-400 font-bold">🏆</span>
+        </button>
+      </div>
+
+      {/* Grid de naves */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
+        {filteredShips.map((shipType) => {
+          const currentQuantity = getShipQuantity(shipType.id);
+          const buildQuantity = buildQuantities[shipType.id] || 1;
+          const buildCheck = canBuildShip(shipType, buildQuantity);
+
+          const totalCost = {
+            metal: shipType.metal_cost * buildQuantity,
+            crystal: shipType.crystal_cost * buildQuantity,
+            deuterium: shipType.deuterium_cost * buildQuantity,
+          };
+
+          const buildTimePerUnit = calculateShipyardTime(
+            shipType.metal_cost,
+            shipType.crystal_cost,
+            getShipyardLevel(),
+            getNaniteLevel(),
+            isPlus
+          );
+          const totalBuildTime = buildTimePerUnit * buildQuantity;
+
+          const inQueue = shipQueue
+            .filter((q) => q.ship_type_id === shipType.id)
+            .reduce((acc, q) => acc + (q.quantity - q.quantity_completed), 0);
+
+          const bpInfo = blueprintMap[shipType.id];
+          const hasEnoughBlueprints = !!bpInfo && bpInfo.quantity >= buildQuantity;
+          // Si tiene planos suficientes -> requisito unico es Hangar Nv 1.
+          // Si no -> mostrar la lista normal de requisitos.
+          const shipyardLvl = getShipyardLevel();
+          const allReqs = hasEnoughBlueprints
+            ? [{ name: translateEntityName(t, 'shipyard', t.shipyard.title), level: 1, met: shipyardLvl >= 1 }]
+            : getAllRequirements(shipType.id);
+
+          return (
+            <ShipCard
+              key={shipType.id}
+              shipType={shipType}
+              currentQuantity={currentQuantity}
+              inQueue={inQueue}
+              buildQuantity={buildQuantity}
+              totalCost={totalCost}
+              buildTime={totalBuildTime}
+              canBuild={buildCheck.allowed && !isProcessing}
+              disabledReason={isProcessing ? t.common.processing : buildCheck.reason}
+              missingReqs={buildCheck.missingReqs}
+              allRequirements={allReqs}
+              resources={resources}
+              combatBonuses={getCombatBonuses()}
+              shipSpeedWithBonus={getShipSpeedWithBonus(shipType)}
+              requiresBlueprint={!!bpInfo}
+              blueprintQuantity={bpInfo?.quantity ?? 0}
+              bypassRequirements={hasEnoughBlueprints}
+              blueprintCostTung={getBlueprintCostTung(shipType.id)}
+              isBuyingBlueprint={buyingBlueprint === shipType.id}
+              tungBalance={Number(profile?.tung_balance) || 0}
+              onBuyBlueprint={() => handleBuyBlueprint(shipType.id)}
+              onUpdateQuantity={(delta) => updateQuantity(shipType.id, delta)}
+              onSetMax={() => setMaxQuantity(shipType)}
+              onBuild={() => handleBuildShip(shipType.id)}
+              onShowInfo={() => setSelectedShipInfo(shipType)}
+            />
+          );
+        })}
+      </div>
+
+      {/* Modal de informacion */}
+      {selectedShipInfo && (
+        <ShipInfoModal
+          shipType={selectedShipInfo}
+          currentQuantity={getShipQuantity(selectedShipInfo.id)}
+          shipyardLevel={getShipyardLevel()}
+          naniteLevel={getNaniteLevel()}
+          combatBonuses={getCombatBonuses()}
+          shipSpeedWithBonus={getShipSpeedWithBonus(selectedShipInfo)}
+          isVip={isPlus}
+          onClose={() => setSelectedShipInfo(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+interface ShipCardProps {
+  shipType: ShipType;
+  currentQuantity: number;
+  inQueue: number;
+  buildQuantity: number;
+  totalCost: { metal: number; crystal: number; deuterium: number };
+  buildTime: number;
+  canBuild: boolean;
+  disabledReason?: string;
+  missingReqs?: string[];
+  allRequirements: { name: string; level: number; met: boolean }[];
+  resources: { metal: number; crystal: number; deuterium: number } | null;
+  combatBonuses: { weapon: number; shield: number; armor: number };
+  shipSpeedWithBonus: number;
+  requiresBlueprint: boolean;
+  blueprintQuantity: number;
+  bypassRequirements?: boolean;
+  blueprintCostTung?: number | null;
+  isBuyingBlueprint?: boolean;
+  tungBalance?: number;
+  onBuyBlueprint?: () => void;
+  onUpdateQuantity: (delta: number) => void;
+  onSetMax: () => void;
+  onBuild: () => void;
+  onShowInfo: () => void;
+}
+
+// Fecha de habilitación del mercado de planos: lunes 27 de abril de 2026, 12:00 hora local
+const BLUEPRINT_MARKET_UNLOCK_AT = new Date(2026, 3, 27, 12, 0, 0).getTime();
+
+function BlueprintMarketCountdown() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const remaining = Math.max(0, BLUEPRINT_MARKET_UNLOCK_AT - now);
+  if (remaining <= 0) {
+    return (
+      <div className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+        <Coins className="w-4 h-4" />
+        Mercado de planos disponible — recarga la página
+      </div>
+    );
+  }
+  const totalSeconds = Math.floor(remaining / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return (
+    <div className="w-full rounded-lg border border-cyber-yellow/40 bg-space-900/60 p-3 text-center">
+      <div className="flex items-center justify-center gap-2 text-cyber-yellow font-orbitron text-xs mb-2">
+        <Clock className="w-4 h-4" />
+        <span>Mercado de planos en mantenimiento</span>
+      </div>
+      <div className="flex items-center justify-center gap-2 font-orbitron">
+        {days > 0 && (
+          <div className="flex flex-col items-center min-w-[44px] bg-space-800/80 rounded-md px-2 py-1">
+            <span className="text-cyber-yellow text-lg font-bold leading-none">{pad(days)}</span>
+            <span className="text-gray-400 text-[9px] mt-1">días</span>
+          </div>
+        )}
+        <div className="flex flex-col items-center min-w-[44px] bg-space-800/80 rounded-md px-2 py-1">
+          <span className="text-cyber-yellow text-lg font-bold leading-none">{pad(hours)}</span>
+          <span className="text-gray-400 text-[9px] mt-1">hs</span>
+        </div>
+        <div className="flex flex-col items-center min-w-[44px] bg-space-800/80 rounded-md px-2 py-1">
+          <span className="text-cyber-yellow text-lg font-bold leading-none">{pad(minutes)}</span>
+          <span className="text-gray-400 text-[9px] mt-1">min</span>
+        </div>
+        <div className="flex flex-col items-center min-w-[44px] bg-space-800/80 rounded-md px-2 py-1">
+          <span className="text-cyber-yellow text-lg font-bold leading-none">{pad(seconds)}</span>
+          <span className="text-gray-400 text-[9px] mt-1">seg</span>
+        </div>
+      </div>
+      <p className="text-gray-400 text-[11px] mt-2">
+        Se habilita el lunes 27/04 a las 12:00 hs
+      </p>
+    </div>
+  );
+}
+
+function ShipCard({
+  shipType,
+  currentQuantity,
+  inQueue,
+  buildQuantity,
+  totalCost,
+  buildTime,
+  canBuild,
+  disabledReason,
+  missingReqs,
+  allRequirements,
+  resources,
+  combatBonuses,
+  shipSpeedWithBonus,
+  requiresBlueprint,
+  blueprintQuantity,
+  bypassRequirements = false,
+  blueprintCostTung = null,
+  isBuyingBlueprint = false,
+  tungBalance = 0,
+  onBuyBlueprint,
+  onUpdateQuantity,
+  onSetMax,
+  onBuild,
+  onShowInfo,
+}: ShipCardProps) {
+  const { t } = useI18n();
+  const hasBlueprintForQuantity = blueprintQuantity >= buildQuantity;
+  const isLocked = !!(missingReqs && missingReqs.length > 0) && !hasBlueprintForQuantity;
+  // Cuando tiene planos suficientes -> requisitos quedan anulados (solo Hangar Nv1).
+  const reqsBypassed = bypassRequirements;
+
+  return (
+    <div className={`card-glass overflow-hidden rounded-2xl ${isLocked ? 'opacity-60' : ''} ${requiresBlueprint && blueprintQuantity > 0 ? 'ring-1 ring-emerald-500/40' : ''}`}>
+      {/* Imagen de la nave */}
+      <button
+        onClick={onShowInfo}
+        className="relative w-full aspect-[4/3] sm:aspect-square bg-gradient-to-br from-space-700 via-space-800 to-space-900 overflow-hidden group cursor-pointer"
+      >
+        {shipType.image_url ? (
+          <MediaDisplay
+            src={shipType.image_url}
+            alt={translateShipName(t, shipType.code, shipType.name)}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Rocket className="w-24 h-24 text-space-600 group-hover:text-cyber-orange transition-colors" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-space-900/90 via-transparent to-transparent" />
+        <div className="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 bg-space-900/80 backdrop-blur-sm px-2 py-1 sm:px-3 sm:py-1.5 rounded-full">
+          <span className="font-orbitron text-cyber-orange text-[10px] sm:text-sm">{currentQuantity}</span>
+          {inQueue > 0 && <span className="text-[9px] sm:text-xs text-gray-400 ml-1">(+{inQueue})</span>}
+        </div>
+        {requiresBlueprint && blueprintQuantity > 0 && (
+          <div className="absolute top-3 left-3 bg-emerald-500/20 backdrop-blur-sm px-3 py-1.5 rounded-full border border-emerald-500/40">
+            <span className="font-orbitron text-emerald-300 text-xs">Planos: {blueprintQuantity}</span>
+          </div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
+          <h3 className="font-orbitron text-[11px] sm:text-lg transition-colors truncate text-white group-hover:text-cyber-orange">
+            {translateShipName(t, shipType.code, shipType.name)}
+          </h3>
+        </div>
+      </button>
+
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+        {/* Stats de combate */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 text-center text-[10px] sm:text-sm">
+          <div className="bg-space-700/50 rounded-lg p-1 sm:p-2">
+            <p className="text-gray-500 text-[9px] sm:text-xs">{t.shipyard.attack}</p>
+            <p className="text-white font-semibold">
+              {combatBonuses.weapon > 0 ? (
+                <>
+                  <span className="text-gray-400 line-through text-xs">{shipType.weapon_power}</span>{' '}
+                  <span className="text-cyber-red">{Math.floor(shipType.weapon_power * (1 + combatBonuses.weapon))}</span>
+                </>
+              ) : (
+                shipType.weapon_power
+              )}
+            </p>
+          </div>
+          <div className="bg-space-700/50 rounded-lg p-1 sm:p-2">
+            <p className="text-gray-500 text-[9px] sm:text-xs">{t.shipyard.shield}</p>
+            <p className="text-white font-semibold">
+              {combatBonuses.shield > 0 ? (
+                <>
+                  <span className="text-gray-400 line-through text-[9px] sm:text-xs">{shipType.shield_power}</span>{' '}
+                  <span className="text-cyber-blue">{Math.floor(shipType.shield_power * (1 + combatBonuses.shield))}</span>
+                </>
+              ) : (
+                shipType.shield_power
+              )}
+            </p>
+          </div>
+          <div className="bg-space-700/50 rounded-lg p-1 sm:p-2">
+            <p className="text-gray-500 text-[9px] sm:text-xs">{t.shipyard.cargo}</p>
+            <p className="text-white font-semibold truncate">
+              {formatNumber(shipType.cargo_capacity)}
+            </p>
+          </div>
+          <div className="bg-space-700/50 rounded-lg p-1 sm:p-2">
+            <p className="text-gray-500 text-[9px] sm:text-xs">{t.shipyard.speed}</p>
+            <p className="text-white font-semibold truncate">
+              {shipSpeedWithBonus > shipType.base_speed ? (
+                <>
+                  <span className="text-gray-400 line-through text-xs">{formatNumber(shipType.base_speed)}</span>{' '}
+                  <span className="text-cyber-green">{formatNumber(shipSpeedWithBonus)}</span>
+                </>
+              ) : (
+                formatNumber(shipType.base_speed)
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* Requisitos */}
+        {allRequirements.length > 0 && (
+          <div className={`text-xs space-y-1 mb-3 p-2 rounded-lg ${reqsBypassed ? 'bg-emerald-500/5 border border-emerald-500/20' : 'bg-space-700/30'}`}>
+            <span className="text-gray-400 font-medium">
+              {t.common.requirements}:
+              {reqsBypassed && (
+                <span className="ml-2 text-[10px] text-emerald-300">(plano activo · solo Hangar Nv 1)</span>
+              )}
+            </span>
+            {allRequirements.map((req, idx) => (
+              <div
+                key={idx}
+                className={`flex items-center gap-1 ${req.met ? 'text-cyber-green' : 'text-cyber-orange'}`}
+              >
+                <span className="font-bold">{req.met ? '✓' : '✗'}</span>
+                <span>
+                  {req.name} {t.common.level}.{req.level}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Estado del plano / requisitos: claro e intuitivo */}
+        {requiresBlueprint && (
+          <div className="space-y-2">
+            {reqsBypassed ? (
+              <div className="text-[11px] rounded-lg px-2 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                <span className="font-semibold">✓ Plano activo.</span> Se construye solo con Hangar Nv 1 · se gasta 1 plano por nave.
+              </div>
+            ) : isLocked ? (
+              <div className="text-[11px] rounded-lg px-2 py-2 border border-cyber-yellow/30 bg-cyber-yellow/10 text-cyber-yellow">
+                <span className="font-semibold">Te faltan requisitos.</span> Complétalos para construirla, o compra su plano y créala ya (solo pide Hangar Nv 1).
+              </div>
+            ) : (
+              <div className="text-[11px] rounded-lg px-2 py-2 border border-cyber-green/30 bg-cyber-green/10 text-cyber-green">
+                <span className="font-semibold">✓ Cumples los requisitos.</span> Puedes construirla sin plano. El plano es un atajo opcional.
+              </div>
+            )}
+
+            <div className="text-[11px] text-cyan-300 px-1">
+              Planos en inventario: <span className="font-semibold">{blueprintQuantity}</span>
+            </div>
+
+            {onBuyBlueprint && (() => {
+              const canAfford = blueprintCostTung == null || tungBalance >= blueprintCostTung;
+              const buyDisabled = isBuyingBlueprint || !canAfford;
+              return (
+                <button
+                  onClick={onBuyBlueprint}
+                  disabled={buyDisabled}
+                  className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-semibold text-xs transition-all ${
+                    isBuyingBlueprint
+                      ? 'bg-space-700 text-gray-500 cursor-not-allowed'
+                      : !canAfford
+                        ? 'bg-space-700/60 text-gray-500 border border-space-600 cursor-not-allowed'
+                        : 'bg-cyber-yellow/15 text-cyber-yellow border border-cyber-yellow/40 hover:bg-cyber-yellow/25'
+                  }`}
+                >
+                  <Coins className="w-4 h-4" />
+                  {isBuyingBlueprint
+                    ? 'Comprando...'
+                    : !canAfford
+                      ? `TUNG insuficiente · necesitas ${formatNumber(blueprintCostTung as number)}`
+                      : blueprintCostTung != null
+                        ? `Comprar plano · ${formatNumber(blueprintCostTung)} TUNG`
+                        : 'Comprar plano'}
+                </button>
+              );
+            })()}
+
+            {onBuyBlueprint && (
+              <div className="text-[10px] text-gray-500 px-1">
+                Tu saldo: <span className="text-gray-300 font-semibold">{formatNumber(Math.floor(tungBalance))} TUNG</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {isLocked ? (
+          <div className="text-xs sm:text-sm text-cyber-orange">
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 flex-shrink-0" />
+              {t.common.locked}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Costos */}
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+              <CostItem
+                label={t.resources.metal}
+                value={totalCost.metal}
+                available={resources?.metal || 0}
+              />
+              <CostItem
+                label={t.resources.crystal}
+                value={totalCost.crystal}
+                available={resources?.crystal || 0}
+              />
+              <CostItem
+                label={t.resources.deuterium}
+                value={totalCost.deuterium}
+                available={resources?.deuterium || 0}
+              />
+            </div>
+
+            {/* Selector de cantidad */}
+            <div className="flex items-center justify-center gap-1 flex-wrap">
+              <button
+                onClick={() => onUpdateQuantity(-10)}
+                className="px-2 py-1.5 bg-space-700 rounded-lg hover:bg-space-600 text-xs text-gray-300 font-medium"
+              >
+                -10
+              </button>
+              <button
+                onClick={() => onUpdateQuantity(-1)}
+                className="px-2 py-1.5 bg-space-700 rounded-lg hover:bg-space-600 text-xs text-gray-300 font-medium"
+              >
+                -1
+              </button>
+              <input
+                type="number"
+                value={buildQuantity}
+                onChange={(e) =>
+                  onUpdateQuantity(Math.max(1, parseInt(e.target.value) || 1) - buildQuantity)
+                }
+                className="w-16 text-center bg-space-800 border border-cyber-blue/30 rounded-lg py-1.5 text-white text-sm"
+                min={1}
+              />
+              <button
+                onClick={() => onUpdateQuantity(1)}
+                className="px-2 py-1.5 bg-space-700 rounded-lg hover:bg-space-600 text-xs text-gray-300 font-medium"
+              >
+                +1
+              </button>
+              <button
+                onClick={() => onUpdateQuantity(10)}
+                className="px-2 py-1.5 bg-space-700 rounded-lg hover:bg-space-600 text-xs text-gray-300 font-medium"
+              >
+                +10
+              </button>
+              <button
+                onClick={onSetMax}
+                className="px-2 py-1.5 bg-cyber-blue/20 text-cyber-blue rounded-lg hover:bg-cyber-blue/30 text-xs font-medium"
+              >
+                MAX
+              </button>
+            </div>
+
+            {/* Tiempo y boton construir */}
+            <div className="flex items-center justify-between pt-2 border-t border-space-700">
+              <div className="flex items-center gap-1 text-sm text-gray-400">
+                <Clock className="w-4 h-4" />
+                {formatTime(buildTime)}
+              </div>
+              <button
+                onClick={onBuild}
+                disabled={!canBuild}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                  canBuild
+                    ? 'bg-cyber-orange hover:bg-cyber-orange/80 text-white'
+                    : 'bg-space-700 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                {t.common.build}
+              </button>
+            </div>
+
+            {!canBuild && disabledReason && !isLocked && (
+              <div className="flex items-start gap-2 text-xs text-cyber-orange">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="break-words">{disabledReason}</span>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ShipInfoModalProps {
+  shipType: ShipType;
+  currentQuantity: number;
+  shipyardLevel: number;
+  naniteLevel: number;
+  combatBonuses: { weapon: number; shield: number; armor: number };
+  shipSpeedWithBonus: number;
+  isVip: boolean;
+  onClose: () => void;
+}
+
+function ShipInfoModal({
+  shipType,
+  currentQuantity,
+  shipyardLevel,
+  naniteLevel,
+  combatBonuses,
+  shipSpeedWithBonus,
+  isVip,
+  onClose,
+}: ShipInfoModalProps) {
+  const { t } = useI18n();
+  const buildTimePerUnit = calculateShipyardTime(
+    shipType.metal_cost,
+    shipType.crystal_cost,
+    shipyardLevel,
+    naniteLevel,
+    isVip
+  );
+
+  const rapidFireData = shipType.rapid_fire as Record<string, number> | null;
+  const rapidFireEntries = rapidFireData ? Object.entries(rapidFireData) : [];
+
+  const shipCodeNames: Record<string, string> = {
+    small_cargo: t.shipyard.smallCargo,
+    large_cargo: t.shipyard.largeCargo,
+    colony_ship: t.shipyard.colonyShip,
+    recycler: t.shipyard.recycler,
+    espionage_probe: t.shipyard.espionageProbe,
+    solar_satellite: t.shipyard.solarSatellite,
+    light_fighter: t.shipyard.lightFighter,
+    heavy_fighter: t.shipyard.heavyFighter,
+    cruiser: t.shipyard.cruiser,
+    battleship: t.shipyard.battleship,
+    battlecruiser: t.shipyard.battlecruiser,
+    bomber: t.shipyard.bomber,
+    destroyer: t.shipyard.destroyer,
+    deathstar: t.shipyard.deathstar,
+    star_destroyer: t.shipyard.starDestroyer,
+    black_moon: t.shipyard.blackMoon,
+    falco_x_clasica: t.shipyard.falcoXClasica,
+    nova: t.shipyard.nova,
+    large_frigate: t.shipyard.largeFrigate,
+    destruccion_masiva: t.shipyard.destruccionMasiva,
+    rocket_launcher: t.defense.rocketLauncher,
+    light_laser: t.defense.lightLaser,
+    heavy_laser: t.defense.heavyLaser,
+    gauss_cannon: t.defense.gaussCannon,
+    ion_cannon: t.defense.ionCannon,
+    plasma_turret: t.defense.plasmaTurret,
+  };
+
+  const categoryName =
+    shipType.category === 'civil'
+      ? t.shipyard.civilShips
+      : shipType.category === 'combat'
+        ? t.shipyard.combatShips
+        : t.shipyard.specialShips;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-space-800 border border-space-600 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-cyber-orange/20 to-transparent p-4 sm:p-6 border-b border-space-600">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="p-3 rounded-xl bg-cyber-orange/20 text-cyber-orange">
+              <ShipIcon
+                imageUrl={shipType.image_url}
+                name={translateShipName(t, shipType.code, shipType.name)}
+                className="w-10 h-10"
+                iconClassName="w-10 h-10"
+              />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h2 className="font-orbitron text-xl text-white">{translateShipName(t, shipType.code, shipType.name)}</h2>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-space-700 transition-colors text-gray-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-400 text-sm mt-1">{shipType.description}</p>
+              <div className="flex items-center gap-4 mt-3">
+                <span className="text-cyber-orange font-orbitron">
+                  {t.common.quantity}: {formatNumber(currentQuantity)}
+                </span>
+                <span className="text-gray-500 text-sm">
+                  {t.common.type}: {categoryName}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[60vh]">
+          {/* Stats de combate */}
+          <div className="mb-6">
+            <h3 className="text-white font-semibold mb-3">{t.shipyard.combatStats}</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <Target className="w-6 h-6 mx-auto mb-2 text-cyber-red" />
+                <p className="text-xs text-gray-400">{t.shipyard.attack}</p>
+                <p className="text-lg font-orbitron text-white">
+                  {combatBonuses.weapon > 0 ? (
+                    <>
+                      <span className="text-gray-400 line-through text-sm">{formatNumber(shipType.weapon_power)}</span>{' '}
+                      <span className="text-cyber-red">{formatNumber(Math.floor(shipType.weapon_power * (1 + combatBonuses.weapon)))}</span>
+                    </>
+                  ) : (
+                    formatNumber(shipType.weapon_power)
+                  )}
+                </p>
+              </div>
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <Shield className="w-6 h-6 mx-auto mb-2 text-cyber-blue" />
+                <p className="text-xs text-gray-400">{t.shipyard.shield}</p>
+                <p className="text-lg font-orbitron text-white">
+                  {combatBonuses.shield > 0 ? (
+                    <>
+                      <span className="text-gray-400 line-through text-sm">{formatNumber(shipType.shield_power)}</span>{' '}
+                      <span className="text-cyber-blue">{formatNumber(Math.floor(shipType.shield_power * (1 + combatBonuses.shield)))}</span>
+                    </>
+                  ) : (
+                    formatNumber(shipType.shield_power)
+                  )}
+                </p>
+              </div>
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <Crosshair className="w-6 h-6 mx-auto mb-2 text-cyber-pink" />
+                <p className="text-xs text-gray-400">{t.shipyard.hull}</p>
+                <p className="text-lg font-orbitron text-white">
+                  {combatBonuses.armor > 0 ? (
+                    <>
+                      <span className="text-gray-400 line-through text-sm">{formatNumber(shipType.structural_integrity)}</span>{' '}
+                      <span className="text-cyber-pink">{formatNumber(Math.floor(shipType.structural_integrity * (1 + combatBonuses.armor)))}</span>
+                    </>
+                  ) : (
+                    formatNumber(shipType.structural_integrity)
+                  )}
+                </p>
+              </div>
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <Truck className="w-6 h-6 mx-auto mb-2 text-cyber-green" />
+                <p className="text-xs text-gray-400">{t.shipyard.cargo}</p>
+                <p className="text-lg font-orbitron text-white">
+                  {formatNumber(shipType.cargo_capacity)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Velocidad y consumo */}
+          <div className="mb-6">
+            <h3 className="text-white font-semibold mb-3">{t.shipyard.speedAndConsumption}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+              <div className="bg-space-700/50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Gauge className="w-5 h-5 text-cyber-orange" />
+                  <div>
+                    <p className="text-xs text-gray-400">{t.shipyard.baseSpeed}</p>
+                    <p className="text-white font-semibold">
+                      {shipSpeedWithBonus > shipType.base_speed ? (
+                        <>
+                          <span className="text-gray-400 line-through text-sm">{formatNumber(shipType.base_speed)}</span>{' '}
+                          <span className="text-cyber-green">{formatNumber(shipSpeedWithBonus)}</span>
+                        </>
+                      ) : (
+                        formatNumber(shipType.base_speed)
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-space-700/50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-cyber-blue" />
+                  <div>
+                    <p className="text-xs text-gray-400">{t.shipyard.timePerUnit}</p>
+                    <p className="text-white font-semibold">{formatTime(buildTimePerUnit)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Costos */}
+          <div className="mb-6">
+            <h3 className="text-white font-semibold mb-3">{t.shipyard.buildCosts}</h3>
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <p className="text-xs text-gray-400 mb-1">{t.resources.metal}</p>
+                <p className="text-white font-semibold">{formatNumber(shipType.metal_cost)}</p>
+              </div>
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <p className="text-xs text-cyan-400 mb-1">{t.resources.crystal}</p>
+                <p className="text-white font-semibold">{formatNumber(shipType.crystal_cost)}</p>
+              </div>
+              <div className="bg-space-700/50 p-3 rounded-lg text-center">
+                <p className="text-xs text-green-400 mb-1">{t.resources.deuterium}</p>
+                <p className="text-white font-semibold">{formatNumber(shipType.deuterium_cost)}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Rapid Fire */}
+          {rapidFireEntries.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <Crosshair className="w-5 h-5 text-cyber-red" />
+                {t.shipyard.rapidFire}
+              </h3>
+              <p className="text-xs text-gray-400 mb-3">{t.shipyard.rapidFireDescription}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                {rapidFireEntries.map(([target, value]) => (
+                  <div
+                    key={target}
+                    className="bg-space-700/50 p-2 rounded-lg flex items-center justify-between"
+                  >
+                    <span className="text-sm text-gray-300">{shipCodeNames[target] || target}</span>
+                    <span className="text-cyber-red font-orbitron">x{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tabla de produccion */}
+          <div className="bg-space-700/30 p-4 rounded-lg">
+            <h3 className="text-white font-semibold mb-2">{t.shipyard.productionTable}</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-gray-400 border-b border-space-600">
+                    <th className="text-left py-2 px-2">{t.common.quantity}</th>
+                    <th className="text-right py-2 px-2">{t.resources.metal}</th>
+                    <th className="text-right py-2 px-2">{t.resources.crystal}</th>
+                    <th className="text-right py-2 px-2">{t.resources.deuterium}</th>
+                    <th className="text-right py-2 px-2">{t.common.time}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[1, 5, 10, 50, 100, 500, 1000].map((qty) => (
+                    <tr key={qty} className="border-b border-space-700/50 text-gray-300">
+                      <td className="py-2 px-2 font-orbitron">{qty}</td>
+                      <td className="text-right py-2 px-2">
+                        {formatNumber(shipType.metal_cost * qty)}
+                      </td>
+                      <td className="text-right py-2 px-2">
+                        {formatNumber(shipType.crystal_cost * qty)}
+                      </td>
+                      <td className="text-right py-2 px-2">
+                        {formatNumber(shipType.deuterium_cost * qty)}
+                      </td>
+                      <td className="text-right py-2 px-2 text-gray-400">
+                        {formatTime(buildTimePerUnit * qty)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

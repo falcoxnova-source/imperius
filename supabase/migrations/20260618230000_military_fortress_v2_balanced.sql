@@ -1,0 +1,49 @@
+-- =====================================================================
+-- MIGRATION: Military Fortress Build Order v2 (Balanced Growth)
+-- =====================================================================
+-- Revisión del diseño militar según feedback del usuario:
+-- "suba minas indefinido pero que se enfoque en militar"
+--
+-- ECONOMÍA: crece normal (sin tope)
+--   • Minas suben indefinidamente como un planeta normal
+--   • Solar sube siempre que energy_balance <= 10 o falta energía
+--   • Se intercalan con la construcción militar (no compiten)
+--
+-- PRIORIDAD MILITAR: 100% foco en producción de naves y defensas
+--   Fase 1 (arranque):
+--     • robotics < 2, luego shipyard < 4, luego robotics < 4
+--   Fase 2 (núcleo):
+--     • shipyard < 8 (con robotics >= 4)
+--     • robotics < 6 (con shipyard >= 6)
+--     • research_lab hasta 8 → desbloquear hyperspace, armor, impulse
+--     • storages crecen con shipyard (hasta 8)
+--   Fase 3 (naves capitales):
+--     • shipyard < 12 → battleships, bombers, destroyers
+--     • robotics < 10 → apoya construcción rápida
+--     • nanite < 4 (con robotics >= 10) → deathstars
+--     • shipyard < 14 (con nanite >= 2) → producción masiva
+--     • nanite < 6 (con shipyard >= 14) → deathstars rápidas
+--
+-- MINAS INTERCALADAS:
+--   • metal_mine ≤ shipyard + 4
+--   • crystal_mine ≤ shipyard + 2
+--   • deut_synth ≤ shipyard + 1
+--   → crecen pero sin adelantarse a la infraestructura militar
+--
+-- CARGOS (para saquear):
+--   • small_cargo: tope 80 (antes 40)
+--   • large_cargo: tope 60 (antes 25)
+--   • recycler:    tope 30 (antes 15)
+--   → Lleva botín tras atacar, recoge escombros tras batallas
+--
+-- Efecto esperado:
+--   ✓ Planeta militar autosuficiente económicamente
+--   ✓ Infraestructura militar progresa sin freno
+--   ✓ Naves grandes desbloqueadas rápido (bomber/destroyer/deathstar)
+--   ✓ Suficiente capacidad de carga para saquear tras atacar
+--   ✓ Mineros complementan vía transportes (no dependencia crítica)
+--
+-- Aplicado vía: scripts/apply-miner-fixes.cjs
+-- =====================================================================
+
+SELECT 'Military fortress v2 (balanced growth) applied via apply-miner-fixes.cjs' AS note;

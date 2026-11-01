@@ -1,0 +1,7 @@
+id uuid gen_random_uuid()
+planet_id uuid 
+ship_type_id integer 
+quantity integer 0
+in_construction integer 0
+construction_end_time timestamp with time zone 
+created_at timestamp with time zone now()

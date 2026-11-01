@@ -1,0 +1,150 @@
+﻿cols acs_fleets: id:uuid:NO:gen_random_uuid() | main_fleet_id:uuid:YES: | alliance_id:uuid:YES: | name:text:NO:'ACS Attack'::text | target_galaxy:integer:NO: | target_system:integer:NO: | target_position:integer:NO: | arrival_time:timestamp with time zone:NO: | max_fleets:integer:NO:5 | is_active:boolean:NO:true | created_at:timestamp with time zone:YES:now() | creator_id:uuid:YES: | status:text:NO:'waiting'::text | current_participants:integer:NO:1 | invited_users:ARRAY:NO:ARRAY[]::uuid[]
+cols acs_participants: id:uuid:NO:gen_random_uuid() | acs_id:uuid:YES: | fleet_id:uuid:YES: | user_id:uuid:YES: | joined_at:timestamp with time zone:YES:now()
+cols building_types: id:integer:NO:nextval('building_types_id_seq'::regclass) | code:text:NO: | name:text:NO: | description:text:YES: | category:text:NO: | base_metal:integer:YES:0 | base_crystal:integer:YES:0 | base_deuterium:integer:YES:0 | base_energy:integer:YES:0 | cost_factor:numeric:YES:1.5 | base_time_seconds:integer:YES:60 | max_level:integer:YES:50 | image_url:text:YES:
+cols defense_requirements: id:integer:NO:nextval('defense_requirements_id_seq'::regclass) | defense_type_id:integer:NO: | required_building_id:integer:YES: | required_building_level:integer:YES:0 | required_tech_id:integer:YES: | required_tech_level:integer:YES:0
+cols defense_types: id:integer:NO:nextval('defense_types_id_seq'::regclass) | code:text:NO: | name:text:NO: | description:text:YES: | metal_cost:bigint:YES:0 | crystal_cost:bigint:YES:0 | deuterium_cost:bigint:YES:0 | build_time_seconds:integer:YES:60 | structural_integrity:bigint:YES:100 | shield_power:bigint:YES:0 | weapon_power:bigint:YES:0 | image_url:text:YES: | max_per_planet:integer:YES:
+cols fleets: id:uuid:NO:gen_random_uuid() | user_id:uuid:YES: | origin_planet_id:uuid:YES: | target_galaxy:integer:NO: | target_system:integer:NO: | target_position:integer:NO: | target_type:text:YES:'planet'::text | mission_type:text:NO: | cargo_metal:numeric:YES:0 | cargo_crystal:numeric:YES:0 | cargo_deuterium:numeric:YES:0 | departure_time:timestamp with time zone:NO: | arrival_time:timestamp with time zone:NO: | return_time:timestamp with time zone:YES: | is_returning:boolean:YES:false | is_completed:boolean:YES:false | created_at:timestamp with time zone:YES:now() | arrival_notified:boolean:NO:false | acs_id:uuid:YES: | is_acs:boolean:NO:false | accel_out:boolean:NO:false | accel_ret:boolean:NO:false | pending_dark_matter:numeric:NO:0 | pending_fxu:numeric:NO:0
+cols game_settings: id:integer:NO:nextval('game_settings_id_seq'::regclass) | key:text:NO: | value:text:NO: | description:text:YES: | updated_at:timestamp with time zone:YES:now()
+cols jackpot_history: id:uuid:NO:gen_random_uuid() | user_id:uuid:YES: | type:text:NO: | amount:numeric:NO: | source:text:NO: | jackpot_balance_after:numeric:NO: | created_at:timestamp with time zone:YES:now()
+cols messages: id:uuid:NO:gen_random_uuid() | sender_id:uuid:YES: | recipient_id:uuid:YES: | subject:text:NO: | body:text:NO: | message_type:text:YES:'player'::text | is_read:boolean:YES:false | created_at:timestamp with time zone:YES:now()
+cols planet_buildings: id:uuid:NO:gen_random_uuid() | planet_id:uuid:YES: | building_type_id:integer:YES: | level:integer:YES:0 | is_upgrading:boolean:YES:false | upgrade_end_time:timestamp with time zone:YES: | created_at:timestamp with time zone:YES:now()
+cols planet_defenses: id:uuid:NO:gen_random_uuid() | planet_id:uuid:YES: | defense_type_id:integer:YES: | quantity:integer:YES:0 | in_construction:integer:YES:0 | construction_end_time:timestamp with time zone:YES: | created_at:timestamp with time zone:YES:now() | anti_ballistic_missiles:integer:YES:0 | interplanetary_missiles:integer:YES:0
+cols planet_resources: id:uuid:NO:gen_random_uuid() | planet_id:uuid:YES: | metal:numeric:YES:500 | crystal:numeric:YES:500 | deuterium:numeric:YES:0 | energy_used:integer:YES:0 | energy_max:integer:YES:0 | metal_per_hour:numeric:YES:30 | crystal_per_hour:numeric:YES:15 | deuterium_per_hour:numeric:YES:0 | metal_storage:numeric:YES:10000 | crystal_storage:numeric:YES:10000 | deuterium_storage:numeric:YES:10000 | last_update:timestamp with time zone:YES:now() | metal_mine_percent:smallint:NO:100 | crystal_mine_percent:smallint:NO:100 | deuterium_synth_percent:smallint:NO:100 | solar_plant_percent:smallint:NO:100 | fusion_reactor_percent:smallint:NO:100 | solar_satellite_percent:smallint:NO:100
+cols planets: id:uuid:NO:gen_random_uuid() | user_id:uuid:YES: | name:text:NO:'Planeta'::text | galaxy:integer:NO: | solar_system:integer:NO: | position:integer:NO: | planet_type:text:YES:'planet'::text | image_id:integer:YES:1 | diameter:integer:YES:12800 | fields_used:integer:YES:0 | fields_max:integer:YES:163 | temp_min:integer:YES:'-40'::integer | temp_max:integer:YES:30 | is_main_planet:boolean:YES:false | is_destroyed:boolean:YES:false | last_update:timestamp with time zone:YES:now() | created_at:timestamp with time zone:YES:now() | jump_gate_cooldown:timestamp with time zone:YES: | name_changed:boolean:YES:false | autopilot_role:text:NO:'balanced'::text | metal_deposit:bigint:YES: | crystal_deposit:bigint:YES: | deuterium_deposit:bigint:YES: | planet_status:text:YES:'active'::text | depleted_at:timestamp with time zone:YES: | regenerates_at:timestamp with time zone:YES: | metal_initial_deposit:bigint:YES: | crystal_initial_deposit:bigint:YES: | deuterium_initial_deposit:bigint:YES: | dark_matter_stock:numeric:NO:0 | dark_matter_last_gen:timestamp with time zone:YES:now() | autopilot_enabled:boolean:NO:true
+cols profiles: id:uuid:NO: | username:text:NO: | email:text:YES: | avatar_url:text:YES: | dark_matter:integer:NO:0 | points_total:integer:YES:0 | points_buildings:integer:YES:0 | points_research:integer:YES:0 | points_fleet:integer:YES:0 | points_defense:integer:YES:0 | rank_position:integer:YES:0 | is_admin:boolean:YES:false | is_banned:boolean:YES:false | vacation_mode:boolean:YES:false | last_activity:timestamp with time zone:YES:now() | created_at:timestamp with time zone:YES:now() | updated_at:timestamp with time zone:YES:now() | notify_attacks:boolean:YES:true | notify_buildings:boolean:YES:true | notify_research:boolean:YES:true | notify_messages:boolean:YES:true | battles_won:integer:YES:0 | battles_draw:integer:YES:0 | battles_lost:integer:YES:0 | units_destroyed:bigint:YES:0 | units_lost:bigint:YES:0 | debris_metal_total:bigint:YES:0 | debris_crystal_total:bigint:YES:0 | rank_buildings:integer:YES:0 | rank_research:integer:YES:0 | rank_fleet:integer:YES:0 | rank_defense:integer:YES:0 | fxu_balance:numeric:YES:1000 | referred_by:uuid:YES: | referral_code:text:YES: | is_hidden:boolean:YES:false | vacation_mode_enabled_at:timestamp with time zone:YES: | points_expedition:integer:YES:0 | rank_expedition:integer:YES:0 | email_verified:boolean:YES:false | usdt_balance:numeric:NO:0 | vacation_remaining_research_seconds:integer:YES:0 | is_bot:boolean:YES:false | autopilot_eligible:boolean:YES:false | autopilot_active:boolean:YES:false | last_manual_action:timestamp with time zone:YES: | autopilot_vip_boost:boolean:NO:false | autopilot_vip_boost_expires_at:timestamp with time zone:YES: | has_created_alliance:boolean:NO:false | active_title:text:YES: | active_title_icon:text:YES: | active_badge:text:YES: | active_planet_effect:text:YES: | active_hero_skin:text:YES: | hide_records:boolean:YES:false | daily_streak:integer:YES:0 | last_daily_claim:timestamp with time zone:YES: | tung_balance:numeric:YES:0 | can_view_financials:boolean:NO:false | kyc_status:text:NO:'none'::text | two_factor_login_enabled:boolean:NO:false | tutorial_step:smallint:NO:0 | tutorial_completed:boolean:NO:false | telegram_alerts_enabled:boolean:NO:true
+cols referral_commissions: id:uuid:NO:gen_random_uuid() | referrer_id:uuid:NO: | seller_id:uuid:NO: | transaction_id:uuid:YES: | commission_type:text:NO: | resource_type:text:YES: | amount:bigint:NO:0 | created_at:timestamp with time zone:YES:now() | fxu_amount:numeric:YES:0
+cols ship_requirements: id:integer:NO:nextval('ship_requirements_id_seq'::regclass) | ship_type_id:integer:NO: | required_building_id:integer:YES: | required_building_level:integer:YES:0 | required_tech_id:integer:YES: | required_tech_level:integer:YES:0
+cols ship_types: id:integer:NO:nextval('ship_types_id_seq'::regclass) | code:text:NO: | name:text:NO: | description:text:YES: | category:text:NO: | metal_cost:integer:YES:0 | crystal_cost:integer:YES:0 | deuterium_cost:integer:YES:0 | build_time_seconds:integer:YES:60 | structural_integrity:integer:YES:100 | shield_power:integer:YES:0 | weapon_power:integer:YES:0 | cargo_capacity:integer:YES:0 | base_speed:integer:YES:0 | fuel_consumption:integer:YES:0 | rapid_fire:jsonb:YES:'{}'::jsonb | image_url:text:YES:
+cols technology_types: id:integer:NO:nextval('technology_types_id_seq'::regclass) | code:text:NO: | name:text:NO: | description:text:YES: | category:text:NO: | base_metal:integer:YES:0 | base_crystal:integer:YES:0 | base_deuterium:integer:YES:0 | cost_factor:numeric:YES:2.0 | base_time_seconds:integer:YES:120 | max_level:integer:YES:20 | image_url:text:YES: | energy_required:integer:YES:0
+cols user_technologies: id:uuid:NO:gen_random_uuid() | user_id:uuid:YES: | technology_type_id:integer:YES: | level:integer:YES:0 | is_researching:boolean:YES:false | research_end_time:timestamp with time zone:YES: | research_planet_id:uuid:YES: | created_at:timestamp with time zone:YES:now() | research_start_time:timestamp with time zone:YES:
+bt 1 metal_mine
+bt 2 crystal_mine
+bt 3 deuterium_synthesizer
+bt 4 solar_plant
+bt 5 fusion_reactor
+bt 6 metal_storage
+bt 7 crystal_storage
+bt 8 deuterium_tank
+bt 9 robotics_factory
+bt 10 nanite_factory
+bt 11 shipyard
+bt 12 research_lab
+bt 13 missile_silo
+bt 14 terraformer
+bt 15 lunar_base
+bt 16 sensor_phalanx
+bt 17 jump_gate
+bt 18 alliance_depot
+bt 21 university
+tt 1 energy_tech
+tt 2 laser_tech
+tt 3 ion_tech
+tt 4 hyperspace_tech
+tt 5 plasma_tech
+tt 6 combustion_drive
+tt 7 impulse_drive
+tt 8 hyperspace_drive
+tt 9 weapons_tech
+tt 10 shielding_tech
+tt 11 armour_tech
+tt 12 espionage_tech
+tt 13 computer_tech
+tt 14 astrophysics
+tt 15 graviton_tech
+tt 16 intergalactic_research_network
+tt 21 expedition
+tt 22 metal_production
+tt 23 crystal_production
+tt 24 deuterium_production
+tt 25 matter_manipulation
+fn _internal_set_fxu_context() => void secdef=true
+fn apply_vip_time_bonus(uuid,integer) => integer secdef=true
+fn battle_units_diff(jsonb,jsonb,text) => jsonb secdef=false
+fn calculate_planet_resources(uuid) => jsonb secdef=true
+fn contribute_to_jackpot(numeric,text,uuid) => numeric secdef=true
+fn fleet_calc_slowest_speed(jsonb,uuid) => integer secdef=true
+fn get_game_speed() => integer secdef=true
+fn get_live_tung_price_usd() => numeric secdef=true
+fn get_user_daily_mission_speed_bonus(uuid) => numeric secdef=true
+fn is_user_in_vacation_mode(uuid) => boolean secdef=true
+fn is_user_plus(uuid) => boolean secdef=true
+fn record_admin_revenue(text,numeric,text,uuid,uuid,text) => uuid secdef=true
+fn simulate_xnova_combat(jsonb,jsonb) => jsonb secdef=true
+seq public.ship_types_id_seq last=22
+rand bot_ai_tick
+rand generate_espionage_report
+rand process_fleet_arrival
+rand process_expedition
+rand process_moon_destruction
+trg building_queue enforce_building_queue_limit CREATE TRIGGER enforce_building_queue_limit BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION check_building_queue_limit()
+trg building_queue protect_building_queue_trigger CREATE TRIGGER protect_building_queue_trigger BEFORE UPDATE ON public.building_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_defenses protect_planet_defenses_trigger CREATE TRIGGER protect_planet_defenses_trigger BEFORE UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_resources protect_planet_resources_trigger CREATE TRIGGER protect_planet_resources_trigger BEFORE UPDATE ON public.planet_resources FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planets protect_planets_trigger CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg shipyard_queue protect_shipyard_queue_trigger CREATE TRIGGER protect_shipyard_queue_trigger BEFORE UPDATE ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planets trg_default_autopilot CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+trg planet_defenses trg_enforce_shield_dome_per_account CREATE TRIGGER trg_enforce_shield_dome_per_account BEFORE INSERT OR UPDATE OF quantity, defense_type_id ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION enforce_shield_dome_per_account()
+trg shipyard_queue trg_enforce_ship_blueprint_requirement CREATE TRIGGER trg_enforce_ship_blueprint_requirement BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION enforce_ship_blueprint_requirement()
+trg planet_resources trg_resource_collect_daily_mission CREATE TRIGGER trg_resource_collect_daily_mission AFTER UPDATE OF metal, crystal, deuterium, last_update ON public.planet_resources FOR EACH ROW WHEN ((new.last_update > old.last_update)) EXECUTE FUNCTION trg_resource_collect_daily_mission()
+trg planets trg_set_initial_deposits CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+trg messages trigger_telegram_dm_on_message CREATE TRIGGER trigger_telegram_dm_on_message AFTER INSERT ON public.messages FOR EACH ROW EXECUTE FUNCTION notify_telegram_dm_on_message()
+trg planets trigger_validate_fields_on_update CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+trg fleet_ships trigger_fleet_ships_change_points CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+trg planets trg_cancel_listings_on_planet_loss CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+trg planet_defenses trigger_defense_points CREATE TRIGGER trigger_defense_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+trg building_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg shipyard_queue trg_colony_sale_lock CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg planets trg_colony_sale_lock_autopilot CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+trg planets trg_planets_block_casino CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+trg planets trg_planets_block_sports CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+chk fleets fleets_origin_planet_id_fkey FOREIGN KEY (origin_planet_id) REFERENCES planets(id) ON DELETE SET NULL
+chk fleets fleets_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE
+chk messages messages_recipient_id_fkey FOREIGN KEY (recipient_id) REFERENCES profiles(id) ON DELETE CASCADE
+chk messages messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE SET NULL
+chk planet_defenses planet_defenses_defense_type_id_fkey FOREIGN KEY (defense_type_id) REFERENCES defense_types(id) ON DELETE CASCADE
+chk planet_defenses planet_defenses_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+chk planet_ships planet_ships_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES planets(id) ON DELETE CASCADE
+chk planet_ships planet_ships_ship_type_id_fkey FOREIGN KEY (ship_type_id) REFERENCES ship_types(id) ON DELETE CASCADE
+chk planets planets_user_id_fkey FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE
+chk referral_commissions referral_commissions_referrer_id_fkey FOREIGN KEY (referrer_id) REFERENCES profiles(id) ON DELETE SET NULL
+chk referral_commissions referral_commissions_seller_id_fkey FOREIGN KEY (seller_id) REFERENCES profiles(id) ON DELETE SET NULL
+chk referral_commissions referral_commissions_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES market_transactions(id)
+chk planets planets_autopilot_role_check CHECK ((autopilot_role = ANY (ARRAY['balanced'::text, 'miner'::text, 'military'::text, 'research'::text, 'colonizer'::text, 'custom'::text])))
+chk fleets fleets_mission_type_check CHECK ((mission_type = ANY (ARRAY['attack'::text, 'transport'::text, 'deploy'::text, 'colonize'::text, 'espionage'::text, 'recycle'::text, 'destroy'::text, 'expedition'::text, 'hold'::text, 'return'::text, 'harvest'::text])))
+chk game_settings game_settings_key_key UNIQUE (key)
+chk planet_defenses planet_defenses_planet_id_defense_type_id_key UNIQUE (planet_id, defense_type_id)
+chk planet_ships planet_ships_planet_id_ship_type_id_key UNIQUE (planet_id, ship_type_id)
+chk planets planets_galaxy_solar_system_position_planet_type_key UNIQUE (galaxy, solar_system, "position", planet_type)
+chk ship_types ship_types_code_key UNIQUE (code)
+chk messages messages_message_type_check CHECK ((message_type = ANY (ARRAY['player'::text, 'system'::text, 'battle'::text, 'espionage'::text, 'expedition'::text, 'alliance'::text, 'fleet_warning'::text, 'broadcast'::text])))
+chk planet_ships planet_ships_quantity_non_negative CHECK ((quantity >= 0))
+chk planets check_fields_used_within_max CHECK ((fields_used <= fields_max))
+chk planets planets_galaxy_check CHECK (((galaxy >= 1) AND (galaxy <= 9)))
+chk planets planets_planet_type_check CHECK ((planet_type = ANY (ARRAY['planet'::text, 'moon'::text, 'debris'::text])))
+chk planets planets_position_check CHECK ((("position" >= 1) AND ("position" <= 15)))
+chk planets planets_solar_system_check CHECK (((solar_system >= 1) AND (solar_system <= 499)))
+chk ship_types ship_types_category_check CHECK ((category = ANY (ARRAY['civil'::text, 'combat'::text, 'special'::text])))
+adm 1
+officer bonus_secondary_type,bonus_secondary_value,bonus_type,bonus_value,code,created_at,dark_matter_cost_30d,dark_matter_cost_7d,dark_matter_cost_90d,description,expires_at,fxu_cost_30d,fxu_cost_7d,fxu_cost_90d,icon,id,image_url,name,officer_type_id,sort_order,usdt_cost_30d,usdt_cost_7d,usdt_cost_90d,user_id
+31:   v_computer_tech_level int := 0;
+32:   v_has_admiral boolean;
+33:   v_admiral_speed_bonus numeric := 0;
+34:   v_max_fleet_slots int;
+82:   IF v_profile.vacation_mode THEN
+83:     RETURN jsonb_build_object('success', false, 'error', 'Cannot send fleets in vacation mode');
+164:       WHERE ut.user_id = v_user_id AND tt.code = 'computer_tech'
+167:   ) INTO v_computer_tech_level;
+169:   v_has_admiral := has_active_officer(v_user_id, 'admiral');
+170:   v_max_fleet_slots := 1 + v_computer_tech_level + (CASE WHEN v_has_admiral THEN 2 ELSE 0 END);
+172:   IF v_has_admiral THEN
+173:     v_admiral_speed_bonus := 0.2;
+180:   IF v_active_fleet_count >= v_max_fleet_slots THEN
+181:     RETURN jsonb_build_object('success', false, 'error', 'No available fleet slots');
+298:   v_distance := fleet_calc_distance(
+307:   v_slowest_speed := fleet_calc_slowest_speed(p_fleet_ships, v_user_id);
+312:   v_flight_time := fleet_calc_flight_time(v_distance, v_slowest_speed, p_speed_percent, v_admiral_speed_bonus);
+313:   -- Apply daily mission speed bonus (stackable with admiral and Plus)
+314:   v_flight_time := GREATEST(10, FLOOR(v_flight_time / (1.0 + COALESCE(get_user_daily_mission_speed_bonus(v_user_id), 0))));
+316:   IF is_user_plus(v_user_id) THEN
+320:   v_fuel_consumption := fleet_calc_fuel(p_fleet_ships, v_distance, p_speed_percent);
+secure_send_fleet(uuid,integer,integer,integer,text,jsonb,bigint,bigint,bigint,integer,text,uuid)

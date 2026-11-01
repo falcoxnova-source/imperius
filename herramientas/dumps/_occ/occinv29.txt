@@ -1,0 +1,54 @@
+== planets cols
+id, user_id, name, galaxy, solar_system, position, planet_type, image_id, diameter, fields_used, fields_max, temp_min, temp_max, is_main_planet, is_destroyed, last_update, created_at, jump_gate_cooldown, name_changed, autopilot_role, metal_deposit, crystal_deposit, deuterium_deposit, planet_status, depleted_at, regenerates_at, metal_initial_deposit, crystal_initial_deposit, deuterium_initial_deposit, dark_matter_stock, dark_matter_last_gen, autopilot_enabled
+== planet_resources cols
+id, planet_id, metal, crystal, deuterium, energy_used, energy_max, metal_per_hour, crystal_per_hour, deuterium_per_hour, metal_storage, crystal_storage, deuterium_storage, last_update, metal_mine_percent, crystal_mine_percent, deuterium_synth_percent, solar_plant_percent, fusion_reactor_percent, solar_satellite_percent
+== profiles some cols
+referred_by, is_admin, vacation_mode, battles_won, battles_draw, battles_lost, units_destroyed, units_lost, debris_metal_total, debris_crystal_total, fxu_balance, username
+== secdef
+calculate_and_sync_resources_internal|t|postgres
+contribute_to_jackpot|t|postgres
+get_live_tung_price_usd|t|postgres
+join_acs_with_fleet|t|postgres
+perform_acs_combat|t|postgres
+perform_combat|t|postgres
+process_acs_fleet_arrival|t|postgres
+process_all_pending_fleets|t|postgres
+process_expedition|t|postgres
+process_fleet_arrival|t|postgres
+process_user_fleets|f|postgres
+process_user_pending_fleets|t|postgres
+record_admin_revenue|t|postgres
+secure_send_fleet|t|postgres
+send_fleet|t|postgres
+validate_fleet_mission|t|postgres
+== admin_revenue check
+CHECK ((revenue_type = ANY (ARRAY['market_fee'::text, 'withdrawal_fee'::text, 'instant_build'::text, 'instant_research'::text, 'instant_ship'::text, 'referral_bonus'::text, 'officer_fxu'::text, 'expedition_fee'::text, 'supply_box'::text, 'fleet_acceleration'::text, 'swap_fee'::text, 'transfer_fee'::text, 'plus_subscription'::text, 'colony_abandon'::text, 'planet_rename'::text, 'alliance_rename'::text, 'alliance_creation'::text, 'lottery_fee'::text, 'p2p_fee'::text, 'blueprint_sale'::text, 'hero_respec'::text, 'hero_kit_sale'::text, 'other'::text, 'premium_mission'::text, 'hero_duel'::text, 'daily_streak'::text, 'deposit_gas_buffer'::text, 'instant_unit_sale'::text, 'casino_roulette'::text, 'casino_slots'::text, 'casino_dice'::text, 'casino_battleship'::text, 'sports_football'::text])))
+CHECK ((amount >= (0)::numeric))
+CHECK ((currency = ANY (ARRAY['FXU'::text, 'USDT'::text])))
+== first BEGIN context for guard targets
+create_market_listing|create_market_listing(text,text,bigint,numeric,uuid)|plpgsql|1|t|p_listing_type,p_item_code,p_quantity,p_price_per_unit,p_planet_id
+purchase_market_listing|purchase_market_listing(uuid,integer)|plpgsql|0|t|p_listing_id,p_quantity
+purchase_market_listing|purchase_market_listing(uuid,uuid)|plpgsql|0|t|p_listing_id,p_buyer_planet_id
+purchase_market_listing|purchase_market_listing(uuid,integer,uuid)|plpgsql|0|t|p_listing_id,p_quantity,p_buyer_planet_id
+fulfill_buy_offer|fulfill_buy_offer(uuid,bigint,uuid)|plpgsql|0|t|p_offer_id,p_quantity,p_planet_id
+galaxy_navigate|galaxy_navigate(uuid,integer,integer)|plpgsql|0|t|p_planet_id,p_target_galaxy,p_target_system
+purchase_supply_box|purchase_supply_box(text,uuid)|plpgsql|0|t|p_box_code,p_planet_id
+launch_missiles|launch_missiles(uuid,integer,integer,integer,integer,text)|plpgsql|0|t|p_origin_planet_id,p_target_galaxy,p_target_system,p_target_position,p_missile_count,p_primary_target
+deploy_to_fortress|deploy_to_fortress(integer,uuid,jsonb)|plpgsql|0|t|p_galaxy,p_planet_id,p_ships
+create_colony_listing|create_colony_listing(uuid,numeric)|plpgsql|1|t|p_planet_id,p_price
+purchase_colony_listing|purchase_colony_listing(uuid)|plpgsql|0|t|p_listing_id
+secure_abandon_colony|secure_abandon_colony(uuid)|plpgsql|0|t|p_planet_id
+secure_demolish_building|secure_demolish_building(uuid,integer)|plpgsql|0|t|p_planet_id,p_building_type_id
+update_production_percentages|update_production_percentages(uuid,smallint,smallint,smallint,smallint,smallint,smallint)|plpgsql|0|t|p_planet_id,p_metal_mine_percent,p_crystal_mine_percent,p_deuterium_synth_percent,p_solar_plant_percent,p_fusion_reactor_percent,p_solar_satellite_percent
+refill_colony_resources|refill_colony_resources(uuid)|plpgsql|0|t|p_planet_id
+purchase_instant_unit|purchase_instant_unit(text,uuid,integer)|plpgsql|0|t|p_code,p_planet_id,p_quantity
+purchase_ship_blueprint|purchase_ship_blueprint(text,uuid)|plpgsql|0|t|p_blueprint_code,p_planet_id
+secure_add_to_building_queue|secure_add_to_building_queue(uuid,integer)|plpgsql|0|t|p_planet_id,p_building_type_id
+secure_activate_building_queue|secure_activate_building_queue(uuid)|plpgsql|0|t|p_planet_id
+secure_add_to_shipyard_queue|secure_add_to_shipyard_queue(uuid,integer,integer)|plpgsql|0|t|p_planet_id,p_ship_id,p_quantity
+secure_add_to_shipyard_queue|secure_add_to_shipyard_queue(uuid,text,integer,integer)|plpgsql|0|t|p_planet_id,p_item_type,p_type_id,p_quantity
+secure_start_research|secure_start_research(uuid,integer)|plpgsql|0|t|p_planet_id,p_tech_type_id
+set_planet_autopilot_enabled|set_planet_autopilot_enabled(uuid,boolean)|plpgsql|0|t|p_planet_id,p_enabled
+secure_send_fleet|secure_send_fleet(uuid,integer,integer,integer,text,jsonb,bigint,bigint,bigint,integer,text,uuid)|plpgsql|1|t|p_origin_planet_id,p_target_galaxy,p_target_system,p_target_position,p_mission_type,p_fleet_ships,p_cargo_metal,p_cargo_crystal,p_cargo_deuterium,p_speed_percent,p_target_type,p_override_user_id
+join_acs_with_fleet|join_acs_with_fleet(uuid,uuid,jsonb,integer)|plpgsql|0|t|p_acs_id,p_origin_planet_id,p_fleet_ships,p_speed_percent
+create_buy_offer|create_buy_offer(text,text,bigint,numeric)|plpgsql|0|t|p_listing_type,p_item_code,p_quantity,p_price_per_unit

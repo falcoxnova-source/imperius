@@ -1,0 +1,89 @@
+-- =====================================================================
+-- ANÁLISIS: Root Cause del Bug de Pérdida de Campos en Terraformer
+-- =====================================================================
+--
+-- PROBLEMA REPORTADO:
+-- - Jugador "Diablo" tenía planeta con 213 campos disponibles
+-- - Ahora mostraba 203 campos ocupados (0 disponibles)
+-- - Múltiples jugadores reportaron problema similar
+--
+-- =====================================================================
+-- INVESTIGACIÓN: Línea de tiempo de migraciones
+-- =====================================================================
+--
+-- 20260103144300_019_fix_security_issues.sql
+--   - Creó calculate_planet_max_fields CON formula lineal:
+--     fields_max = v_base_fields + position_bonus + (terraformer_level * 5)
+--   - Creó trigger update_planet_fields_on_terraformer
+--
+-- 20260305140000_terraformer_exponential_fields.sql
+--   - Cambió formula a EXPONENCIAL: FLOOR(5 * POWER(level, 1.3))
+--   - Creó helper terraformer_field_bonus()
+--   - Reemplazó calculate_planet_max_fields con formula exponencial
+--   - complete_building_queue_item() ahora usa: 
+--       v_fields_increase := terraformer_field_bonus(new_level) - terraformer_field_bonus(old_level)
+--   - secure_demolish_building() ahora usa:
+--       v_fields_decrease := terraformer_field_bonus(current) - terraformer_field_bonus(current-1)
+--   - RAN recalculation loop para todos los planetas existentes
+--
+-- 20260502133000_fix_terraformer_demolish_double_subtract.sql
+--   - Intentó FIJAR un problema de "doble descuento"
+--   - Cambió secure_demolish_building() para que NO reste fields_max manualmente
+--   - Confiaba en que trigger recalcularía
+--   - RAN recalculation UPDATE pero con COALESCE que podría dejar valores viejos
+--
+-- =====================================================================
+-- EL BUG: Inconsistencia en el recálculo
+-- =====================================================================
+--
+-- ESCENARIO: Un jugador tenía terraformer level 20 en su planeta
+--
+-- Paso 1: Migración 20260305140000 ejecutada
+--   - Old formula: level * 5 = 20 * 5 = 100 campos extra
+--   - New formula: FLOOR(5 * 20^1.3) = FLOOR(5 * 251.97) = FLOOR(1259.8) = 1259
+--   - Diferencia: +1159 campos
+--   - Si antes tenía 100 campos, ahora debería tener 100 + 1159 = 1259
+--   - La migración hizo UPDATE fields_max = fields_max + (new_bonus - old_bonus)
+--
+-- Paso 2: Migración 20260502133000 ejecutada
+--   - Hizo un UPDATE usando calculate_planet_max_fields() para recalcular
+--   - Pero había una condición COALESCE que podría usar valor viejo si cálculo fallaba
+--   - También usó GREATEST(fields_used, calculated_max) lo que es INCORRECTO
+--   - Eso permitiría que fields_used INVALIDE el cálculo correcto
+--
+-- Paso 3: Trigger update_planet_fields_on_terraformer ejecutado
+--   - Cuando terraformer se modifica, recalcula fields_max
+--   - Pero si terraformer fue demolido parcialmente en forma inesperada
+--   - El trigger podría ejecutarse sin sincronizar fields_used
+--
+-- RESULTADO: fields_used > fields_max (overflow)
+--   - Jugador ve "203 campos ocupado de 203 campos disponible" (0 libres)
+--   - O casos más graves donde fields_used está fuera de bounds
+--
+-- =====================================================================
+-- POR QUÉ pasó esto:
+-- =====================================================================
+--
+-- 1. La migración 20260305140000 cambió la FORMULA SIN actualizar todas las 
+--    referencias consistentemente
+-- 
+-- 2. La migración 20260502133000 intentó "arreglarlo" pero creó más confusión
+--    usando GREATEST(fields_used, calculated_max) que es LÓGICAMENTE ERRÓNEO
+--
+-- 3. El trigger recalcula from scratch usando calculate_planet_max_fields()
+--    pero NO sincroniza fields_used - crea desajustes
+--
+-- 4. No hay validación de invariante: fields_used <= fields_max en triggers
+--
+-- =====================================================================
+-- SOLUCIÓN IMPLEMENTADA:
+-- =====================================================================
+--
+-- 1. Confirmar terraformer_field_bonus() está definida correctamente
+-- 2. Confirmar calculate_planet_max_fields() usa SOLO la fórmula exponencial
+-- 3. Recalcular fields_max para TODOS los planetas usando:
+--    new_fields_max = GREATEST(fields_used, calculated_value)
+--    PERO también ajustar fields_used si es necesario
+-- 4. Agregar validaciones en triggers para prevenir future inconsistencies
+--
+-- =====================================================================

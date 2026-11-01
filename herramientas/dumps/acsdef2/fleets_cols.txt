@@ -1,0 +1,24 @@
+id uuid
+user_id uuid
+origin_planet_id uuid
+target_galaxy integer
+target_system integer
+target_position integer
+target_type text
+mission_type text
+cargo_metal numeric
+cargo_crystal numeric
+cargo_deuterium numeric
+departure_time timestamp with time zone
+arrival_time timestamp with time zone
+return_time timestamp with time zone
+is_returning boolean
+is_completed boolean
+created_at timestamp with time zone
+arrival_notified boolean
+acs_id uuid
+is_acs boolean
+accel_out boolean
+accel_ret boolean
+pending_dark_matter numeric
+pending_fxu numeric

@@ -1,0 +1,270 @@
+const { Client } = require('pg');
+
+const c = new Client({
+  host: 'aws-1-eu-north-1.pooler.supabase.com',
+  port: 6543,
+  user: 'postgres.hhrgcnvydmjqcevgmlhj',
+  password: 'Jfs.samsung1989*',
+  database: 'postgres',
+  ssl: { rejectUnauthorized: false }
+});
+
+async function main() {
+  await c.connect();
+
+  console.log('Updating admin_distribute_destruction_pool to Top 10 exponential + reset...');
+
+  await c.query(`
+    CREATE OR REPLACE FUNCTION admin_distribute_destruction_pool()
+    RETURNS jsonb
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    SET search_path = public
+    AS $$
+    DECLARE
+      v_admin_id uuid;
+      v_pool_balance numeric;
+      v_distribution_id uuid;
+      v_distributed_count int := 0;
+      v_player RECORD;
+      v_rank int := 0;
+      v_weight numeric;
+      v_total_weight numeric := 0;
+      v_num_participants int;
+      v_reward_percent numeric;
+      v_reward_amount numeric;
+      v_total_distributed numeric := 0;
+      v_distribution_month date;
+      v_rewards jsonb := '[]'::jsonb;
+      v_first_player_id uuid;
+      v_total_calculated numeric := 0;
+      v_remainder numeric;
+      -- Exponential weights for Top 10 (sum = 100)
+      v_exp_weights numeric[] := ARRAY[25.0, 18.0, 14.0, 11.0, 9.0, 7.0, 6.0, 5.0, 3.0, 2.0];
+    BEGIN
+      v_admin_id := auth.uid();
+
+      IF NOT EXISTS (SELECT 1 FROM profiles WHERE id = v_admin_id AND is_admin = true) THEN
+        RETURN jsonb_build_object('success', false, 'error', 'No autorizado');
+      END IF;
+
+      SELECT destruction_balance INTO v_pool_balance FROM jackpot_pools WHERE id = 1;
+
+      IF v_pool_balance IS NULL OR v_pool_balance <= 0 THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Pool de destruccion vacio o sin fondos');
+      END IF;
+
+      v_distribution_month := date_trunc('month', now())::date;
+
+      -- Get destruction ranking data into a temp table for processing (TOP 10 only)
+      CREATE TEMP TABLE temp_dest_dist (
+        rank_num int,
+        uid uuid,
+        uname text,
+        dpoints bigint
+      ) ON COMMIT DROP;
+
+      INSERT INTO temp_dest_dist (rank_num, uid, uname, dpoints)
+      SELECT
+        ROW_NUMBER() OVER (ORDER BY dr.destruction_points DESC)::int,
+        dr.user_id,
+        dr.username,
+        dr.destruction_points
+      FROM get_destruction_ranking() dr
+      LIMIT 10;
+
+      SELECT COUNT(*) INTO v_num_participants FROM temp_dest_dist;
+
+      IF v_num_participants = 0 THEN
+        RETURN jsonb_build_object('success', false, 'error', 'No hay jugadores con puntos de destruccion');
+      END IF;
+
+      -- Calculate total weight based on actual participants
+      v_total_weight := 0;
+      FOR i IN 1..v_num_participants LOOP
+        v_total_weight := v_total_weight + v_exp_weights[i];
+      END LOOP;
+
+      INSERT INTO destruction_ranking_distributions (distribution_month, total_pool_amount, distributed_by)
+      VALUES (v_distribution_month, v_pool_balance, v_admin_id)
+      ON CONFLICT (distribution_month) DO UPDATE SET
+        total_pool_amount = EXCLUDED.total_pool_amount,
+        distributed_by = EXCLUDED.distributed_by,
+        distributed_at = now()
+      RETURNING id INTO v_distribution_id;
+
+      FOR v_player IN
+        SELECT rank_num, uid, uname, dpoints FROM temp_dest_dist ORDER BY rank_num
+      LOOP
+        v_rank := v_player.rank_num;
+
+        IF v_rank = 1 THEN
+          v_first_player_id := v_player.uid;
+        END IF;
+
+        -- Use exponential weight from array
+        v_weight := v_exp_weights[v_rank];
+        v_reward_percent := ROUND((v_weight / v_total_weight) * 100, 2);
+        v_reward_amount := FLOOR(v_pool_balance * v_weight / v_total_weight);
+
+        v_rewards := v_rewards || jsonb_build_object(
+          'user_id', v_player.uid,
+          'username', v_player.uname,
+          'rank', v_rank,
+          'points', v_player.dpoints,
+          'amount', v_reward_amount,
+          'percent', v_reward_percent
+        );
+
+        v_total_calculated := v_total_calculated + v_reward_amount;
+      END LOOP;
+
+      -- Give remainder to #1
+      v_remainder := v_pool_balance - v_total_calculated;
+      IF v_remainder > 0 AND v_first_player_id IS NOT NULL THEN
+        SELECT jsonb_agg(
+          CASE
+            WHEN (elem->>'user_id')::uuid = v_first_player_id
+            THEN jsonb_set(elem, '{amount}', to_jsonb((elem->>'amount')::numeric + v_remainder))
+            ELSE elem
+          END
+        ) INTO v_rewards
+        FROM jsonb_array_elements(v_rewards) elem;
+
+        v_total_calculated := v_pool_balance;
+      END IF;
+
+      -- Set FXU context to allow balance updates
+      PERFORM _internal_set_fxu_context();
+
+      -- Distribute rewards
+      FOR v_player IN
+        SELECT
+          (elem->>'user_id')::uuid as user_id,
+          (elem->>'username')::text as username,
+          (elem->>'rank')::int as rank,
+          (elem->>'points')::bigint as points,
+          (elem->>'amount')::numeric as amount,
+          (elem->>'percent')::numeric as percent
+        FROM jsonb_array_elements(v_rewards) elem
+      LOOP
+        IF v_player.amount > 0 THEN
+          UPDATE profiles SET fxu_balance = fxu_balance + v_player.amount WHERE id = v_player.user_id;
+
+          INSERT INTO destruction_ranking_rewards (distribution_id, user_id, rank_position, destruction_points, reward_amount, reward_percent)
+          VALUES (v_distribution_id, v_player.user_id, v_player.rank, v_player.points, v_player.amount, v_player.percent);
+
+          INSERT INTO messages (recipient_id, sender_id, subject, body, message_type)
+          VALUES (
+            v_player.user_id,
+            NULL,
+            'Recompensa Ranking Destruccion',
+            'Felicidades! Puesto #' || v_player.rank || ' en destruccion - Has recibido ' || v_player.amount || ' FXU (' || v_player.percent || '% del pool) por ' || v_player.points || ' puntos de destruccion.',
+            'system'
+          );
+
+          v_distributed_count := v_distributed_count + 1;
+        END IF;
+      END LOOP;
+
+      -- Build telegram broadcast message
+      DECLARE
+        v_rewards_list_text text := '';
+        v_rewards_elem jsonb;
+        v_emoji text;
+        v_anon_key text;
+        v_request_id bigint;
+      BEGIN
+        FOR v_rewards_elem IN SELECT * FROM jsonb_array_elements(v_rewards)
+        LOOP
+          IF (v_rewards_elem->>'rank')::int = 1 THEN
+            v_emoji := '🥇';
+          ELSIF (v_rewards_elem->>'rank')::int = 2 THEN
+            v_emoji := '🥈';
+          ELSIF (v_rewards_elem->>'rank')::int = 3 THEN
+            v_emoji := '🥉';
+          ELSE
+            v_emoji := '🔥';
+          END IF;
+          v_rewards_list_text := v_rewards_list_text || v_emoji || ' #' || (v_rewards_elem->>'rank') || ' ' || (v_rewards_elem->>'username') || ' - ' || (v_rewards_elem->>'amount') || ' FXU (' || (v_rewards_elem->>'percent') || '%)' || chr(10);
+        END LOOP;
+
+        v_rewards_list_text := '🔥 RANKING DESTRUCCION TOP 10 - REPARTO 🔥' || chr(10) || chr(10)
+          || '💰 Pool total: ' || v_pool_balance || ' FXU' || chr(10) || chr(10)
+          || v_rewards_list_text || chr(10)
+          || '¡Felicidades a los guerreros mas destructivos!' || chr(10)
+          || '¿Quieres ganar FXU? ¡Ataca y destruye flotas enemigas!' || chr(10)
+          || 'Unete: https://t.me/+1Oo1iGBuQ-xjY2Zh';
+
+        -- Send in-game to players not in the top
+        INSERT INTO messages (recipient_id, sender_id, subject, body, message_type)
+        SELECT p.id, NULL, 'Ranking Destruccion - Reparto', v_rewards_list_text, 'system'
+        FROM profiles p
+        WHERE p.id NOT IN (SELECT (elem->>'user_id')::uuid FROM jsonb_array_elements(v_rewards) elem) AND p.is_admin = false;
+
+        -- Send to Telegram channel
+        BEGIN
+          SELECT anon_key INTO v_anon_key FROM market_notification_config WHERE id = 1;
+
+          IF v_anon_key IS NOT NULL THEN
+            SELECT net.http_post(
+              url := 'https://hhrgcnvydmjqcevgmlhj.supabase.co/functions/v1/send-telegram-broadcast',
+              body := jsonb_build_object(
+                'subject', 'Ranking Destruccion TOP 10 - Reparto',
+                'body', v_rewards_list_text
+              ),
+              headers := jsonb_build_object(
+                'Content-Type', 'application/json',
+                'Authorization', 'Bearer ' || v_anon_key,
+                'apikey', v_anon_key
+              )
+            ) INTO v_request_id;
+          END IF;
+        EXCEPTION
+          WHEN OTHERS THEN
+            RAISE NOTICE 'Telegram broadcast error: %', SQLERRM;
+        END;
+      END;
+
+      -- Update distribution record
+      UPDATE destruction_ranking_distributions
+      SET total_participants = v_distributed_count,
+          total_distributed = v_total_calculated
+      WHERE id = v_distribution_id;
+
+      -- Deduct from destruction pool
+      UPDATE jackpot_pools
+      SET destruction_balance = destruction_balance - v_total_calculated,
+          updated_at = now()
+      WHERE id = 1;
+
+      -- Also update main jackpot
+      UPDATE jackpot SET balance = balance - v_total_calculated WHERE id = 1;
+
+      -- RESET: Clear battle_reports to restart the destruction ranking for next period
+      DELETE FROM battle_reports WHERE 1=1;
+
+      RETURN jsonb_build_object(
+        'success', true,
+        'message', 'Pool de destruccion distribuido y ranking reiniciado',
+        'pool_original', v_pool_balance,
+        'total_distributed', v_total_calculated,
+        'players_rewarded', v_distributed_count,
+        'distribution_id', v_distribution_id,
+        'ranking_reset', true
+      );
+    END;
+    $$;
+  `);
+
+  console.log('Function updated successfully!');
+  console.log('');
+  console.log('Changes made:');
+  console.log('  1. Top 50 -> Top 10');
+  console.log('  2. Linear distribution -> Exponential (25%, 18%, 14%, 11%, 9%, 7%, 6%, 5%, 3%, 2%)');
+  console.log('  3. Added DELETE FROM battle_reports to reset ranking after distribution');
+
+  await c.end();
+}
+
+main().catch(e => { console.error(e); c.end(); });

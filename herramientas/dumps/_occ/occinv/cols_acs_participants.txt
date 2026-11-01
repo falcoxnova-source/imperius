@@ -1,0 +1,5 @@
+id uuid gen_random_uuid()
+acs_id uuid 
+fleet_id uuid 
+user_id uuid 
+joined_at timestamp with time zone now()

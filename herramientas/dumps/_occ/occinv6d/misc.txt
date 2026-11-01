@@ -1,0 +1,106 @@
+resdec: bot_ai_tick() auth=false colock=false
+resdec: fulfill_buy_offer(p_offer_id uuid, p_quantity bigint, p_planet_id uuid) auth=true colock=false
+resdec: galaxy_navigate(p_planet_id uuid, p_target_galaxy integer, p_target_system integer) auth=true colock=false
+resdec: hero_casino_travel() auth=true colock=false
+resdec: join_acs_with_fleet(p_acs_id uuid, p_origin_planet_id uuid, p_fleet_ships jsonb, p_speed_percent integer) auth=true colock=false
+resdec: phalanx_scan(p_moon_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer) auth=true colock=false
+resdec: process_fleet_arrival(p_fleet_id uuid) auth=false colock=false
+resdec: purchase_market_listing(p_listing_id uuid, p_quantity integer) auth=true colock=false
+resdec: purchase_market_listing(p_listing_id uuid, p_quantity integer, p_buyer_planet_id uuid) auth=true colock=false
+resdec: safe_deduct_resources(p_planet_id uuid, p_metal bigint, p_crystal bigint, p_deuterium bigint) auth=false colock=false
+resdec: secure_add_to_building_queue(p_planet_id uuid, p_building_type_id integer) auth=true colock=false
+resdec: secure_add_to_shipyard_queue(p_planet_id uuid, p_item_type text, p_type_id integer, p_quantity integer) auth=true colock=false
+resdec: secure_add_to_shipyard_queue(p_planet_id uuid, p_ship_id integer, p_quantity integer) auth=false colock=false
+resdec: secure_send_fleet(p_origin_planet_id uuid, p_target_galaxy integer, p_target_system integer, p_target_position integer, p_mission_type text, p_fleet_ships jsonb, p_cargo_metal bigint, p_cargo_crystal bigint, p_cargo_deuterium bigint, p_speed_percent integer, p_target_type text, p_override_user_id uuid) auth=true colock=true
+resdec: secure_start_research(p_planet_id uuid, p_tech_type_id integer) auth=true colock=false
+resdec: start_hero_expedition(p_user_id uuid, p_expedition_id uuid) auth=true colock=false
+resdec: start_research(p_technology_id integer) auth=true colock=false
+trg fleets: CREATE TRIGGER trg_award_expedition_blueprint_drop AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION award_expedition_blueprint_drop()
+trg fleets: CREATE TRIGGER trg_fleet_completed_daily_mission AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION trg_fleet_completed_daily_mission()
+trg fleets: CREATE TRIGGER trigger_fleet_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleets FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet()
+trg fleets: CREATE TRIGGER trigger_log_transport_interaction AFTER UPDATE ON public.fleets FOR EACH ROW WHEN (((new.is_completed = true) AND (old.is_completed = false))) EXECUTE FUNCTION log_transport_interaction()
+trg fleets: CREATE TRIGGER trigger_notify_hostile_fleet AFTER INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION notify_hostile_fleet_incoming()
+trg fleets: CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_fleet()
+trg planets: CREATE TRIGGER protect_planets_trigger BEFORE UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planets: CREATE TRIGGER trg_default_autopilot BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_default_autopilot_role()
+trg planets: CREATE TRIGGER trg_set_initial_deposits BEFORE INSERT ON public.planets FOR EACH ROW EXECUTE FUNCTION set_initial_deposits()
+trg planets: CREATE TRIGGER trigger_validate_fields_on_update BEFORE INSERT OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION validate_fields_on_update()
+trg planets: CREATE TRIGGER trg_cancel_listings_on_planet_loss AFTER DELETE OR UPDATE ON public.planets FOR EACH ROW EXECUTE FUNCTION cancel_market_listings_on_planet_loss()
+trg planets: CREATE TRIGGER trg_colony_sale_lock_autopilot BEFORE UPDATE OF autopilot_enabled ON public.planets FOR EACH ROW WHEN (((new.autopilot_enabled IS TRUE) AND (old.autopilot_enabled IS NOT TRUE))) EXECUTE FUNCTION _trg_colony_sale_lock_autopilot()
+trg planets: CREATE TRIGGER trg_planets_block_casino BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_casino()
+trg planets: CREATE TRIGGER trg_planets_block_sports BEFORE INSERT OR UPDATE OF galaxy, solar_system, "position" ON public.planets FOR EACH ROW EXECUTE FUNCTION _trg_planets_block_sports()
+trg planet_resources: CREATE TRIGGER protect_planet_resources_trigger BEFORE UPDATE ON public.planet_resources FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_resources: CREATE TRIGGER trg_resource_collect_daily_mission AFTER UPDATE OF metal, crystal, deuterium, last_update ON public.planet_resources FOR EACH ROW WHEN ((new.last_update > old.last_update)) EXECUTE FUNCTION trg_resource_collect_daily_mission()
+trg building_queue: CREATE TRIGGER enforce_building_queue_limit BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION check_building_queue_limit()
+trg building_queue: CREATE TRIGGER protect_building_queue_trigger BEFORE UPDATE ON public.building_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg building_queue: CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg shipyard_queue: CREATE TRIGGER protect_shipyard_queue_trigger BEFORE UPDATE ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg shipyard_queue: CREATE TRIGGER trg_enforce_ship_blueprint_requirement BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION enforce_ship_blueprint_requirement()
+trg shipyard_queue: CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+trg fleet_ships: CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+trg planet_defenses: CREATE TRIGGER protect_planet_defenses_trigger BEFORE UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_defenses: CREATE TRIGGER trg_enforce_shield_dome_per_account BEFORE INSERT OR UPDATE OF quantity, defense_type_id ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION enforce_shield_dome_per_account()
+trg planet_defenses: CREATE TRIGGER trigger_defense_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_defenses FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+trg planet_ships: CREATE TRIGGER protect_planet_ships_trigger BEFORE UPDATE ON public.planet_ships FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+trg planet_ships: CREATE TRIGGER trigger_fleet_points AFTER INSERT OR DELETE OR UPDATE ON public.planet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_planet_table()
+planets cols: id:uuid | user_id:uuid | name:text | galaxy:integer | solar_system:integer | position:integer | planet_type:text | image_id:integer | diameter:integer | fields_used:integer | fields_max:integer | temp_min:integer | temp_max:integer | is_main_planet:boolean | is_destroyed:boolean | last_update:timestamp with time zone | created_at:timestamp with time zone | jump_gate_cooldown:timestamp with time zone | name_changed:boolean | autopilot_role:text | metal_deposit:bigint | crystal_deposit:bigint | deuterium_deposit:bigint | planet_status:text | depleted_at:timestamp with time zone | regenerates_at:timestamp with time zone | metal_initial_deposit:bigint | crystal_initial_deposit:bigint | deuterium_initial_deposit:bigint | dark_matter_stock:numeric | dark_matter_last_gen:timestamp with time zone | autopilot_enabled:boolean
+pr cols: id:uuid | planet_id:uuid | metal:numeric | crystal:numeric | deuterium:numeric | energy_used:integer | energy_max:integer | metal_per_hour:numeric | crystal_per_hour:numeric | deuterium_per_hour:numeric | metal_storage:numeric | crystal_storage:numeric | deuterium_storage:numeric | last_update:timestamp with time zone | metal_mine_percent:smallint | crystal_mine_percent:smallint | deuterium_synth_percent:smallint | solar_plant_percent:smallint | fusion_reactor_percent:smallint | solar_satellite_percent:smallint
+rc cols: id:uuid:NO | referrer_id:uuid:NO | seller_id:uuid:NO | transaction_id:uuid:YES | commission_type:text:NO | resource_type:text:YES | amount:bigint:NO | created_at:timestamp with time zone:YES | fxu_amount:numeric:YES
+rc con: referral_commissions_referrer_id_fkey FOREIGN KEY (referrer_id) REFERENCES profiles(id) ON DELETE SET NULL
+rc con: referral_commissions_seller_id_fkey FOREIGN KEY (seller_id) REFERENCES profiles(id) ON DELETE SET NULL
+rc con: referral_commissions_transaction_id_fkey FOREIGN KEY (transaction_id) REFERENCES market_transactions(id)
+rc con: referral_commissions_pkey PRIMARY KEY (id)
+fcalc: process_user_pending_fleets(p_user_id uuid) -> jsonb
+fcalc: update_planet_resources(p_planet_id uuid) -> void
+fcalc: _internal_set_fxu_context() -> void
+fcalc: calculate_planet_resources(p_planet_id uuid) -> jsonb
+fcalc: fleet_calc_distance(p_origin_galaxy integer, p_origin_system integer, p_origin_position integer, p_target_galaxy integer, p_target_system integer, p_target_position integer) -> integer
+fcalc: check_moon_creation(p_galaxy integer, p_system integer, p_position integer, p_debris_metal numeric, p_debris_crystal numeric) -> jsonb
+fcalc: fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer, p_admiral_bonus numeric) -> integer
+fcalc: fleet_calc_fuel(p_fleet_ships jsonb, p_distance integer, p_speed_percent integer) -> bigint
+fcalc: fleet_calc_slowest_speed(p_fleet_ships jsonb, p_user_id uuid) -> integer
+fcalc: user_can_build_ship(p_user_id uuid, p_ship_type_id integer) -> boolean
+fcalc: fleet_calc_flight_time(p_distance integer, p_slowest_speed integer, p_speed_percent integer) -> integer
+fcalc: perform_combat(p_attacker_fleet_id uuid, p_target_planet_id uuid) -> jsonb
+fcalc: battle_units_diff(p_initial jsonb, p_remaining jsonb, p_filter text) -> jsonb
+fcalc: apply_attack_building_damage(p_planet_id uuid) -> jsonb
+ships: 1 small_cargo civil spd=5000 fuel=10
+ships: 2 large_cargo civil spd=7500 fuel=50
+ships: 3 colony_ship civil spd=2500 fuel=1000
+ships: 4 recycler civil spd=2000 fuel=300
+ships: 5 espionage_probe civil spd=100000000 fuel=1
+ships: 6 solar_satellite civil spd=0 fuel=0
+ships: 7 light_fighter combat spd=12500 fuel=20
+ships: 8 heavy_fighter combat spd=10000 fuel=75
+ships: 9 cruiser combat spd=15000 fuel=300
+ships: 10 battleship combat spd=10000 fuel=500
+ships: 11 battlecruiser combat spd=10000 fuel=250
+ships: 12 bomber combat spd=4000 fuel=1000
+ships: 13 destroyer combat spd=5000 fuel=1000
+ships: 14 deathstar special spd=100 fuel=1
+ships: 17 falco_x_clasica special spd=2500 fuel=2200
+ships: 18 nova special spd=900 fuel=250
+ships: 19 large_frigate civil spd=6000 fuel=90
+ships: 20 destruccion_masiva special spd=10 fuel=10000
+ships: 21 mega_recycler civil spd=1500 fuel=1200
+ships: 22 dark_matter_collector civil spd=100 fuel=100000
+defs: 1 rocket_launcher m=2000 c=0 d=0
+defs: 2 light_laser m=1500 c=500 d=0
+defs: 3 heavy_laser m=6000 c=2000 d=0
+defs: 4 gauss_cannon m=20000 c=15000 d=2000
+defs: 5 ion_cannon m=5000 c=3000 d=0
+defs: 6 plasma_turret m=50000 c=50000 d=30000
+defs: 7 small_shield_dome m=10000 c=10000 d=0
+defs: 8 large_shield_dome m=50000 c=50000 d=0
+defs: 9 anti_ballistic_missile m=8000 c=0 d=2000
+defs: 10 interplanetary_missile m=12500 c=2500 d=10000
+defs: 11 outer_protection_dome m=5000000 c=4000000 d=2000000
+defs: 13 orbital_defense_platform m=5000000000 c=2000000000 d=800000000
+defs: 15 graviton_cannon m=3000000 c=1500000 d=800000
+debris cols: id:uuid | galaxy:integer | solar_system:integer | position:integer | metal:numeric | crystal:numeric | created_at:timestamp with time zone | updated_at:timestamp with time zone
+br cols: id:uuid | attacker_id:uuid | defender_id:uuid | planet_id:uuid | coordinates:text | result:text | rounds:integer | attacker_losses_metal:numeric | attacker_losses_crystal:numeric | defender_losses_metal:numeric | defender_losses_crystal:numeric | debris_metal:numeric | debris_crystal:numeric | loot_metal:numeric | loot_crystal:numeric | loot_deuterium:numeric | report_data:jsonb | created_at:timestamp with time zone | battle_type:text | galaxy:integer | solar_system:integer | position:integer | attacker_ships_initial:jsonb | defender_ships_initial:jsonb | attacker_ships_lost:jsonb | defender_ships_lost:jsonb | rounds_data:jsonb
+msg cols: id:uuid | sender_id:uuid | recipient_id:uuid | subject:text | body:text | message_type:text | is_read:boolean | created_at:timestamp with time zone
+ut cols: id:uuid | user_id:uuid | technology_type_id:integer | level:integer | is_researching:boolean | research_end_time:timestamp with time zone | research_planet_id:uuid | created_at:timestamp with time zone | research_start_time:timestamp with time zone
+pb cols: id:uuid | planet_id:uuid | building_type_id:integer | level:integer | is_upgrading:boolean | upgrade_end_time:timestamp with time zone | created_at:timestamp with time zone
+gs cols: id:integer | key:text | value:text | description:text | updated_at:timestamp with time zone
+speed fns: fleet_calc_ship_speed

@@ -1,0 +1,52 @@
+﻿300: floor(v_deuterium_reward)::text || ' Deuterio.';
+301: END IF;
+302: 
+303: UPDATE fleets
+304: SET
+305: cargo_metal = cargo_metal + v_metal_reward,
+306: cargo_crystal = cargo_crystal + v_crystal_reward,
+307: cargo_deuterium = cargo_deuterium + v_deuterium_reward,
+308: is_returning = true
+309: WHERE id = p_fleet_id;
+310: 
+311: ELSIF v_event_roll < 68 THEN
+312: -- NAVES ENCONTRADAS (10%) - SOLO naves que el usuario puede construir
+313: v_event_type := 'ships';
+314: SELECT * INTO v_ship_type
+315: FROM ship_types st
+316: WHERE st.code NOT IN ('deathstar', 'colony_ship', 'star_destroyer', 'black_moon', 'espionage_probe', 'solar_satellite', 'falco_x_clasica')
+317: AND st.base_speed > 0
+318: AND user_can_build_ship(v_user_id, st.id)
+319: ORDER BY random()
+320: LIMIT 1;
+321: 
+322: IF FOUND THEN
+323: v_ship_quantity := 1 + floor(random() * LEAST(3, 1 + v_astrophysics_level / 3))::integer;
+324: v_ships_found := jsonb_build_array(jsonb_build_object(
+325: 'ship_type_id', v_ship_type.id,
+326: 'name', v_ship_type.name,
+327: 'quantity', v_ship_quantity
+328: ));
+329: 
+330: INSERT INTO fleet_ships (fleet_id, ship_type_id, quantity)
+331: VALUES (p_fleet_id, v_ship_type.id, v_ship_quantity)
+332: ON CONFLICT (fleet_id, ship_type_id)
+333: DO UPDATE SET quantity = fleet_ships.quantity + v_ship_quantity;
+334: 
+335: v_message_subject := 'Expedicion - Naves Abandonadas';
+55:     SELECT DISTINCT ON (st.id)
+56:       st.id AS item_id,
+57:       st.name AS item_name,
+58:       st.image_url AS item_image,
+59:       ps.quantity AS value,
+60:       p.name AS planet_name,
+61:       pr.username
+62:     FROM ship_types st
+63:     JOIN planet_ships ps ON ps.ship_type_id = st.id AND ps.quantity > 0
+64:     JOIN planets p ON p.id = ps.planet_id AND p.is_destroyed = false
+65:     JOIN profiles pr ON pr.id = p.user_id
+66:                     AND pr.is_banned = false
+67:                     AND COALESCE(pr.hide_records, false) = false
+68:     ORDER BY st.id, ps.quantity DESC
+69:   ) r;
+70: 

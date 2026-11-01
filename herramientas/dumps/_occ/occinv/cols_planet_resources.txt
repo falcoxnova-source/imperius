@@ -1,0 +1,20 @@
+id uuid gen_random_uuid()
+planet_id uuid 
+metal numeric 500
+crystal numeric 500
+deuterium numeric 0
+energy_used integer 0
+energy_max integer 0
+metal_per_hour numeric 30
+crystal_per_hour numeric 15
+deuterium_per_hour numeric 0
+metal_storage numeric 10000
+crystal_storage numeric 10000
+deuterium_storage numeric 10000
+last_update timestamp with time zone now()
+metal_mine_percent smallint 100
+crystal_mine_percent smallint 100
+deuterium_synth_percent smallint 100
+solar_plant_percent smallint 100
+fusion_reactor_percent smallint 100
+solar_satellite_percent smallint 100

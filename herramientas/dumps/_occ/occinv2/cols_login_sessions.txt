@@ -1,0 +1,7 @@
+id uuid
+user_id uuid
+ip_address text
+user_agent text
+fingerprint text
+country_code text
+created_at timestamp with time zone

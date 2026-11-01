@@ -1,0 +1,1 @@
+import{J as e,ir as t}from"./vendor-react-C_5YlgcA.js";import{t as n}from"./GameMedia-j1scr3sF.js";var r=t();function i({imageUrl:t,name:i,className:a=`w-8 h-8`,iconClassName:o}){return t?(0,r.jsx)(n,{src:t,alt:i||`Ship`,className:`${a} object-contain`}):(0,r.jsx)(e,{className:o||a})}export{i as t};

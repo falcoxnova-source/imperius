@@ -1,0 +1,33 @@
+-- Fix ships missing from drive technology speed bonus categories
+-- Falco-X Clasica, Nova, Large Frigate, Destruccion Masiva, Mega Recycler
+-- were never added to fleet_calc_ship_speed, so engine upgrades had NO effect on them
+
+CREATE OR REPLACE FUNCTION fleet_calc_ship_speed(
+  p_ship_code text,
+  p_base_speed int,
+  p_combustion_level int,
+  p_impulse_level int,
+  p_hyperspace_level int
+) RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_bonus numeric := 0;
+BEGIN
+  IF p_base_speed = 0 OR p_base_speed IS NULL THEN
+    RETURN 0;
+  END IF;
+
+  IF p_ship_code IN ('small_cargo', 'large_cargo', 'light_fighter', 'espionage_probe', 'recycler', 'mega_recycler', 'large_frigate') THEN
+    v_bonus := p_combustion_level * 0.10;
+  ELSIF p_ship_code IN ('heavy_fighter', 'cruiser', 'battleship', 'battlecruiser', 'bomber', 'colony_ship') THEN
+    v_bonus := p_impulse_level * 0.20;
+  ELSIF p_ship_code IN ('destroyer', 'deathstar', 'pathfinder', 'star_destroyer', 'black_moon', 'falco_x_clasica', 'nova', 'destruccion_masiva') THEN
+    v_bonus := p_hyperspace_level * 0.30;
+  END IF;
+
+  RETURN FLOOR(p_base_speed * (1 + v_bonus));
+END;
+$$;

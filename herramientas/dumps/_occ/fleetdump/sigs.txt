@@ -1,0 +1,2 @@
+secure_send_fleet(uuid,integer,integer,integer,text,jsonb,bigint,bigint,bigint,integer,text,uuid)
+validate_fleet_mission(uuid,uuid,integer,integer,integer,text,text)

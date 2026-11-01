@@ -1,0 +1,24 @@
+id uuid gen_random_uuid()
+user_id uuid 
+origin_planet_id uuid 
+target_galaxy integer 
+target_system integer 
+target_position integer 
+target_type text 'planet'::text
+mission_type text 
+cargo_metal numeric 0
+cargo_crystal numeric 0
+cargo_deuterium numeric 0
+departure_time timestamp with time zone 
+arrival_time timestamp with time zone 
+return_time timestamp with time zone 
+is_returning boolean false
+is_completed boolean false
+created_at timestamp with time zone now()
+arrival_notified boolean false
+acs_id uuid 
+is_acs boolean false
+accel_out boolean false
+accel_ret boolean false
+pending_dark_matter numeric 0
+pending_fxu numeric 0

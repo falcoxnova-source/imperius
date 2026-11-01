@@ -1,0 +1,158 @@
+﻿40:       'type_id', v_ship_record.ship_type_id,
+41:       'code', v_ship_record.code,
+42:       'name', v_ship_record.name,
+43:       'quantity', v_ship_record.quantity,
+44:       'initial_quantity', v_ship_record.quantity,
+45:       'weapon', v_weapon,
+46:       'shield', v_shield,
+47:       'hull', v_hull,
+48:       'current_hull', v_hull * v_ship_record.quantity,
+49:       'current_shield', v_shield * v_ship_record.quantity,
+50:       'metal_cost', v_ship_record.metal_cost,
+51:       'crystal_cost', v_ship_record.crystal_cost,
+52:       'rapid_fire', COALESCE(v_ship_record.rapid_fire, '{}'::jsonb),
+53:       'is_defense', false,
+54:       'source', 'planet'
+55:     );
+56:   END LOOP;
+57: 
+58:   -- === DEFENDER UNITS (planet owner ships) ===
+59:   SELECT 
+60:     COALESCE((SELECT level FROM user_technologies ut JOIN technology_types tt ON ut.technology_type_id = tt.id WHERE ut.user_id = v_defender_id AND tt.code = 'weapons_tech'), 0),
+61:     COALESCE((SELECT level FROM user_technologies ut JOIN technology_types tt ON ut.technology_type_id = tt.id WHERE ut.user_id = v_defender_id AND tt.code = 'shielding_tech'), 0),
+62:     COALESCE((SELECT level FROM user_technologies ut JOIN technology_types tt ON ut.technology_type_id = tt.id WHERE ut.user_id = v_defender_id AND tt.code = 'armour_tech'), 0)
+63:   INTO v_weapon_bonus, v_shield_bonus, v_hull_bonus;
+64: 
+65:   FOR v_ship_record IN
+66:     SELECT ps.ship_type_id, ps.quantity, st.code, st.name, st.weapon_power, st.shield_power,
+67:            st.structural_integrity, st.metal_cost, st.crystal_cost, st.rapid_fire
+68:     FROM planet_ships ps
+69:     JOIN ship_types st ON ps.ship_type_id = st.id
+70:     WHERE ps.planet_id = p_target_planet_id AND ps.quantity > 0 AND NOT public._occ_is_recovery_fleet(p_attacker_fleet_id, p_target_planet_id) /* [OCUPA1-pc1] */
+71:   LOOP
+72:     v_weapon := FLOOR(v_ship_record.weapon_power * (1 + v_weapon_bonus * 0.10));
+73:     v_shield := FLOOR(v_ship_record.shield_power * (1 + v_shield_bonus * 0.10));
+74:     v_hull := FLOOR(v_ship_record.structural_integrity * (1 + v_hull_bonus * 0.10));
+75:     
+76:     v_defender_units := v_defender_units || jsonb_build_object(
+77:       'type_id', v_ship_record.ship_type_id,
+78:       'code', v_ship_record.code,
+79:       'name', v_ship_record.name,
+80:       'quantity', v_ship_record.quantity,
+81:       'initial_quantity', v_ship_record.quantity,
+82:       'weapon', v_weapon,
+83:       'shield', v_shield,
+84:       'hull', v_hull,
+85:       'current_hull', v_hull * v_ship_record.quantity,
+86:       'current_shield', v_shield * v_ship_record.quantity,
+87:       'metal_cost', v_ship_record.metal_cost,
+88:       'crystal_cost', v_ship_record.crystal_cost,
+89:       'rapid_fire', COALESCE(v_ship_record.rapid_fire, '{}'::jsonb),
+90:       'is_defense', false,
+91:       'source', 'planet'
+92:     );
+93:   END LOOP;
+94: 
+95:   -- === DEFENDER DEFENSES ===
+96:   FOR v_defense_record IN
+97:     SELECT pd.defense_type_id, pd.quantity, dt.code, dt.name, dt.weapon_power, dt.shield_power,
+98:            dt.structural_integrity, dt.metal_cost, dt.crystal_cost
+99:     FROM planet_defenses pd
+100:     JOIN defense_types dt ON pd.defense_type_id = dt.id
+101:     WHERE pd.planet_id = p_target_planet_id AND pd.quantity > 0 AND NOT public._occ_is_recovery_fleet(p_attacker_fleet_id, p_target_planet_id) /* [OCUPA1-pc2] */
+102:     AND dt.code NOT IN ('interplanetary_missile', 'anti_ballistic_missile')
+103:   LOOP
+104:     v_weapon := FLOOR(v_defense_record.weapon_power * (1 + v_weapon_bonus * 0.10));
+105:     v_shield := FLOOR(v_defense_record.shield_power * (1 + v_shield_bonus * 0.10));
+106:     v_hull := FLOOR(v_defense_record.structural_integrity * (1 + v_hull_bonus * 0.10));
+107:     
+108:     v_defender_units := v_defender_units || jsonb_build_object(
+109:       'type_id', v_defense_record.defense_type_id,
+110:       'code', v_defense_record.code,
+111:       'name', v_defense_record.name,
+112:       'quantity', v_defense_record.quantity,
+113:       'initial_quantity', v_defense_record.quantity,
+114:       'weapon', v_weapon,
+115:       'shield', v_shield,
+116:       'hull', v_hull,
+117:       'current_hull', v_hull * v_defense_record.quantity,
+118:       'current_shield', v_shield * v_defense_record.quantity,
+119:       'metal_cost', v_defense_record.metal_cost,
+120:       'crystal_cost', v_defense_record.crystal_cost,
+121:       'rapid_fire', '{}'::jsonb,
+122:       'is_defense', true,
+123:       'source', 'defense'
+124:     );
+125:   END LOOP;
+126: 
+127:   -- === ALLIED STATIONED FLEETS (deployed on this planet via Alliance Depot) ===
+128:   -- FIX: Was 'hold', must be 'deploy' (that's how fleets are stored)
+129:   FOR v_allied_fleet IN
+130:     SELECT f.id as fleet_id, f.user_id as ally_user_id
+131:     FROM fleets f
+132:     WHERE f.target_galaxy = (SELECT galaxy FROM planets WHERE id = p_target_planet_id)
+133:       AND f.target_system = (SELECT solar_system FROM planets WHERE id = p_target_planet_id)
+134:       AND f.target_position = (SELECT position FROM planets WHERE id = p_target_planet_id)
+135:       AND f.mission_type = 'deploy'
+136:       AND COALESCE(f.target_type, 'planet') = (SELECT planet_type FROM planets WHERE id = p_target_planet_id)
+137:       AND f.is_completed = false
+138:       AND f.is_returning = false
+139:       AND f.user_id != v_defender_id
+140:       AND f.user_id != v_attacker_id
+141:       AND f.arrival_time <= now()
+142:   LOOP
+143:     -- Get this ally's tech bonuses
+144:     SELECT 
+145:       COALESCE((SELECT level FROM user_technologies ut JOIN technology_types tt ON ut.technology_type_id = tt.id WHERE ut.user_id = v_allied_fleet.ally_user_id AND tt.code = 'weapons_tech'), 0),
+146:       COALESCE((SELECT level FROM user_technologies ut JOIN technology_types tt ON ut.technology_type_id = tt.id WHERE ut.user_id = v_allied_fleet.ally_user_id AND tt.code = 'shielding_tech'), 0),
+147:       COALESCE((SELECT level FROM user_technologies ut JOIN technology_types tt ON ut.technology_type_id = tt.id WHERE ut.user_id = v_allied_fleet.ally_user_id AND tt.code = 'armour_tech'), 0)
+148:     INTO v_weapon_bonus, v_shield_bonus, v_hull_bonus;
+149: 
+150:     -- Add this ally's ships as defender units, tagged with fleet_id as source
+151:     FOR v_ship_record IN
+152:       SELECT fs.ship_type_id, fs.quantity, st.code, st.name, st.weapon_power, st.shield_power,
+153:              st.structural_integrity, st.metal_cost, st.crystal_cost, st.rapid_fire
+154:       FROM fleet_ships fs
+155:       JOIN ship_types st ON fs.ship_type_id = st.id
+156:       WHERE fs.fleet_id = v_allied_fleet.fleet_id AND fs.quantity > 0
+157:     LOOP
+158:       v_weapon := FLOOR(v_ship_record.weapon_power * (1 + v_weapon_bonus * 0.10));
+159:       v_shield := FLOOR(v_ship_record.shield_power * (1 + v_shield_bonus * 0.10));
+160:       v_hull := FLOOR(v_ship_record.structural_integrity * (1 + v_hull_bonus * 0.10));
+161:       
+162:       v_defender_units := v_defender_units || jsonb_build_object(
+163:         'type_id', v_ship_record.ship_type_id,
+164:         'code', v_ship_record.code,
+165:         'name', v_ship_record.name,
+166:         'quantity', v_ship_record.quantity,
+167:         'initial_quantity', v_ship_record.quantity,
+168:         'weapon', v_weapon,
+169:         'shield', v_shield,
+170:         'hull', v_hull,
+171:         'current_hull', v_hull * v_ship_record.quantity,
+172:         'current_shield', v_shield * v_ship_record.quantity,
+173:         'metal_cost', v_ship_record.metal_cost,
+174:         'crystal_cost', v_ship_record.crystal_cost,
+175:         'rapid_fire', COALESCE(v_ship_record.rapid_fire, '{}'::jsonb),
+176:         'is_defense', false,
+177:         'source', v_allied_fleet.fleet_id::text
+178:       );
+179:     END LOOP;
+180:   END LOOP;
+181: 
+182:   -- Run the combat simulation
+183:   v_combat_result := simulate_xnova_combat(v_attacker_units, v_defender_units);
+184: 
+185:   RETURN v_combat_result;
+== triggers on fleets with garrison/occ
+trg_award_expedition_blueprint_drop|award_expedition_blueprint_drop|O
+trg_colony_sale_lock|_trg_colony_sale_lock_fleet|O
+trg_fleet_completed_daily_mission|trg_fleet_completed_daily_mission|O
+trg_occ_block_fleet|_occ_trg_block_fleet|O
+trg_occ_garrison_end_del|_occ_trg_garrison_end|O
+trg_occ_garrison_end_upd|_occ_trg_garrison_end|O
+trg_occ_hostile_warning|_occ_trg_hostile_warning|O
+trigger_fleet_change_points|queue_points_update_for_fleet|O
+trigger_log_transport_interaction|log_transport_interaction|O
+trigger_notify_hostile_fleet|notify_hostile_fleet_incoming|O
+== frontend incoming source

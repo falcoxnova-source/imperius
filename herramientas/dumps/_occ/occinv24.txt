@@ -1,0 +1,446 @@
+== ship_types cols
+id:integer, code:text, name:text, description:text, category:text, metal_cost:integer, crystal_cost:integer, deuterium_cost:integer, build_time_seconds:integer, structural_integrity:integer, shield_power:integer, weapon_power:integer, cargo_capacity:integer, base_speed:integer, fuel_consumption:integer, rapid_fire:jsonb, image_url:text
+== ship_types
+ERROR:  column "speed" does not exist
+LINE 1: select id, code, category, coalesce(speed::text,'?') from sh...
+                                            ^
+== defense_types
+1|rocket_launcher|
+2|light_laser|
+3|heavy_laser|
+4|gauss_cannon|
+5|ion_cannon|
+6|plasma_turret|
+7|small_shield_dome|1
+8|large_shield_dome|1
+9|anti_ballistic_missile|
+10|interplanetary_missile|
+11|outer_protection_dome|1
+13|orbital_defense_platform|1
+15|graviton_cannon|
+== building codes
+10|nanite_factory
+11|shipyard
+9|robotics_factory
+== enforce_ship_blueprint_requirement
+
+DECLARE
+  v_owner_id       uuid;
+  v_blueprint_id   bigint;
+  v_unit_name      text;
+  v_shipyard_level integer;
+  v_owned          integer;
+  v_validation     jsonb;
+BEGIN
+  -- Solo naves o defensas
+  IF NEW.item_type NOT IN ('ship','defense') THEN
+    RETURN NEW;
+  END IF;
+  IF NEW.item_type = 'ship'    AND NEW.ship_type_id    IS NULL THEN RETURN NEW; END IF;
+  IF NEW.item_type = 'defense' AND NEW.defense_type_id IS NULL THEN RETURN NEW; END IF;
+
+  SELECT p.user_id INTO v_owner_id FROM planets p WHERE p.id = NEW.planet_id;
+  IF v_owner_id IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  -- Localizar plano (nave o defensa)
+  IF NEW.item_type = 'ship' THEN
+    SELECT sb.id, st.name INTO v_blueprint_id, v_unit_name
+    FROM ship_blueprints sb
+    JOIN ship_types st ON st.id = sb.ship_type_id
+    WHERE sb.ship_type_id = NEW.ship_type_id AND sb.is_active = true
+    LIMIT 1;
+  ELSE
+    SELECT sb.id, dt.name INTO v_blueprint_id, v_unit_name
+    FROM ship_blueprints sb
+    JOIN defense_types dt ON dt.id = sb.defense_type_id
+    WHERE sb.defense_type_id = NEW.defense_type_id AND sb.is_active = true
+    LIMIT 1;
+  END IF;
+
+  -- Sin plano definido: sin restriccion extra (via normal ya validada)
+  IF v_blueprint_id IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  SELECT COUNT(*)::integer INTO v_owned
+  FROM user_ship_blueprints usb
+  WHERE usb.user_id = v_owner_id AND usb.blueprint_id = v_blueprint_id;
+
+  -- CONSUMIBLE: si posee planos suficientes para toda la tanda,
+  -- exige Hangar Nv1, consume NEW.quantity planos (los mas antiguos) y listo.
+  IF v_owned >= NEW.quantity THEN
+    SELECT COALESCE(pb.level, 0) INTO v_shipyard_level
+    FROM planet_buildings pb
+    JOIN building_types bt ON bt.id = pb.building_type_id
+    WHERE pb.planet_id = NEW.planet_id AND bt.code = 'shipyard'
+    LIMIT 1;
+
+    IF COALESCE(v_shipyard_level, 0) < 1 THEN
+      RAISE EXCEPTION 'Necesitas Hangar nivel 1 para construir con plano.'
+        USING ERRCODE = 'P0001';
+    END IF;
+
+    DELETE FROM user_ship_blueprints
+    WHERE ctid IN (
+      SELECT usb.ctid FROM user_ship_blueprints usb
+      WHERE usb.user_id = v_owner_id AND usb.blueprint_id = v_blueprint_id
+      ORDER BY usb.acquired_at ASC
+      LIMIT NEW.quantity
+    );
+    NEW.blueprints_used := NEW.quantity;
+    RETURN NEW;
+  END IF;
+
+  -- Sin planos suficientes: requisitos completos (via normal)
+  IF NEW.item_type = 'ship' THEN
+    v_validation := validate_ship_requirements(NEW.planet_id, NEW.ship_type_id);
+  ELSE
+    v_validation := validate_defense_requirements(NEW.planet_id, NEW.defense_type_id);
+  END IF;
+
+  IF NOT COALESCE((v_validation->>'valid')::boolean, false) THEN
+    RAISE EXCEPTION 'No cumples los requisitos para construir %. Compra su plano o cumple los requisitos.',
+      COALESCE(v_unit_name, 'esto')
+      USING ERRCODE = 'P0001';
+  END IF;
+
+  NEW.blueprints_used := 0;
+  RETURN NEW;
+END;
+
+== user_can_build_ship
+CREATE OR REPLACE FUNCTION public.user_can_build_ship(p_user_id uuid, p_ship_type_id integer)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_requirement record;
+  v_user_tech_level integer;
+  v_user_building_level integer;
+BEGIN
+  FOR v_requirement IN
+    SELECT sr.required_tech_id, sr.required_tech_level,
+           sr.required_building_id, sr.required_building_level
+    FROM ship_requirements sr
+    WHERE sr.ship_type_id = p_ship_type_id
+  LOOP
+    IF v_requirement.required_tech_id IS NOT NULL AND COALESCE(v_requirement.required_tech_level, 0) > 0 THEN
+      SELECT COALESCE(ut.level, 0) INTO v_user_tech_level
+      FROM user_technologies ut
+      WHERE ut.user_id = p_user_id
+        AND ut.technology_type_id = v_requirement.required_tech_id;
+
+      IF COALESCE(v_user_tech_level, 0) < v_requirement.required_tech_level THEN
+        RETURN false;
+      END IF;
+    END IF;
+
+    IF v_requirement.required_building_id IS NOT NULL AND COALESCE(v_requirement.required_building_level, 0) > 0 THEN
+      SELECT COALESCE(MAX(pb.level), 0) INTO v_user_building_level
+      FROM planet_buildings pb
+      JOIN planets p ON p.id = pb.planet_id
+      WHERE p.user_id = p_user_id
+        AND pb.building_type_id = v_requirement.required_building_id;
+
+      IF COALESCE(v_user_building_level, 0) < v_requirement.required_building_level THEN
+        RETURN false;
+      END IF;
+    END IF;
+  END LOOP;
+
+  RETURN true;
+END;
+$function$
+
+== planet_buildings cols
+id:uuid, planet_id:uuid, building_type_id:integer, level:integer, is_upgrading:boolean, upgrade_end_time:timestamp with time zone, created_at:timestamp with time zone
+== planets cols
+id:uuid, user_id:uuid, name:text, galaxy:integer, solar_system:integer, position:integer, planet_type:text, image_id:integer, diameter:integer, fields_used:integer, fields_max:integer, temp_min:integer, temp_max:integer, is_main_planet:boolean, is_destroyed:boolean, last_update:timestamp with time zone, created_at:timestamp with time zone, jump_gate_cooldown:timestamp with time zone, name_changed:boolean, autopilot_role:text, metal_deposit:bigint, crystal_deposit:bigint, deuterium_deposit:bigint, planet_status:text, depleted_at:timestamp with time zone, regenerates_at:timestamp with time zone, metal_initial_deposit:bigint, crystal_initial_deposit:bigint, deuterium_initial_deposit:bigint, dark_matter_stock:numeric, dark_matter_last_gen:timestamp with time zone, autopilot_enabled:boolean
+== fleets cols
+id:uuid:gen_random_uuid(), user_id:uuid:, origin_planet_id:uuid:, target_galaxy:integer:, target_system:integer:, target_position:integer:, target_type:text:'planet'::text, mission_type:text:, cargo_metal:numeric:0, cargo_crystal:numeric:0, cargo_deuterium:numeric:0, departure_time:timestamp with time zone:, arrival_time:timestamp with time zone:, return_time:timestamp with time zone:, is_returning:boolean:false, is_completed:boolean:false, created_at:timestamp with time zone:now(), arrival_notified:boolean:false, acs_id:uuid:, is_acs:boolean:false, accel_out:boolean:false, accel_ret:boolean:false, pending_dark_matter:numeric:0, pending_fxu:numeric:0
+== referral_commissions cols
+id:uuid:NO, referrer_id:uuid:NO, seller_id:uuid:NO, transaction_id:uuid:YES, commission_type:text:NO, resource_type:text:YES, amount:bigint:NO, created_at:timestamp with time zone:YES, fxu_amount:numeric:YES
+== referral_commissions checks
+FOREIGN KEY (referrer_id) REFERENCES profiles(id) ON DELETE SET NULL
+FOREIGN KEY (seller_id) REFERENCES profiles(id) ON DELETE SET NULL
+FOREIGN KEY (transaction_id) REFERENCES market_transactions(id)
+PRIMARY KEY (id)
+== profiles cols subset
+username:text
+is_admin:boolean
+vacation_mode:boolean
+created_at:timestamp with time zone
+battles_won:integer
+battles_draw:integer
+battles_lost:integer
+units_destroyed:bigint
+units_lost:bigint
+debris_metal_total:bigint
+debris_crystal_total:bigint
+fxu_balance:numeric
+referred_by:uuid
+== tables exist?
+||
+== queue delete triggers
+building_queue|enforce_building_queue_limit|CREATE TRIGGER enforce_building_queue_limit BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION check_building_queue_limit()
+building_queue|protect_building_queue_trigger|CREATE TRIGGER protect_building_queue_trigger BEFORE UPDATE ON public.building_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+shipyard_queue|protect_shipyard_queue_trigger|CREATE TRIGGER protect_shipyard_queue_trigger BEFORE UPDATE ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION protect_game_table_full()
+fleets|trg_award_expedition_blueprint_drop|CREATE TRIGGER trg_award_expedition_blueprint_drop AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION award_expedition_blueprint_drop()
+shipyard_queue|trg_enforce_ship_blueprint_requirement|CREATE TRIGGER trg_enforce_ship_blueprint_requirement BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION enforce_ship_blueprint_requirement()
+fleets|trg_fleet_completed_daily_mission|CREATE TRIGGER trg_fleet_completed_daily_mission AFTER UPDATE OF is_completed ON public.fleets FOR EACH ROW EXECUTE FUNCTION trg_fleet_completed_daily_mission()
+fleets|trigger_log_transport_interaction|CREATE TRIGGER trigger_log_transport_interaction AFTER UPDATE ON public.fleets FOR EACH ROW WHEN (((new.is_completed = true) AND (old.is_completed = false))) EXECUTE FUNCTION log_transport_interaction()
+fleets|trigger_notify_hostile_fleet|CREATE TRIGGER trigger_notify_hostile_fleet AFTER INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION notify_hostile_fleet_incoming()
+fleet_ships|trigger_fleet_ships_change_points|CREATE TRIGGER trigger_fleet_ships_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleet_ships FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet_ships()
+fleets|trigger_fleet_change_points|CREATE TRIGGER trigger_fleet_change_points AFTER INSERT OR DELETE OR UPDATE ON public.fleets FOR EACH ROW EXECUTE FUNCTION queue_points_update_for_fleet()
+building_queue|trg_colony_sale_lock|CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.building_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+shipyard_queue|trg_colony_sale_lock|CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.shipyard_queue FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_queue()
+fleets|trg_colony_sale_lock|CREATE TRIGGER trg_colony_sale_lock BEFORE INSERT ON public.fleets FOR EACH ROW EXECUTE FUNCTION _trg_colony_sale_lock_fleet()
+== cron
+8|cleanup_old_broadcast_messages|0 3 * * *|DELETE FROM public.messages WHERE message_type = 'broadcast' AND created_at < NOW() - INTERVAL '7 days'
+10|fetch-twitter-missions|*/5 * * * *|
+  SELECT net.http_post(
+    url := c.supabase_project_url || '/functions/v1/fetch-twitter-missions',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer ' || c.supabase_anon_key
+    ),
+    body := '{}'::jsonb
+  )
+  FROM twitter_social_config c
+  WHERE c.supabase_project_url IS NOT NULL
+    AND c.supabase_anon_key IS NOT NULL
+  LIMIT 1;
+  
+13|cleanup-http-response|0 4 * * *|DELETE FROM net._http_response WHERE created < now() - interval '24 hours'
+14|cleanup-old-completed-fleets|0 5 * * 0|DELETE FROM fleets WHERE is_completed = true AND arrival_time < now() - interval '30 days'
+16|cleanup-cron-run-details|30 4 * * *|DELETE FROM cron.job_run_details WHERE end_time < now() - interval '7 days'
+17|cleanup-old-game-messages|30 3 * * *|DELETE FROM public.messages 
+    WHERE (
+      (message_type IN ('expedition', 'espionage') AND created_at < now() - interval '7 days')
+      OR (message_type = 'system' AND created_at < now() - interval '7 days')
+      OR (message_type = 'combat' AND created_at < now() - interval '7 days')
+    )
+26|p2p_expire_offers_every_15min|*/15 * * * *|SELECT public.p2p_expire_stale_offers();
+27|auto-cancel-insufficient-listings|*/3 * * * *|SELECT public.auto_cancel_insufficient_market_listings();
+28|clean_expired_cosmetics_every_5min|*/5 * * * *|SELECT public.clean_all_expired_cosmetics();
+29|distribute-treasure-pool|5 0 * * *|SELECT admin_distribute_treasure_pool()
+30|lottery-auto-draw|10 0 * * *|SELECT public.cron_execute_lottery_draw();
+31|distribute-top50-pool|15 0 * * *|SELECT public.admin_distribute_monthly_pool()
+32|enforce-alliance-member-limits|*/10 * * * *|SELECT public.cron_enforce_alliance_member_limits();
+33|research-orphan-tick|* * * * *|SELECT public.cron_promote_orphan_research();
+34|expire-market-offers-24h|*/5 * * * *|SELECT public.cron_expire_market_offers();
+35|bot_tick_worker|10 seconds|SELECT public.bot_tick_worker();
+36|raffle-auto-draw|* * * * *|SELECT public.cron_execute_raffle_draws();
+37|update-player-rankings|*/5 * * * *|SELECT public.update_all_rankings();
+38|hero-duel-resolve|* * * * *|SELECT public.resolve_hero_duel(id) FROM public.hero_duels WHERE status = 'accepted' AND resolves_at <= now()
+39|battleship-tick|10 seconds|SELECT public.battleship_tick()
+40|sports-football-tick|* * * * *|SELECT public._sports_cron_tick()
+41|battleship-daily-pool|1 0 * * *|SELECT public.battleship_daily_pool_payout()
+== validate_ship_requirements
+
+DECLARE
+  v_requirement RECORD;
+  v_current_level integer;
+  v_missing_reqs jsonb := '[]'::jsonb;
+  v_planet RECORD;
+BEGIN
+  SELECT * INTO v_planet FROM planets WHERE id = p_planet_id;
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('valid', false, 'error', 'Planet not found');
+  END IF;
+
+  FOR v_requirement IN
+    SELECT sr.*, 
+           bt.name as building_name, 
+           tt.name as tech_name
+    FROM ship_requirements sr
+    LEFT JOIN building_types bt ON bt.id = sr.required_building_id
+    LEFT JOIN technology_types tt ON tt.id = sr.required_tech_id
+    WHERE sr.ship_type_id = p_ship_type_id
+  LOOP
+    IF v_requirement.required_building_id IS NOT NULL THEN
+      SELECT COALESCE(pb.level, 0) INTO v_current_level
+      FROM planet_buildings pb
+      WHERE pb.planet_id = p_planet_id
+        AND pb.building_type_id = v_requirement.required_building_id;
+      
+      IF v_current_level IS NULL THEN v_current_level := 0; END IF;
+      
+      IF v_current_level < v_requirement.required_building_level THEN
+        v_missing_reqs := v_missing_reqs || jsonb_build_object(
+          'type', 'building',
+          'name', v_requirement.building_name,
+          'required', v_requirement.required_building_level,
+          'current', v_current_level
+        );
+      END IF;
+    END IF;
+
+    IF v_requirement.required_tech_id IS NOT NULL THEN
+      SELECT COALESCE(ut.level, 0) INTO v_current_level
+      FROM user_technologies ut
+      WHERE ut.user_id = v_planet.user_id
+        AND ut.technology_type_id = v_requirement.required_tech_id;
+      
+      IF v_current_level IS NULL THEN v_current_level := 0; END IF;
+      
+      IF v_current_level < v_requirement.required_tech_level THEN
+        v_missing_reqs := v_missing_reqs || jsonb_build_object(
+          'type', 'technology',
+          'name', v_requirement.tech_name,
+          'required', v_requirement.required_tech_level,
+          'current', v_current_level
+        );
+      END IF;
+    END IF;
+  END LOOP;
+
+  IF jsonb_array_length(v_missing_reqs) > 0 THEN
+    RETURN jsonb_build_object('valid', false, 'missing', v_missing_reqs);
+  END IF;
+
+  RETURN jsonb_build_object('valid', true);
+END;
+
+== shipyard build time formula in secure_add_to_shipyard_queue
+6:v_shipyard_level integer;
+7:v_nanite_level integer;
+11:v_build_time_per_unit integer;
+14:v_game_speed integer;
+78:    SELECT COALESCE(pb.level, 0) INTO v_shipyard_level
+83:    IF COALESCE(v_shipyard_level, 0) < 1 THEN
+173:SELECT COALESCE(pb.level, 0) INTO v_shipyard_level
+178:SELECT COALESCE(pb.level, 0) INTO v_nanite_level
+181:WHERE pb.planet_id = p_planet_id AND bt.code = 'nanite_factory';
+183:v_game_speed := get_game_speed();
+186:v_build_time_per_unit := GREATEST(1, FLOOR(
+188:/ (2500.0 * (1 + COALESCE(v_shipyard_level, 0)))
+190:/ POWER(2, COALESCE(v_nanite_level, 0))
+191:/ v_game_speed
+194:v_build_time_per_unit := GREATEST(1, FLOOR(
+196:/ (2500.0 * (1 + COALESCE(v_shipyard_level, 0)))
+198:/ POWER(2, COALESCE(v_nanite_level, 0))
+199:/ v_game_speed
+203:-- VIP Plus: time bonus (game_settings.vip_time_speed_multiplier)
+204:v_build_time_per_unit := public.apply_vip_time_bonus(auth.uid(), v_build_time_per_unit);
+222:build_time_per_unit, queue_position,
+223:start_time, current_unit_end_time
+230:v_build_time_per_unit, v_queue_position + 1,
+232:CASE WHEN v_queue_position = 0 THEN now() + (v_build_time_per_unit || ' seconds')::interval ELSE NULL END
+240:  'build_time_per_unit', v_build_time_per_unit,
+250:v_shipyard_level integer;
+251:v_nanite_level integer;
+255:v_build_time_per_unit integer;
+258:v_game_speed integer;
+323:    SELECT COALESCE(pb.level, 0) INTO v_shipyard_level
+328:    IF COALESCE(v_shipyard_level, 0) < 1 THEN
+369:  SELECT COALESCE(pb.level, 0) INTO v_shipyard_level
+374:  IF COALESCE(v_shipyard_level, 0) < 1 THEN
+449:SELECT COALESCE(pb.level, 0) INTO v_shipyard_level
+454:SELECT COALESCE(pb.level, 0) INTO v_nanite_level
+457:WHERE pb.planet_id = p_planet_id AND bt.code = 'nanite_factory';
+459:v_game_speed := get_game_speed();
+462:v_build_time_per_unit := GREATEST(1, FLOOR(
+464:/ (2500.0 * (1 + COALESCE(v_shipyard_level, 0)))
+466:/ POWER(2, COALESCE(v_nanite_level, 0))
+== _bs_settle
+
+DECLARE
+  c_pool_rate  constant numeric := 0.05;
+  c_daily_rate constant numeric := 0.05;
+  c_ref_rate   constant numeric := 0.20;
+  m             public.battleship_matches%ROWTYPE;
+  v_cfg         public.battleship_config%ROWTYPE;
+  v_loser       uuid;
+  v_fee         numeric;
+  v_pool        numeric;
+  v_daily       numeric;
+  v_company     numeric;
+  v_referrer    uuid;
+  v_ref_share   numeric := 0;
+  v_admin_share numeric;
+  v_admin_id    uuid;
+  v_pending     numeric;
+  v_flush       numeric;
+BEGIN
+  SELECT * INTO m FROM public.battleship_matches WHERE id = p_match_id FOR UPDATE;
+  IF NOT FOUND OR m.status NOT IN ('placing', 'battle') OR p_winner NOT IN (m.player1, m.player2) THEN
+    RETURN;
+  END IF;
+  PERFORM public._internal_set_fxu_context();
+  UPDATE public.profiles SET fxu_balance = fxu_balance + m.pot WHERE id = p_winner;
+  UPDATE public.battleship_entries
+     SET payout = CASE WHEN user_id = p_winner THEN m.pot ELSE 0 END
+   WHERE match_id = p_match_id;
+  UPDATE public.battleship_matches
+     SET status = 'finished', winner = p_winner, end_reason = p_reason, payout = m.pot,
+         turn = NULL, deadline = NULL, finished_at = now(), version = version + 1, updated_at = now()
+   WHERE id = p_match_id;
+
+  IF NOT m.loser_fee THEN
+    -- Partidas antiguas: la comision ya se cobro al unirse
+    UPDATE public.battleship_config SET total_paid = total_paid + m.pot, updated_at = now() WHERE id = 1;
+    RETURN;
+  END IF;
+
+  v_loser   := CASE WHEN p_winner = m.player1 THEN m.player2 ELSE m.player1 END;
+  v_fee     := m.stake * 2 - m.pot;                -- 20% de la apuesta del perdedor
+  v_pool    := round(m.stake * c_pool_rate, 8);    -- 5%  pools normales
+  v_daily   := round(m.stake * c_daily_rate, 8);   -- 5%  pool diario Batalla de Naves
+  v_company := v_fee - v_pool - v_daily;           -- 10% empresa
+
+  SELECT p.referred_by INTO v_referrer FROM public.profiles p WHERE p.id = v_loser;
+  IF v_referrer IS NOT NULL AND v_referrer <> v_loser
+     AND EXISTS (SELECT 1 FROM public.profiles WHERE id = v_referrer) THEN
+    v_ref_share := round(v_company * c_ref_rate, 8);
+  ELSE
+    v_referrer := NULL;
+    v_ref_share := 0;
+  END IF;
+  v_admin_share := v_company - v_ref_share;
+
+  SELECT id INTO v_admin_id FROM public.profiles WHERE is_admin = true ORDER BY created_at ASC LIMIT 1;
+  IF v_admin_share > 0 AND v_admin_id IS NOT NULL THEN
+    UPDATE public.profiles SET fxu_balance = fxu_balance + v_admin_share WHERE id = v_admin_id;
+  END IF;
+
+  IF v_referrer IS NOT NULL AND v_ref_share > 0 THEN
+    UPDATE public.profiles SET fxu_balance = fxu_balance + v_ref_share WHERE id = v_referrer;
+    INSERT INTO public.referral_commissions (referrer_id, seller_id, transaction_id, commission_type, fxu_amount)
+    VALUES (v_referrer, v_loser, NULL, 'casino_battleship_referral', v_ref_share);
+  END IF;
+
+  UPDATE public.battleship_entries
+     SET fee = v_fee, pool_share = v_pool, daily_pool_share = v_daily, company_share = v_admin_share,
+         referrer_id = v_referrer, referrer_share = v_ref_share
+   WHERE match_id = p_match_id AND user_id = v_loser;
+
+  IF v_admin_share > 0 THEN
+    -- record_admin_revenue reparte la parte de los accionistas
+    PERFORM public.record_admin_revenue('casino_battleship', v_admin_share,
+      'Batalla de Naves: comision del perdedor', v_loser, p_match_id);
+  END IF;
+
+  -- Pools normales: se acumula y se envia en multiplos de 10
+  SELECT * INTO v_cfg FROM public.battleship_config WHERE id = 1 FOR UPDATE;
+  v_pending := v_cfg.pool_pending + v_pool;
+== contribute_to_jackpot
+p_user_id uuid, p_seconds integer|integer
+p_revenue_type text, p_amount numeric, p_description text, p_related_user_id uuid, p_related_tx_id uuid, p_currency text|uuid
+|void
+p_amount numeric, p_source text, p_user_id uuid|numeric
+|integer
+|numeric
+== messages cols
+id:uuid:NO, sender_id:uuid:YES, recipient_id:uuid:YES, subject:text:NO, body:text:NO, message_type:text:YES, is_read:boolean:YES, created_at:timestamp with time zone:YES
+== battle_reports cols
+id:uuid, attacker_id:uuid, defender_id:uuid, planet_id:uuid, coordinates:text, result:text, rounds:integer, attacker_losses_metal:numeric, attacker_losses_crystal:numeric, defender_losses_metal:numeric, defender_losses_crystal:numeric, debris_metal:numeric, debris_crystal:numeric, loot_metal:numeric, loot_crystal:numeric, loot_deuterium:numeric, report_data:jsonb, created_at:timestamp with time zone, battle_type:text, galaxy:integer, solar_system:integer, position:integer, attacker_ships_initial:jsonb, defender_ships_initial:jsonb, attacker_ships_lost:jsonb, defender_ships_lost:jsonb, rounds_data:jsonb
+== planet_resources cols
+id:uuid, planet_id:uuid, metal:numeric, crystal:numeric, deuterium:numeric, energy_used:integer, energy_max:integer, metal_per_hour:numeric, crystal_per_hour:numeric, deuterium_per_hour:numeric, metal_storage:numeric, crystal_storage:numeric, deuterium_storage:numeric, last_update:timestamp with time zone, metal_mine_percent:smallint, crystal_mine_percent:smallint, deuterium_synth_percent:smallint, solar_plant_percent:smallint, fusion_reactor_percent:smallint, solar_satellite_percent:smallint
+== acs tables cols
+acs_fleets|id, main_fleet_id, alliance_id, name, target_galaxy, target_system, target_position, arrival_time, max_fleets, is_active, created_at, creator_id, status, current_participants, invited_users
+acs_participants|id, acs_id, fleet_id, user_id, joined_at
