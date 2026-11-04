@@ -12,11 +12,11 @@ const KEYWORDS =
 
 const faqData = [
   {
-      q: '¿Qué es Xnova?',
-    a: 'Xnova es un juego de estrategia espacial gratuito tipo OGame en el que produces recursos, los vendes en el mercado entre jugadores y ganas criptomonedas reales (token TUNG) sin invertir nada.',
+      q: '¿Qué es Imperium?',
+    a: 'Imperium es un juego de estrategia de imperios gratuito tipo OGame en el que produces recursos, los vendes en el mercado entre jugadores y ganas criptomonedas reales (token TUNG) sin invertir nada.',
   },
   {
-      q: '¿Cómo ganar crypto de manera gratis en Xnova?',
+      q: '¿Cómo ganar crypto de manera gratis en Imperium?',
     a: 'Construyes minas de metal, cristal y deuterio que producen las 24 horas sin coste. Publicas el excedente en el mercado P2P y, cuando otro jugador lo compra, recibes tokens TUNG que puedes retirar a tu wallet.',
   },
   {
@@ -24,19 +24,19 @@ const faqData = [
     a: 'La materia prima te sale gratis porque la producen tus minas, así que cada venta es beneficio neto. Vende cuando un recurso escasea y compra cuando sobra para aumentar tu margen sin poner dinero.',
   },
   {
-      q: '¿Es Xnova realmente gratis? ¿Puedo ganar sin invertir?',
+      q: '¿Es Imperium realmente gratis? ¿Puedo ganar sin invertir?',
     a: 'Sí, 100% gratis. No necesitas depositar nada ni comprar NFTs. Te registras, juegas y acumulas tokens TUNG que puedes retirar a tu wallet.',
   },
   {
-      q: '¿Xnova es similar a OGame?',
-    a: 'Sí. Mismas mecánicas: gestión de recursos, construcción, investigación, flotas, combate, alianzas y colonización. La diferencia es que en Xnova ganas criptomonedas reales.',
+      q: '¿Imperium es similar a OGame?',
+    a: 'Sí. Mismas mecánicas: gestión de recursos, construcción, investigación, legiones, combate, alianzas y conquista. La diferencia es que en Imperium ganas criptomonedas reales.',
   },
   {
       q: '¿Cómo retiro mis ganancias?',
     a: 'Conecta MetaMask o cualquier wallet Web3 compatible con BSC. Los tokens TUNG se transfieren a tu wallet y puedes intercambiarlos por otras criptomonedas.',
   },
   {
-      q: '¿Cuánto puedo ganar jugando a Xnova?',
+      q: '¿Cuánto puedo ganar jugando a Imperium?',
     a: 'Depende de tu actividad y de lo bien que vendas en el mercado. Cuanto mayor sea el nivel de tus minas y más constante tu comercio, mayores serán tus ingresos.',
   },
   {
@@ -51,7 +51,7 @@ const faqData = [
 const videoGuides = [
   {
     id: 'bfKO1OII1VM',
-    title: 'Cómo Jugar Xnova desde 0 — Tutorial Completo para Principiantes',
+    title: 'Cómo Jugar Imperium desde 0 — Tutorial Completo para Principiantes',
     author: 'Guía oficial',
   },
   {
@@ -61,43 +61,43 @@ const videoGuides = [
   },
   {
     id: 'hSebzn-G2ZI',
-    title: 'Vídeo del ecosistema Xnova',
-    author: 'Ecosistema Xnova',
+    title: 'Vídeo del ecosistema Imperium',
+    author: 'Ecosistema Imperium',
   },
   {
     id: 'OzYS9lzQ9Jw',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'aX80OPQK2dw',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'uThnvmIOTSk',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'bAutDtt4W_U',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'pOBzzmJuhcE',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'tbF5bFz5_5o',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'C8Y2tK2RnIc',
-    title: 'Guía de Xnova',
-    author: 'Comunidad Xnova',
+    title: 'Guía de Imperium',
+    author: 'Comunidad Imperium',
   },
   {
     id: 'EUWHH8KrvU8',
@@ -158,15 +158,15 @@ export function LandingPage() {
   return (
     <>
       <SEO
-        title="Xnova | Gana Criptomonedas Gratis Jugando | Juego Tipo OGame"
-        description="Xnova es el juego de estrategia espacial tipo OGame donde generas ingresos gratis: vende tus recursos en el mercado y gana criptomonedas reales sin invertir."
+        title="Imperium | Gana Criptomonedas Gratis Jugando | Juego Tipo OGame"
+        description="Imperium es el juego de estrategia de imperios tipo OGame donde generas ingresos gratis: vende tus recursos en el mercado y gana criptomonedas reales sin invertir."
         keywords={KEYWORDS}
         schema={[schemas.webApplication, schemas.aggregateRating({ ratingValue: 4.5, bestRating: 5, ratingCount: 45 }), breadcrumbSchema, faqSchema]}
       />
 
-      <div className="min-h-screen bg-[#0a0e17] text-white font-['Rajdhani'] overflow-x-hidden">
+      <div className="min-h-screen bg-[#120d06] text-white font-['Rajdhani'] overflow-x-hidden">
         {/* ===== NAVBAR ===== */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0e17]/90 backdrop-blur-xl border-b border-white/5" role="navigation" aria-label="Navegación principal">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#120d06]/90 backdrop-blur-xl border-b border-white/5" role="navigation" aria-label="Navegación principal">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
@@ -184,22 +184,22 @@ export function LandingPage() {
                 </span>
               </Link>
               <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-                <a href="#features" className="hover:text-cyan-400 transition-colors">
+                <a href="#features" className="hover:text-amber-400 transition-colors">
                   Características
                 </a>
-                <a href="#how-it-works" className="hover:text-cyan-400 transition-colors">
+                <a href="#how-it-works" className="hover:text-amber-400 transition-colors">
                   Cómo Funciona
                 </a>
-                <a href="#earn" className="hover:text-cyan-400 transition-colors">
+                <a href="#earn" className="hover:text-amber-400 transition-colors">
                   Ganancias
                 </a>
-                <a href="#faq" className="hover:text-cyan-400 transition-colors">
+                <a href="#faq" className="hover:text-amber-400 transition-colors">
                   FAQ
                 </a>
-                <Link to="/blog" className="hover:text-cyan-400 transition-colors">
+                <Link to="/blog" className="hover:text-amber-400 transition-colors">
                   Blog
                 </Link>
-                <Link to="/about" className="hover:text-cyan-400 transition-colors">
+                <Link to="/about" className="hover:text-amber-400 transition-colors">
                   Sobre Nosotros
                 </Link>
               </div>
@@ -212,7 +212,7 @@ export function LandingPage() {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-5 py-2 text-sm font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-cyan-500/20"
+                  className="px-5 py-2 text-sm font-bold bg-gradient-to-r from-amber-500 to-yellow-600 rounded-lg hover:from-amber-400 hover:to-yellow-500 transition-all duration-300 shadow-lg shadow-amber-500/20"
                 >
                   Regístrate
                 </Link>
@@ -225,22 +225,22 @@ export function LandingPage() {
         <section className="relative pt-32 pb-20 overflow-hidden">
           {/* Animated background */}
           <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-[150px]" />
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/15 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-600/15 rounded-full blur-[120px] animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-700/10 rounded-full blur-[150px]" />
             {/* Grid pattern */}
             <div
               className="absolute inset-0 opacity-[0.03]"
               style={{
                 backgroundImage:
-                  'linear-gradient(rgba(0,212,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.3) 1px, transparent 1px)',
+                  'linear-gradient(rgba(245,158,11,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.3) 1px, transparent 1px)',
                 backgroundSize: '60px 60px',
               }}
             />
-            {/* Floating planets */}
-            <div className="absolute top-[15%] right-[10%] w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/10 animate-bounce" style={{animationDuration: '8s'}} />
-            <div className="absolute bottom-[25%] left-[8%] w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/15 to-pink-500/15 border border-purple-500/10 animate-bounce" style={{animationDuration: '6s', animationDelay: '2s'}} />
-            <div className="absolute top-[40%] left-[15%] w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400/10 to-blue-400/10 border border-cyan-400/10 animate-pulse" style={{animationDuration: '4s'}} />
+            {/* Emblemas romanos */}
+            <div className="absolute top-[15%] right-[10%] w-16 h-16 rounded-full bg-gradient-to-br from-amber-500/25 to-yellow-600/25 border border-amber-500/20 flex items-center justify-center text-3xl animate-bounce" style={{animationDuration: '8s'}}>🏛️</div>
+            <div className="absolute bottom-[25%] left-[8%] w-12 h-12 rounded-full bg-gradient-to-br from-orange-500/20 to-red-600/20 border border-orange-500/20 flex items-center justify-center text-2xl animate-bounce" style={{animationDuration: '6s', animationDelay: '2s'}}>⚜️</div>
+            <div className="absolute top-[40%] left-[15%] w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400/15 to-amber-400/15 border border-yellow-400/20 flex items-center justify-center text-xl animate-pulse" style={{animationDuration: '4s'}}>🛡️</div>
           </div>
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -268,24 +268,24 @@ export function LandingPage() {
 
                 <h1
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
-                  style={{ fontFamily: 'Orbitron, sans-serif' }}
+                  style={{ fontFamily: 'Cinzel, serif' }}
                 >
                   Gana{' '}
-                  <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
                     Criptomonedas
                   </span>{' '}
                   Gratis
                   <br />
-                  Jugando a Xnova
+                  Jugando a Imperium
                 </h1>
 
                 <p className="text-lg sm:text-xl text-slate-400 mb-10 leading-relaxed">
-                  <span className="text-white font-semibold">Xnova</span> es el juego de
-                  estrategia espacial multijugador tipo{' '}
-                  <span className="text-cyan-400 font-semibold">OGame</span> donde{' '}
+                  <span className="text-white font-semibold">Imperium</span> es el juego de
+                  estrategia de imperios multijugador tipo{' '}
+                  <span className="text-amber-400 font-semibold">OGame</span> donde{' '}
                   <span className="text-white font-semibold">generas ingresos gratis</span>:
-                  tus minas producen recursos sin coste y al{' '}
-                  <span className="text-cyan-400 font-semibold">venderlos en el mercado</span>{' '}
+                  tus provincias producen recursos sin coste y al{' '}
+                  <span className="text-amber-400 font-semibold">venderlos en el mercado</span>{' '}
                   ganas tokens{' '}
                   <span className="text-yellow-400 font-semibold">TUNG</span> convertibles
                   a dinero real.{' '}
@@ -295,10 +295,10 @@ export function LandingPage() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link
                     to="/register"
-                    className="group px-8 py-4 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105"
+                    className="group px-8 py-4 text-lg font-bold bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl hover:from-amber-400 hover:to-yellow-500 transition-all duration-300 shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-105"
                   >
                     🎮 Empezar a Ganar Ahora
-                    <span className="block text-sm font-normal text-cyan-200 mt-1">
+                    <span className="block text-sm font-normal text-amber-200 mt-1">
                       Sin depósito · Registro en 30 segundos
                     </span>
                   </Link>
@@ -329,7 +329,7 @@ export function LandingPage() {
                       ¿Quieres adelantar? Compra TUNG aquí
                     </div>
                     <div className="text-sm text-slate-400">
-                      Con TUNG aceleras construcciones, flotas e investigaciones y compras
+                      Con TUNG aceleras construcciones, legiones e investigaciones y compras
                       recursos en el mercado.
                     </div>
                   </div>
@@ -346,8 +346,8 @@ export function LandingPage() {
                       className="p-3 rounded-xl bg-white/[0.02] border border-white/5 backdrop-blur-sm"
                     >
                       <div
-                        className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"
-                        style={{ fontFamily: 'Orbitron, sans-serif' }}
+                        className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                        style={{ fontFamily: 'Cinzel, serif' }}
                       >
                         {stat.value}
                       </div>
@@ -361,12 +361,12 @@ export function LandingPage() {
               <div className="relative flex justify-center lg:justify-end">
                 <div className="relative">
                   {/* Glow effect behind image */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl" />
+                  <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-orange-500/20 rounded-3xl blur-3xl" />
                   <img
                     src="https://photos.pinksale.finance/file/pinksale-logo-upload/1780084974042-31e656c333398b759f995c601c1e102e.png"
-                    alt="Xnova - Juego de estrategia espacial"
+                    alt="Imperium - Juego de estrategia de imperios"
                     loading="lazy"
-                    className="relative w-full max-w-md lg:max-w-lg rounded-2xl shadow-2xl shadow-cyan-500/10 border border-white/5"
+                    className="relative w-full max-w-md lg:max-w-lg rounded-2xl shadow-2xl shadow-amber-500/10 border border-white/5"
                   />
                 </div>
               </div>
@@ -384,11 +384,11 @@ export function LandingPage() {
               </div>
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 📊{' '}
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  La Economía Real de Xnova
+                <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                  La Economía Real de Imperium
                 </span>
               </h2>
               <p className="text-slate-400 text-lg">
@@ -404,7 +404,7 @@ export function LandingPage() {
                   value: stats ? stats.total_players.toLocaleString() : LOADING,
                   label: 'Jugadores registrados',
                   sub: stats ? `${stats.ranked_players.toLocaleString()} activos en el ranking` : '',
-                  color: 'from-cyan-400 to-blue-400',
+                  color: 'from-amber-300 to-yellow-400',
                   border: 'border-cyan-500/20',
                 },
                 {
@@ -448,7 +448,7 @@ export function LandingPage() {
                   border: 'border-purple-500/20',
                 },
                 {
-                  icon: '🚀',
+                  icon: '🏺',
                   value: stats ? formatUsdt(stats.expedition_pool_fxu * stats.tung_price_usd) : LOADING,
                   label: 'Bote de expediciones',
                   sub: stats
@@ -465,7 +465,7 @@ export function LandingPage() {
                   <div className="text-2xl mb-2">{stat.icon}</div>
                   <div
                     className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}
-                    style={{ fontFamily: 'Orbitron, sans-serif' }}
+                    style={{ fontFamily: 'Cinzel, serif' }}
                   >
                     {stat.value}
                   </div>
@@ -478,7 +478,7 @@ export function LandingPage() {
             {stats && (
               <p className="text-center text-xs text-slate-500 mt-8">
                 Conversión a USDT calculada con el precio real de TUNG:{' '}
-                <span className="text-cyan-400 font-semibold">
+                <span className="text-amber-400 font-semibold">
                   1 TUNG = ${stats.tung_price_usd}
                 </span>
               </p>
@@ -487,7 +487,7 @@ export function LandingPage() {
             <div className="text-center mt-10">
               <Link
                 to="/register"
-                className="inline-block px-8 py-4 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105"
+                className="inline-block px-8 py-4 text-lg font-bold bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl hover:from-amber-400 hover:to-yellow-500 transition-all duration-300 shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-105"
               >
                 🎮 Únete y empieza a ganar
               </Link>
@@ -505,15 +505,15 @@ export function LandingPage() {
               </div>
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 🎬{' '}
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  Cómo Jugar Xnova desde 0
+                <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                  Cómo Jugar Imperium desde 0
                 </span>
               </h2>
               <p className="text-lg text-slate-400">
-                Mira este tutorial completo y aprende paso a paso cómo empezar en Xnova:{' '}
+                Mira este tutorial completo y aprende paso a paso cómo empezar en Imperium:{' '}
                 construir tu imperio, gestionar recursos, investigar tecnologías y ganar{' '}
                 <span className="text-yellow-400 font-semibold">TUNG</span> desde el primer día.
               </p>
@@ -521,7 +521,7 @@ export function LandingPage() {
 
             {/* Featured video */}
             <div className="max-w-4xl mx-auto">
-              <div className="rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 shadow-2xl shadow-cyan-500/10 hover:border-cyan-500/30 transition-all duration-300">
+              <div className="rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 shadow-2xl shadow-amber-500/10 hover:border-amber-500/30 transition-all duration-300">
                 <div className="relative aspect-video">
                   <iframe
                     src={`https://www.youtube-nocookie.com/embed/${videoGuides[0].id}`}
@@ -536,7 +536,7 @@ export function LandingPage() {
                   <h3 className="text-lg sm:text-xl font-semibold text-white mb-1">
                     {videoGuides[0].title}
                   </h3>
-                  <p className="text-sm text-cyan-400">{videoGuides[0].author}</p>
+                  <p className="text-sm text-amber-400">{videoGuides[0].author}</p>
                 </div>
               </div>
             </div>
@@ -548,7 +548,7 @@ export function LandingPage() {
                   {pagedVideos.map((video) => (
                     <div
                       key={video.id}
-                      className="group rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10"
+                      className="group rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 hover:border-amber-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/10"
                     >
                       <div className="relative aspect-video">
                         <iframe
@@ -564,7 +564,7 @@ export function LandingPage() {
                         <h3 className="text-base sm:text-lg font-semibold text-white mb-1">
                           {video.title}
                         </h3>
-                        <p className="text-sm text-cyan-400">{video.author}</p>
+                        <p className="text-sm text-amber-400">{video.author}</p>
                       </div>
                     </div>
                   ))}
@@ -576,7 +576,7 @@ export function LandingPage() {
                       type="button"
                       onClick={() => setVideoPage((p) => (p - 1 + totalVideoPages) % totalVideoPages)}
                       aria-label="Videos anteriores"
-                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.03] border border-white/10 text-slate-300 hover:text-white hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all duration-200"
+                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.03] border border-white/10 text-slate-300 hover:text-white hover:border-amber-500/40 hover:bg-amber-500/10 transition-all duration-200"
                     >
                       ‹
                     </button>
@@ -590,7 +590,7 @@ export function LandingPage() {
                           aria-label={`Página de videos ${i + 1}`}
                           className={`h-2.5 rounded-full transition-all duration-200 ${
                             i === videoPage
-                              ? 'w-6 bg-cyan-400'
+                              ? 'w-6 bg-amber-400'
                               : 'w-2.5 bg-white/20 hover:bg-white/40'
                           }`}
                         />
@@ -601,7 +601,7 @@ export function LandingPage() {
                       type="button"
                       onClick={() => setVideoPage((p) => (p + 1) % totalVideoPages)}
                       aria-label="Videos siguientes"
-                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.03] border border-white/10 text-slate-300 hover:text-white hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all duration-200"
+                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.03] border border-white/10 text-slate-300 hover:text-white hover:border-amber-500/40 hover:bg-amber-500/10 transition-all duration-200"
                     >
                       ›
                     </button>
@@ -613,7 +613,7 @@ export function LandingPage() {
             {/* Creator hint */}
             <div className="text-center mt-10">
               <p className="text-slate-500 text-sm">
-                ¿Eres creador de contenido? Crea tu guía en video y súmate a la comunidad Xnova.
+                ¿Eres creador de contenido? Crea tu guía en video y súmate a la comunidad de Imperium.
               </p>
             </div>
           </div>
@@ -639,16 +639,16 @@ export function LandingPage() {
             <div className="text-center mb-16">
               <h2
                 className="text-3xl sm:text-4xl font-bold mb-4"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 ¿Por Qué{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                  Xnova
+                <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">
+                  Imperium
                 </span>
                 ?
               </h2>
               <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-                La evolución de los juegos de estrategia espacial. Toda la profundidad de
+                La evolución de los juegos de estrategia de imperios. Toda la profundidad de
                 OGame con recompensas crypto reales.
               </p>
             </div>
@@ -658,17 +658,17 @@ export function LandingPage() {
                 {
                   icon: '⚔️',
                   title: 'Estrategia Profunda',
-                  desc: 'Gestiona recursos, investiga tecnologías, construye naves y defiende tu imperio con mecánicas estilo OGame y Xnova.',
+                  desc: 'Gestiona recursos, investiga tecnologías, entrena tropas y defiende tu imperio con mecánicas estilo OGame e Imperium.',
                 },
                 {
-                  icon: '🌌',
+                  icon: '🏛️',
                   title: 'Gana Crypto Real',
                   desc: 'Cada acción en el juego genera tokens TUNG. Retíralos a tu wallet y conviértelos en USDT, BTC o la crypto que prefieras.',
                 },
                 {
                   icon: '💰',
                   title: 'Alianzas y Guerras',
-                  desc: 'Forma alianzas, comercia recursos, coordina ataques masivos y domina el universo junto a miles de jugadores.',
+                  desc: 'Forma alianzas, comercia recursos, coordina ataques masivos y domina el imperio junto a miles de jugadores.',
                 },
                 {
                   icon: '🔬',
@@ -678,10 +678,10 @@ export function LandingPage() {
               ].map((feature) => (
                 <div
                   key={feature.title}
-                  className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-cyan-500/20 transition-all duration-300"
+                  className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-amber-500/20 transition-all duration-300"
                 >
                   <div className="text-4xl mb-4">{feature.icon}</div>
-                  <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Cinzel, serif' }}>
                     {feature.title}
                   </h3>
                   <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
@@ -697,10 +697,10 @@ export function LandingPage() {
             <div className="text-center mb-16">
               <h2
                 className="text-3xl sm:text-4xl font-bold mb-4"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 Empieza en{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">
                   3 Pasos
                 </span>
               </h2>
@@ -719,7 +719,7 @@ export function LandingPage() {
                 {
                   step: '02',
                   title: 'Construye tu Imperio',
-                  desc: 'Mejora minas, investiga tecnologías, construye tu flota espacial y coloniza planetas.',
+                  desc: 'Mejora minas, investiga tecnologías, entrena tus legiones y conquista provincias.',
                 },
                 {
                   step: '03',
@@ -729,12 +729,12 @@ export function LandingPage() {
               ].map((item) => (
                 <div key={item.step} className="relative text-center">
                   <div
-                    className="text-7xl font-bold bg-gradient-to-b from-cyan-500/20 to-transparent bg-clip-text text-transparent mb-4"
-                    style={{ fontFamily: 'Orbitron, sans-serif' }}
+                    className="text-7xl font-bold bg-gradient-to-b from-amber-500/20 to-transparent bg-clip-text text-transparent mb-4"
+                    style={{ fontFamily: 'Cinzel, serif' }}
                   >
                     {item.step}
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                  <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'Cinzel, serif' }}>
                     {item.title}
                   </h3>
                   <p className="text-slate-400 leading-relaxed">{item.desc}</p>
@@ -745,9 +745,9 @@ export function LandingPage() {
             <div className="text-center mt-12">
               <Link
                 to="/register"
-                className="inline-flex px-8 py-4 text-lg font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-xl shadow-cyan-500/25"
+                className="inline-flex px-8 py-4 text-lg font-bold bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl hover:from-amber-400 hover:to-yellow-500 transition-all duration-300 shadow-xl shadow-amber-500/25"
               >
-                🚀 Crear Cuenta Gratis
+                🏛️ Crear Cuenta Gratis
               </Link>
             </div>
           </div>
@@ -759,7 +759,7 @@ export function LandingPage() {
             <div className="text-center mb-16">
               <h2
                 className="text-3xl sm:text-4xl font-bold mb-4"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 ¿Cómo se{' '}
                 <span className="bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">
@@ -780,11 +780,11 @@ export function LandingPage() {
                 },
                 {
                   title: '⚔️ Batallas y Conquistas',
-                  desc: 'Gana batallas espaciales y recibe recompensas por cada victoria.',
+                  desc: 'Gana batallas por el imperio y recibe recompensas por cada victoria.',
                 },
                 {
-                  title: '🚀 Expediciones',
-                  desc: 'Envía flotas a explorar y descubre recursos, tecnologías y tokens.',
+                  title: '🏺 Expediciones',
+                  desc: 'Envía expediciones a explorar y descubre recursos, tecnologías y tokens.',
                 },
                 {
                   title: '💱 Mercado P2P',
@@ -817,10 +817,10 @@ export function LandingPage() {
             <div className="text-center mb-16">
               <h2
                 className="text-3xl sm:text-4xl font-bold mb-4"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 Preguntas{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">
                   Frecuentes
                 </span>
               </h2>
@@ -830,11 +830,11 @@ export function LandingPage() {
               {faqData.map((faq) => (
                 <details
                   key={faq.q}
-                  className="group p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-cyan-500/20 transition-all duration-300 cursor-pointer"
+                  className="group p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-amber-500/20 transition-all duration-300 cursor-pointer"
                 >
-                  <summary className="font-semibold text-white group-open:text-cyan-400 transition-colors list-none flex items-center justify-between">
+                  <summary className="font-semibold text-white group-open:text-amber-400 transition-colors list-none flex items-center justify-between">
                     {faq.q}
-                    <span className="text-cyan-400 text-xl group-open:rotate-45 transition-transform duration-300">
+                    <span className="text-amber-400 text-xl group-open:rotate-45 transition-transform duration-300">
                       +
                     </span>
                   </summary>
@@ -848,30 +848,30 @@ export function LandingPage() {
         {/* ===== CTA FINAL ===== */}
         <section className="py-20 relative">
           <div className="absolute inset-0">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 rounded-full blur-[150px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full blur-[150px]" />
           </div>
 
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2
               className="text-3xl sm:text-5xl font-bold mb-6"
-              style={{ fontFamily: 'Orbitron, sans-serif' }}
+              style={{ fontFamily: 'Cinzel, serif' }}
             >
               ¿Listo para Construir tu
               <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Imperio Galáctico
+              <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                Imperio Romano
               </span>
               ?
             </h2>
             <p className="text-lg text-slate-400 mb-10 max-w-2xl mx-auto">
               Únete a miles de jugadores que ya están ganando criptomonedas mientras dominan
-              el universo. El momento es ahora.
+              el imperio. El momento es ahora.
             </p>
             <Link
               to="/register"
-              className="inline-flex px-10 py-5 text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-2xl shadow-cyan-500/30 hover:scale-105"
+              className="inline-flex px-10 py-5 text-xl font-bold bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl hover:from-amber-400 hover:to-yellow-500 transition-all duration-300 shadow-2xl shadow-amber-500/30 hover:scale-105"
             >
-              🚀 Regístrate Ahora
+              🏛️ Regístrate Ahora
             </Link>
             <p className="mt-4 text-xs text-slate-600">
               Sin tarjeta de crédito · Sin descargas · Registro instantáneo
@@ -885,15 +885,15 @@ export function LandingPage() {
             <div className="text-center mb-10">
               <h2
                 className="text-2xl sm:text-3xl font-bold mb-3"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 Partners{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">
                   y Ecosistema
                 </span>
               </h2>
               <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-                Proyectos que forman parte del universo Xnova.
+                Proyectos que forman parte del ecosistema de Imperium.
               </p>
             </div>
 
@@ -912,10 +912,10 @@ export function LandingPage() {
                   className="h-24 w-24 object-contain transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="text-center">
-                  <div className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                  <div className="text-lg font-bold text-white" style={{ fontFamily: 'Cinzel, serif' }}>
                     DixBase
                   </div>
-                  <div className="text-xs text-slate-500 group-hover:text-cyan-400 transition-colors">dixbase.com</div>
+                  <div className="text-xs text-slate-500 group-hover:text-amber-400 transition-colors">dixbase.com</div>
                 </div>
               </a>
 
@@ -928,15 +928,15 @@ export function LandingPage() {
               >
                 <img
                   src="/Imagenes/alianzas/tung.png"
-                  alt="TUNG - token de gobernanza de Xnova"
+                  alt="TUNG - token de gobernanza de Imperium"
                   loading="lazy"
                   className="h-24 w-24 object-contain transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="text-center">
-                  <div className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                  <div className="text-lg font-bold text-white" style={{ fontFamily: 'Cinzel, serif' }}>
                     TUNG
                   </div>
-                  <div className="text-xs text-slate-500 group-hover:text-yellow-400 transition-colors">Token de gobernanza de Xnova</div>
+                  <div className="text-xs text-slate-500 group-hover:text-yellow-400 transition-colors">Token de gobernanza de Imperium</div>
                 </div>
               </a>
             </div>
@@ -946,21 +946,21 @@ export function LandingPage() {
         {/* ===== EQUIPO ===== */}
         <section id="equipo" className="py-20 relative">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 rounded-full blur-[140px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full blur-[140px]" />
           </div>
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2
                 className="text-2xl sm:text-4xl font-bold mb-3"
-                style={{ fontFamily: 'Orbitron, sans-serif' }}
+                style={{ fontFamily: 'Cinzel, serif' }}
               >
                 Nuestro{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">
                   Equipo
                 </span>
               </h2>
               <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-                Las personas que construyen el universo Xnova.
+                Las personas que construyen Imperium.
               </p>
             </div>
 
@@ -970,34 +970,34 @@ export function LandingPage() {
                   name: 'Jennierfs',
                   role: 'CEO · Fundador · Dev',
                   img: '/Imagenes/Equipo/Jennierfs.jpg',
-                  accent: 'from-cyan-400 via-blue-500 to-purple-500',
-                  badge: 'text-cyan-300 border-cyan-400/30 bg-cyan-500/10',
+                  accent: 'from-amber-400 via-yellow-500 to-orange-500',
+                  badge: 'text-amber-300 border-amber-400/30 bg-amber-500/10',
                 },
                 {
                   name: 'ReinelH',
                   role: 'Cofundador',
                   img: '/Imagenes/Equipo/ReinelH.jpg',
-                  accent: 'from-purple-500 via-blue-500 to-cyan-400',
-                  badge: 'text-purple-300 border-purple-400/30 bg-purple-500/10',
+                  accent: 'from-orange-500 via-red-500 to-amber-400',
+                  badge: 'text-orange-300 border-orange-400/30 bg-orange-500/10',
                 },
               ].map((member) => (
                 <div
                   key={member.name}
-                  className="group relative rounded-2xl p-[1px] bg-gradient-to-b from-white/10 to-white/[0.02] hover:from-cyan-500/40 hover:to-purple-500/20 transition-all duration-500"
+                  className="group relative rounded-2xl p-[1px] bg-gradient-to-b from-white/10 to-white/[0.02] hover:from-amber-500/40 hover:to-yellow-500/20 transition-all duration-500"
                 >
-                  <div className="relative h-full rounded-2xl bg-[#070b18]/90 backdrop-blur-sm p-8 flex flex-col items-center text-center overflow-hidden">
+                  <div className="relative h-full rounded-2xl bg-[#15100a]/90 backdrop-blur-sm p-8 flex flex-col items-center text-center overflow-hidden">
                     <div className={`absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-gradient-to-br ${member.accent} opacity-10 blur-3xl group-hover:opacity-20 transition-opacity duration-500`} />
-                    <div className={`relative p-[3px] rounded-full bg-gradient-to-br ${member.accent} shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform duration-500`}>
+                    <div className={`relative p-[3px] rounded-full bg-gradient-to-br ${member.accent} shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-500`}>
                       <img
                         src={member.img}
-                        alt={`${member.name} - ${member.role} de Xnova`}
+                        alt={`${member.name} - ${member.role} de Imperium`}
                         loading="lazy"
-                        className="h-36 w-36 rounded-full object-cover border-4 border-[#070b18]"
+                        className="h-36 w-36 rounded-full object-cover border-4 border-[#15100a]"
                       />
                     </div>
                     <h3
                       className="relative mt-6 text-xl font-bold text-white tracking-wide"
-                      style={{ fontFamily: 'Orbitron, sans-serif' }}
+                      style={{ fontFamily: 'Cinzel, serif' }}
                     >
                       {member.name}
                     </h3>
@@ -1031,39 +1031,39 @@ export function LandingPage() {
                   </span>
                 </div>
                 <p className="text-sm text-slate-500 max-w-md">
-                  Xnova es un juego de estrategia espacial multijugador tipo OGame donde
+                  Imperium es un juego de estrategia de imperios multijugador tipo OGame donde
                   generas ingresos gratis vendiendo tus recursos en el mercado y ganas
                   criptomonedas reales. Juega gratis, sin inversión.
                 </p>
               </div>
               <div>
-                <h4 className="font-bold text-white mb-4" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                <h4 className="font-bold text-white mb-4" style={{ fontFamily: 'Cinzel, serif' }}>
                   Juego
                 </h4>
                 <div className="space-y-2 text-sm text-slate-400">
-                  <Link to="/register" className="block hover:text-cyan-400 transition-colors">Registrarse</Link>
-                  <Link to="/login" className="block hover:text-cyan-400 transition-colors">Iniciar Sesión</Link>
-                  <a href="#features" className="block hover:text-cyan-400 transition-colors">Características</a>
-                  <a href="#how-it-works" className="block hover:text-cyan-400 transition-colors">Cómo Funciona</a>
+                  <Link to="/register" className="block hover:text-amber-400 transition-colors">Registrarse</Link>
+                  <Link to="/login" className="block hover:text-amber-400 transition-colors">Iniciar Sesión</Link>
+                  <a href="#features" className="block hover:text-amber-400 transition-colors">Características</a>
+                  <a href="#how-it-works" className="block hover:text-amber-400 transition-colors">Cómo Funciona</a>
                 </div>
               </div>
               <div>
-                <h4 className="font-bold text-white mb-4" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                <h4 className="font-bold text-white mb-4" style={{ fontFamily: 'Cinzel, serif' }}>
                   Recursos
                 </h4>
                 <div className="space-y-2 text-sm text-slate-400">
-                  <Link to="/blog" className="block hover:text-cyan-400 transition-colors">Blog</Link>
-                  <Link to="/about" className="block hover:text-cyan-400 transition-colors">Sobre Nosotros</Link>
-                  <Link to="/ganar-criptomonedas-jugando" className="block hover:text-cyan-400 transition-colors">Ganar Criptomonedas</Link>
-                  <Link to="/alternativa-ogame-crypto" className="block hover:text-cyan-400 transition-colors">Alternativa OGame</Link>
-                  <Link to="/juegos-play-to-earn-gratis" className="block hover:text-cyan-400 transition-colors">Juegos P2E Gratis</Link>
-                  <Link to="/ganar-dinero-jugando" className="block hover:text-cyan-400 transition-colors">Ganar Dinero Jugando</Link>
-                  <Link to="/5-pasos-para-ganar-criptomonedas" className="block hover:text-cyan-400 transition-colors">5 Pasos para Ganar Crypto</Link>
+                  <Link to="/blog" className="block hover:text-amber-400 transition-colors">Blog</Link>
+                  <Link to="/about" className="block hover:text-amber-400 transition-colors">Sobre Nosotros</Link>
+                  <Link to="/ganar-criptomonedas-jugando" className="block hover:text-amber-400 transition-colors">Ganar Criptomonedas</Link>
+                  <Link to="/alternativa-ogame-crypto" className="block hover:text-amber-400 transition-colors">Alternativa OGame</Link>
+                  <Link to="/juegos-play-to-earn-gratis" className="block hover:text-amber-400 transition-colors">Juegos P2E Gratis</Link>
+                  <Link to="/ganar-dinero-jugando" className="block hover:text-amber-400 transition-colors">Ganar Dinero Jugando</Link>
+                  <Link to="/5-pasos-para-ganar-criptomonedas" className="block hover:text-amber-400 transition-colors">5 Pasos para Ganar Crypto</Link>
                 </div>
               </div>
             </div>
             <div className="pt-8 border-t border-white/5 text-center text-xs text-slate-600">
-              © {new Date().getFullYear()} Xnova. Todos los derechos reservados.
+              © {new Date().getFullYear()} Imperium. Todos los derechos reservados.
               Las criptomonedas son volátiles. Juega responsablemente.
             </div>
           </div>
