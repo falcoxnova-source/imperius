@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ⚠️  CONFIGURACIÓN - Cambia esto según tu entorno
 const SUPABASE_URL = 'https://hhrgcnvydmjqcevgmlhj.supabase.co';
-const SUPABASE_SERVICE_KEY = 'sb_secret_PON_TU_CLAVE_AQUI'; // Secret key (NUNCA en frontend)
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || 'sb_secret_PON_TU_CLAVE_AQUI'; // Secret key (NUNCA en frontend)
 
 const ADMIN_USERNAME = 'admin'; // Cambiar si el admin tiene otro nombre
 

@@ -2,7 +2,7 @@
 // Uso: node scripts/_add_large_cargos_and_astro.cjs
 const { createClient } = require('@supabase/supabase-js');
 const SUPABASE_URL = 'https://vpfpvtwxwquoxmrevmaz.supabase.co';
-const SUPABASE_KEY = 'sb_secret_PON_TU_CLAVE_AQUI';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || 'sb_secret_PON_TU_CLAVE_AQUI'; // Nunca subir claves reales al repo
 
 const USER_EMAIL = 'jenserfs@gmail.com';
 const ASTROPHYSICS_TECH_ID = 16; // Ajusta si tu tabla usa otro ID para Astrofísica
