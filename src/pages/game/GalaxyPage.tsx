@@ -1012,26 +1012,15 @@ export function GalaxyPage() {
               ring: 'ring-emerald-200/40',
             },
             {
-              key: 'battleship',
-              label: 'Batalla de Naves',
-              sub: 'PvP · TUNG',
-              icon: '⚓',
-              title: 'Batalla de Naves PvP',
-              onClick: () => navigate('/game/battleship', { state: { hyperspace: true } }),
-              grad: 'from-sky-300 via-blue-600 to-indigo-900',
-              edge: 'shadow-[0_5px_0_#1e1b4b,0_10px_22px_-6px_rgba(59,130,246,0.7)] hover:shadow-[0_7px_0_#1e1b4b,0_16px_30px_-6px_rgba(59,130,246,0.85)] active:shadow-[0_1px_0_#1e1b4b,0_4px_10px_-4px_rgba(59,130,246,0.6)]',
-              ring: 'ring-sky-200/40',
-            },
-            {
               key: 'sports',
               label: 'Apuestas Deportivas',
               sub: 'Fútbol · TUNG',
               icon: '⚽',
-              title: 'Estadio Galáctico: apuestas de fútbol',
+              title: 'Coliseo Imperial: apuestas de fútbol',
               onClick: () => navigate('/game/sports'),
-              grad: 'from-lime-300 via-green-600 to-emerald-900',
-              edge: 'shadow-[0_5px_0_#064e3b,0_10px_22px_-6px_rgba(34,197,94,0.7)] hover:shadow-[0_7px_0_#064e3b,0_16px_30px_-6px_rgba(34,197,94,0.85)] active:shadow-[0_1px_0_#064e3b,0_4px_10px_-4px_rgba(34,197,94,0.6)]',
-              ring: 'ring-lime-200/40',
+              grad: 'from-yellow-300 via-amber-500 to-yellow-800',
+              edge: 'shadow-[0_5px_0_#78350f,0_10px_22px_-6px_rgba(245,158,11,0.7)] hover:shadow-[0_7px_0_#78350f,0_16px_30px_-6px_rgba(245,158,11,0.85)] active:shadow-[0_1px_0_#78350f,0_4px_10px_-4px_rgba(245,158,11,0.6)]',
+              ring: 'ring-amber-200/40',
             },
           ].map((b) => (
             <button
@@ -1250,17 +1239,17 @@ export function GalaxyPage() {
                   // [SPORTS1] Estadio Galactico (apuestas de futbol)
                   if (galaxy === SPORTS_COORDS.galaxy && system === SPORTS_COORDS.system && slot.position === SPORTS_COORDS.position && !slot.planet) {
                     return (
-                      <tr key={slot.position} className="border-t border-green-500/30 bg-gradient-to-r from-green-900/25 via-space-800 to-emerald-900/25">
+                      <tr key={slot.position} className="border-t border-amber-500/30 bg-gradient-to-r from-amber-900/25 via-space-800 to-yellow-900/25">
                         <td className="px-3 py-3 text-center">
-                          <span className="font-orbitron text-green-300">{slot.position}</span>
+                          <span className="font-serif font-bold text-amber-300">{slot.position}</span>
                         </td>
                         <td className="px-3 py-3" colSpan={5}>
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-lime-300/40 via-green-600/40 to-emerald-900/40 ring-2 ring-green-400/60 flex items-center justify-center text-xl animate-pulse" style={{ animationDuration: '2.5s' }}>
-                              ⚽
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-300/40 via-amber-500/40 to-yellow-900/40 ring-2 ring-amber-400/60 flex items-center justify-center text-xl animate-pulse" style={{ animationDuration: '2.5s' }}>
+                              🏟️
                             </div>
                             <div>
-                              <p className="text-green-200 font-semibold">Estadio Galáctico</p>
+                              <p className="font-serif font-bold text-amber-200 tracking-wide">Coliseo Imperial</p>
                               <p className="text-xs text-gray-400">Apuestas de fútbol en TUNG: gana local, empate o visitante.</p>
                               <p className="text-xs text-gray-500">{formatCoordinates(galaxy, system, slot.position)}</p>
                             </div>
@@ -1269,7 +1258,7 @@ export function GalaxyPage() {
                         <td className="px-3 py-3 text-center">
                           <button
                             onClick={() => navigate('/game/sports')}
-                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-lg hover:opacity-90 transition-all font-semibold text-sm mx-auto"
+                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-600 to-yellow-700 text-white rounded-lg hover:opacity-90 transition-all font-serif font-semibold text-sm mx-auto"
                           >
                             ⚽ Apostar
                           </button>
