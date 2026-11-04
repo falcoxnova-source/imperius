@@ -620,8 +620,8 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
             <p className="text-sm text-amber-200 font-semibold">{tx('Abandonar ocupación', 'Abandon occupation')}</p>
             <p className="text-xs text-gray-400">
               {tx(
-                'Tu guarnición y la Nave de Ocupación regresan a su planeta de origen según su velocidad de vuelo. La producción pendiente se devuelve al planeta y el dueño recupera el control.',
-                'Your garrison and the Occupation Ship fly back to their origin planet at their flight speed. Pending production is refunded to the planet and the owner regains control.'
+                'Tu guarnición y el Guardián regresan a su planeta de origen según su velocidad de vuelo. La producción pendiente se devuelve al planeta y el dueño recupera el control.',
+                'Your garrison and the Guardian fly back to their origin planet at their flight speed. Pending production is refunded to the planet and the owner regains control.'
               )}
             </p>
           </div>

@@ -413,7 +413,7 @@ export const en: Translations = {
     nova: 'Nova',
     largeFrigate: 'Large Frigate',
     destruccionMasiva: 'Nodra',
-    occupationShip: 'Occupation Ship',
+    occupationShip: 'Guardian',
     megaRecycler: 'Mega Recycler',
     darkMatterCollector: 'Dark Matter Collector',
     escortRequired: 'Escort Required',

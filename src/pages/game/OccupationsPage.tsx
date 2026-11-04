@@ -1,5 +1,5 @@
 /**
- * OccupationsPage - Nave de Ocupación
+ * OccupationsPage - Guardián
  * - Compra de la nave con TUNG (precio fijo en USD, cobrado al precio en vivo)
  * - Gestión de colonias ocupadas: producción, transporte y abandono
  * - Colonias propias ocupadas (recuperación)
@@ -357,30 +357,30 @@ export function OccupationsPage() {
   return (
     <div className="space-y-5 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="card-glass p-5 flex flex-col md:flex-row items-center gap-5 border-red-500/30 bg-gradient-to-r from-red-950/30 via-space-800 to-amber-950/20">
+      <div className="card-glass p-5 flex flex-col md:flex-row items-center gap-5 border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-space-800 to-yellow-950/20">
         {shipImg && (
-          <img src={shipImg} alt={t.shipyard.occupationShip} className="w-32 h-32 object-contain drop-shadow-[0_0_18px_rgba(239,68,68,0.45)]" />
+          <img src={shipImg} alt={t.shipyard.occupationShip} className="w-32 h-32 object-contain drop-shadow-[0_0_18px_rgba(245,158,11,0.45)]" />
         )}
         <div className="flex-1 text-center md:text-left">
-          <h1 className="font-orbitron text-2xl sm:text-3xl text-white flex items-center gap-2 justify-center md:justify-start">
-            <Flag className="w-7 h-7 text-red-400" /> {t.nav.occupations}
+          <h1 className="font-serif text-2xl sm:text-3xl text-amber-100 tracking-wide flex items-center gap-2 justify-center md:justify-start">
+            <Flag className="w-7 h-7 text-amber-400" /> {t.nav.occupations}
           </h1>
           <p className="text-gray-400 text-sm mt-1">
             {tx(
-              'Conquista colonias enemigas con la Nave de Ocupación: produce en ellas, quédate con sus recursos y defiéndelas con tu guarnición.',
-              'Conquer enemy colonies with the Occupation Ship: produce there, keep their resources and defend them with your garrison.'
+              'Conquista colonias enemigas con el Guardián: produce en ellas, quédate con sus recursos y defiéndelas con tu guarnición.',
+              'Conquer enemy colonies with the Guardian: produce there, keep their resources and defend them with your garrison.'
             )}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-center">
           <div className="bg-space-700/50 rounded-lg px-4 py-2">
             <p className="text-xs text-gray-400">{tx('Ocupaciones activas', 'Active occupations')}</p>
-            <p className="font-orbitron text-lg text-red-300">{activeCount}</p>
+            <p className="font-serif text-lg text-amber-300">{activeCount}</p>
             <p className="text-[10px] text-gray-500">{tx(`máx ${maxPerPlayer} por jugador`, `max ${maxPerPlayer} per player`)}</p>
           </div>
           <div className="bg-space-700/50 rounded-lg px-4 py-2">
             <p className="text-xs text-gray-400">{tx('Precio', 'Price')}</p>
-            <p className="font-orbitron text-lg text-amber-300">{info?.unit_price_usd ?? 10} USD</p>
+            <p className="font-serif text-lg text-amber-300">{info?.unit_price_usd ?? 10} USD</p>
           </div>
         </div>
       </div>
@@ -431,7 +431,7 @@ export function OccupationsPage() {
           <button
             key={tb.key}
             onClick={() => setTab(tb.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap ${tab === tb.key ? 'bg-red-600 text-white' : 'bg-space-700 text-gray-400 hover:bg-space-600'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap ${tab === tb.key ? 'bg-amber-600 text-white' : 'bg-space-700 text-gray-400 hover:bg-space-600'}`}
           >
             <tb.icon className="w-4 h-4" /> {tb.label}
           </button>
@@ -442,18 +442,18 @@ export function OccupationsPage() {
       {tab === 'occupations' && (
         <div className="space-y-4">
           {!overview ? (
-            <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-red-400 animate-spin" /></div>
+            <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-amber-400 animate-spin" /></div>
           ) : overview.as_occupier.length === 0 ? (
             <div className="card-glass p-8 text-center space-y-3">
               <Flag className="w-12 h-12 text-gray-500 mx-auto" />
               <p className="text-gray-300">{tx('No tienes colonias ocupadas.', 'You have no occupied colonies.')}</p>
               <p className="text-sm text-gray-500 max-w-lg mx-auto">
                 {tx(
-                  'Compra una Nave de Ocupación y envíala en una misión de Ataque contra una colonia enemiga junto con otras naves.',
-                  'Buy an Occupation Ship and send it on an Attack mission against an enemy colony together with other ships.'
+                  'Compra un Guardián y envíalo en una misión de Ataque contra una colonia enemiga junto con otras naves.',
+                  'Buy a Guardian and send it on an Attack mission against an enemy colony together with other ships.'
                 )}
               </p>
-              <button onClick={() => setTab('buy')} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold">
+              <button onClick={() => setTab('buy')} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold">
                 <ShoppingCart className="w-4 h-4" /> {tx('Comprar nave', 'Buy ship')}
               </button>
             </div>
@@ -475,7 +475,7 @@ export function OccupationsPage() {
               </div>
 
               {detailLoading && !detail && (
-                <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-red-400 animate-spin" /></div>
+                <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-amber-400 animate-spin" /></div>
               )}
 
               {detail && (
@@ -483,8 +483,8 @@ export function OccupationsPage() {
                   {/* Recursos */}
                   <div className="card-glass p-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                      <h2 className="font-orbitron text-white">
-                        {detail.occupation.planet_name} <span className="text-red-300">{coords(detail.occupation.galaxy, detail.occupation.solar_system, detail.occupation.position)}</span>
+                      <h2 className="font-serif text-amber-100">
+                        {detail.occupation.planet_name} <span className="text-amber-300">{coords(detail.occupation.galaxy, detail.occupation.solar_system, detail.occupation.position)}</span>
                       </h2>
                       <span className="text-xs text-gray-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {tx('Ocupada desde', 'Occupied since')} {new Date(detail.occupation.started_at).toLocaleString(es ? 'es-ES' : 'en-US')}
@@ -515,7 +515,7 @@ export function OccupationsPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Guarnición */}
                     <div className="card-glass p-4">
-                      <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Shield className="w-5 h-5 text-red-400" /> {tx('Guarnición', 'Garrison')}</h3>
+                      <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Shield className="w-5 h-5 text-amber-400" /> {tx('Guarnición', 'Garrison')}</h3>
                       {detail.garrison.length === 0 ? (
                         <p className="text-sm text-gray-500">{tx('Sin naves.', 'No ships.')}</p>
                       ) : (
@@ -533,7 +533,7 @@ export function OccupationsPage() {
 
                     {/* Cola */}
                     <div className="card-glass p-4">
-                      <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Factory className="w-5 h-5 text-amber-400" /> {tx('Producción en curso', 'Production in progress')}</h3>
+                      <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Factory className="w-5 h-5 text-amber-400" /> {tx('Producción en curso', 'Production in progress')}</h3>
                       {detail.queue.length === 0 ? (
                         <p className="text-sm text-gray-500">{tx('Nada en producción.', 'Nothing in production.')}</p>
                       ) : (
@@ -569,7 +569,7 @@ export function OccupationsPage() {
                   {/* Producir */}
                   <div className="card-glass p-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                      <h3 className="font-orbitron text-white flex items-center gap-2"><Rocket className="w-5 h-5 text-orange-400" /> {tx('Producir', 'Produce')}</h3>
+                      <h3 className="font-serif text-amber-100 flex items-center gap-2"><Rocket className="w-5 h-5 text-amber-400" /> {tx('Producir', 'Produce')}</h3>
                       <div className="flex gap-2">
                         {(['ship', 'defense'] as const).map((bt) => (
                           <button
@@ -635,7 +635,7 @@ export function OccupationsPage() {
 
                   {/* Transporte */}
                   <div className="card-glass p-4">
-                    <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Truck className="w-5 h-5 text-cyan-400" /> {tx('Transportar a tus planetas', 'Transport to your planets')}</h3>
+                    <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Truck className="w-5 h-5 text-amber-400" /> {tx('Transportar a tus planetas', 'Transport to your planets')}</h3>
                     {detail.transport_targets.length === 0 ? (
                       <p className="text-sm text-gray-500">{tx('No tienes planetas de destino disponibles.', 'No destination planets available.')}</p>
                     ) : (
@@ -715,8 +715,8 @@ export function OccupationsPage() {
                       <p className="text-sm text-amber-200 font-semibold">{tx('Abandonar ocupación', 'Abandon occupation')}</p>
                       <p className="text-xs text-gray-400">
                         {tx(
-                          'Tu guarnición y la Nave de Ocupación regresan a su planeta de origen según su velocidad de vuelo. La producción pendiente se devuelve al planeta y el dueño recupera el control.',
-                          'Your garrison and the Occupation Ship fly back to their origin planet at their flight speed. Pending production is refunded to the planet and the owner regains control.'
+                          'Tu guarnición y el Guardián regresan a su planeta de origen según su velocidad de vuelo. La producción pendiente se devuelve al planeta y el dueño recupera el control.',
+                          'Your garrison and the Guardian fly back to their origin planet at their flight speed. Pending production is refunded to the planet and the owner regains control.'
                         )}
                       </p>
                     </div>
@@ -743,15 +743,15 @@ export function OccupationsPage() {
       {/* ---------------- Comprar ---------------- */}
       {tab === 'buy' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="card-glass p-5 border-red-500/30">
+          <div className="card-glass p-5 border-amber-500/30">
             {!info ? (
-              <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-red-400 animate-spin" /></div>
+              <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-amber-400 animate-spin" /></div>
             ) : (
               <>
                 <div className="flex items-center gap-4 mb-4">
                   {shipImg && <img src={shipImg} alt="" className="w-24 h-24 object-contain" />}
                   <div>
-                    <h2 className="font-orbitron text-xl text-white">{t.shipyard.occupationShip}</h2>
+                    <h2 className="font-serif text-xl text-amber-100">{t.shipyard.occupationShip}</h2>
                     <p className="text-sm text-gray-400">{tx('Exclusiva del sistema · No comerciable', 'System exclusive · Not tradable')}</p>
                   </div>
                 </div>
@@ -796,7 +796,7 @@ export function OccupationsPage() {
                 <button
                   onClick={handleBuy}
                   disabled={!!busy || !currentPlanet || buyCost == null || Number(info.balance) < buyCost}
-                  className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 disabled:opacity-40 text-white font-bold"
+                  className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 disabled:opacity-40 text-white font-bold"
                 >
                   {busy === 'buy' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Coins className="w-5 h-5" />}
                   {buyCost != null ? `${tx('Comprar por', 'Buy for')} ${formatNumber(buyCost)} TUNG` : tx('Precio no disponible', 'Price unavailable')}
@@ -809,11 +809,11 @@ export function OccupationsPage() {
           </div>
 
           <div className="card-glass p-5">
-            <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Info className="w-5 h-5 text-cyan-400" /> {tx('Cómo funciona', 'How it works')}</h3>
+            <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Info className="w-5 h-5 text-amber-400" /> {tx('Cómo funciona', 'How it works')}</h3>
             <ul className="space-y-2 text-sm text-gray-300 list-disc pl-5">
               <li>{tx('Envía la nave en una misión de Ataque contra una colonia enemiga, acompañada de al menos otra nave.', 'Send the ship on an Attack mission against an enemy colony, together with at least one other ship.')}</li>
-              <li>{tx('Si ganas y la Nave de Ocupación sobrevive, el planeta queda ocupado. La nave no se gasta: se queda con tu flota como guarnición.', 'If you win and the Occupation Ship survives, the planet becomes occupied. The ship is not consumed: it stays with your fleet as garrison.')}</li>
-              <li>{tx('Si el dueño gana la batalla de recuperación, la Nave de Ocupación se destruye. Si abandonas, vuelve a tu base con toda la guarnición según su velocidad de vuelo.', 'If the owner wins the recovery battle, the Occupation Ship is destroyed. If you abandon, it flies back to your base with the whole garrison at its flight speed.')}</li>
+              <li>{tx('Si ganas y el Guardián sobrevive, el planeta queda ocupado. La nave no se gasta: se queda con tu flota como guarnición.', 'If you win and the Guardian survives, the planet becomes occupied. The ship is not consumed: it stays with your fleet as garrison.')}</li>
+              <li>{tx('Si el dueño gana la batalla de recuperación, el Guardián se destruye. Si abandonas, vuelve a tu base con toda la guarnición según su velocidad de vuelo.', 'If the owner wins the recovery battle, the Guardian is destroyed. If you abandon, it flies back to your base with the whole garrison at its flight speed.')}</li>
               <li>{tx('Solo colonias: nunca planetas principales ni lunas. Sin límite total, pero máximo 3 colonias ocupadas de un mismo jugador.', 'Colonies only: never main planets or moons. No total limit, but at most 3 occupied colonies from the same player.')}</li>
               <li>{tx('Te quedas con la producción, puedes fabricar naves y defensas y transportar recursos. No puedes construir edificios ni investigar.', 'You keep the production, can produce ships and defenses and transport resources. No buildings or research.')}</li>
               <li>{tx('El dueño puede recuperarla atacando tu guarnición (solo o con su SAC). Puedes abandonarla cuando quieras.', 'The owner can recover it by attacking your garrison (solo or with their ACS). You can abandon it anytime.')}</li>
@@ -832,7 +832,7 @@ export function OccupationsPage() {
       {/* ---------------- Ranking ---------------- */}
       {tab === 'ranking' && (
         <div className="card-glass p-4">
-          <h2 className="font-orbitron text-white mb-3 flex items-center gap-2"><Crown className="w-5 h-5 text-amber-400" /> {tx('Salón de Conquistadores', 'Hall of Conquerors')}</h2>
+          <h2 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Crown className="w-5 h-5 text-amber-400" /> {tx('Salón de Conquistadores', 'Hall of Conquerors')}</h2>
           {!ranking ? (
             <div className="flex justify-center py-10"><Loader2 className="w-8 h-8 text-amber-400 animate-spin" /></div>
           ) : ranking.length === 0 ? (
@@ -852,11 +852,11 @@ export function OccupationsPage() {
                 </thead>
                 <tbody>
                   {ranking.map((r) => (
-                    <tr key={r.rank} className={`border-b border-space-700/50 ${r.is_me ? 'bg-red-950/30' : ''}`}>
+                    <tr key={r.rank} className={`border-b border-space-700/50 ${r.is_me ? 'bg-amber-950/30' : ''}`}>
                       <td className="py-2 px-2 font-orbitron text-amber-300">{r.rank}</td>
                       <td className="py-2 px-2 text-white">{r.username}{r.is_me && <span className="ml-2 text-xs text-red-300">({tx('tú', 'you')})</span>}</td>
                       <td className="py-2 px-2 text-right text-white">{formatNumber(r.conquests)}</td>
-                      <td className="py-2 px-2 text-right text-emerald-300">{formatNumber(r.active)}</td>
+                      <td className="py-2 px-2 text-right text-amber-300">{formatNumber(r.active)}</td>
                       <td className="py-2 px-2 text-right text-red-300">{formatNumber(r.recovered_by_owner)}</td>
                       <td className="py-2 px-2 text-right text-gray-300">{formatNumber(r.hours)}</td>
                     </tr>
