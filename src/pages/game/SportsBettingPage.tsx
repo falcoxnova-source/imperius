@@ -183,7 +183,7 @@ function Crest({ src, tla, name, size = 44 }: { src: string | null; tla: string 
 function LeagueBadge({ code, emblem, name }: { code: string; emblem: string | null; name: string | null }) {
   const meta = LEAGUES[code];
   return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-200/80">
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-200/80">
       {emblem ? (
         <img src={imgUrl(emblem) ?? undefined} alt="" referrerPolicy="no-referrer" className="h-4 w-4 object-contain" loading="lazy"
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
@@ -198,13 +198,13 @@ function LeagueBadge({ code, emblem, name }: { code: string; emblem: string | nu
 function StadiumBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#0b3b2a_0%,#04140f_45%,#020806_100%)]" />
-      {/* Focos */}
-      <div className="sp-anim absolute -top-24 left-[8%] h-[70vh] w-40 origin-top bg-gradient-to-b from-emerald-100/25 via-emerald-200/5 to-transparent blur-2xl [animation:spBeam_9s_ease-in-out_infinite]" />
-      <div className="sp-anim absolute -top-24 right-[8%] h-[70vh] w-40 origin-top bg-gradient-to-b from-sky-100/20 via-sky-200/5 to-transparent blur-2xl [animation:spBeam_11s_ease-in-out_infinite_reverse]" />
-      <div className="absolute left-1/2 top-0 h-56 w-[60%] -translate-x-1/2 rounded-full bg-emerald-400/10 blur-3xl" />
-      {/* Cesped */}
-      <div className="absolute inset-x-0 bottom-0 h-[45%] opacity-40 [background:repeating-linear-gradient(90deg,#0d4d2b_0_80px,#0f5a32_80px_160px)] [mask-image:linear-gradient(to_top,black,transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#3a2b0c_0%,#171006_45%,#080602_100%)]" />
+      {/* Antorchas */}
+      <div className="sp-anim absolute -top-24 left-[8%] h-[70vh] w-40 origin-top bg-gradient-to-b from-amber-200/30 via-orange-300/5 to-transparent blur-2xl [animation:spBeam_9s_ease-in-out_infinite]" />
+      <div className="sp-anim absolute -top-24 right-[8%] h-[70vh] w-40 origin-top bg-gradient-to-b from-orange-200/25 via-amber-200/5 to-transparent blur-2xl [animation:spBeam_11s_ease-in-out_infinite_reverse]" />
+      <div className="absolute left-1/2 top-0 h-56 w-[60%] -translate-x-1/2 rounded-full bg-amber-400/10 blur-3xl" />
+      {/* Arena */}
+      <div className="absolute inset-x-0 bottom-0 h-[45%] opacity-40 [background:repeating-linear-gradient(90deg,#4a3a1a_0_80px,#54421f_80px_160px)] [mask-image:linear-gradient(to_top,black,transparent)]" />
       <div className="absolute bottom-[-180px] left-1/2 h-[360px] w-[360px] -translate-x-1/2 rounded-full border-2 border-white/10" />
       <div className="absolute inset-x-0 bottom-[0px] h-px bg-white/10" />
       {/* Estrellas / flashes de la grada */}
@@ -222,7 +222,7 @@ function StadiumBackdrop() {
 function Confetti({ seed }: { seed: number }) {
   const pieces = useMemo(() => {
     if (!seed || REDUCED_MOTION) return [];
-    const colors = ['#34d399', '#fbbf24', '#f472b6', '#60a5fa', '#ffffff', '#a78bfa'];
+    const colors = ['#fbbf24', '#f59e0b', '#b91c1c', '#fde68a', '#ffffff', '#d4af37'];
     return Array.from({ length: 90 }).map((_, i) => ({
       left: Math.random() * 100,
       delay: Math.random() * 0.8,
@@ -255,17 +255,17 @@ function PoolBar({ m }: { m: Pools }) {
   const pct = (p: Pick) => (T > 0 ? (poolOf(m, p) / T) * 100 : 0);
   return (
     <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-      <div className="bg-emerald-400 transition-all duration-700" style={{ width: `${pct('H')}%` }} />
-      <div className="bg-amber-300 transition-all duration-700" style={{ width: `${pct('D')}%` }} />
-      <div className="bg-sky-400 transition-all duration-700" style={{ width: `${pct('A')}%` }} />
+      <div className="bg-amber-500 transition-all duration-700" style={{ width: `${pct('H')}%` }} />
+      <div className="bg-stone-300 transition-all duration-700" style={{ width: `${pct('D')}%` }} />
+      <div className="bg-red-400 transition-all duration-700" style={{ width: `${pct('A')}%` }} />
     </div>
   );
 }
 
 const PICK_STYLE: Record<Pick, { ring: string; text: string; bg: string }> = {
-  H: { ring: 'ring-emerald-400/60', text: 'text-emerald-300', bg: 'from-emerald-500/25 to-emerald-700/10' },
-  D: { ring: 'ring-amber-300/60', text: 'text-amber-200', bg: 'from-amber-400/25 to-amber-700/10' },
-  A: { ring: 'ring-sky-400/60', text: 'text-sky-300', bg: 'from-sky-500/25 to-sky-700/10' },
+  H: { ring: 'ring-amber-400/60', text: 'text-amber-300', bg: 'from-amber-500/25 to-amber-700/10' },
+  D: { ring: 'ring-stone-300/60', text: 'text-stone-200', bg: 'from-stone-400/25 to-stone-700/10' },
+  A: { ring: 'ring-red-400/60', text: 'text-red-300', bg: 'from-red-500/25 to-red-700/10' },
 };
 
 // ─── Tarjeta de partido ──────────────────────────────
@@ -287,11 +287,11 @@ function MatchCard({
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br ${LEAGUES[m.competition_code]?.tint ?? 'from-emerald-500/20 to-emerald-800/10'} p-[1px] transition-transform duration-300 hover:-translate-y-0.5 ${
-        live ? 'border-red-500/50 shadow-[0_0_30px_-8px_rgba(239,68,68,0.6)]' : myTotal > 0 ? 'border-emerald-400/40' : 'border-white/10'
+      className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br ${LEAGUES[m.competition_code]?.tint ?? 'from-amber-500/20 to-amber-800/10'} p-[1px] transition-transform duration-300 hover:-translate-y-0.5 ${
+        live ? 'border-red-500/50 shadow-[0_0_30px_-8px_rgba(239,68,68,0.6)]' : myTotal > 0 ? 'border-amber-400/40' : 'border-white/10'
       }`}
     >
-      <div className="relative rounded-2xl bg-[#06130e]/90 p-3 sm:p-4 backdrop-blur">
+      <div className="relative rounded-2xl bg-[#17110a]/90 p-3 sm:p-4 backdrop-blur">
         <div className="flex items-center justify-between gap-2">
           <LeagueBadge code={m.competition_code} emblem={m.competition_emblem} name={m.competition_name} />
           <span className="text-[10px] text-white/40">
@@ -318,7 +318,7 @@ function MatchCard({
               <>
                 <span className="font-mono text-2xl font-black text-white">{hhmm(m.kickoff)}</span>
                 {phase === 'open' || phase === 'closing' ? (
-                  <span className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${phase === 'closing' ? 'bg-amber-500/20 text-amber-200' : 'bg-emerald-500/15 text-emerald-200'}`}>
+                  <span className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${phase === 'closing' ? 'bg-amber-500/20 text-amber-200' : 'bg-stone-500/15 text-stone-200'}`}>
                     <Timer className="h-3 w-3" /> Cierra en {countdown(closeAt - nowSrv)}
                   </span>
                 ) : phase === 'finished' ? (
@@ -360,7 +360,7 @@ function MatchCard({
                 <span className="mt-1 font-mono text-sm font-bold text-white">{mult ? `x${fmt(mult, 2)}` : '—'}</span>
                 <span className="text-[9px] text-white/40">{pct}% del bote</span>
                 {mine[p] > 0 && (
-                  <span className="absolute -right-1 -top-1.5 rounded-full bg-emerald-400 px-1.5 text-[9px] font-black text-emerald-950 shadow">
+                  <span className="absolute -right-1 -top-1.5 rounded-full bg-amber-400 px-1.5 text-[9px] font-black text-amber-950 shadow">
                     {fmt(mine[p], 0)}
                   </span>
                 )}
@@ -376,7 +376,7 @@ function MatchCard({
             <span className="inline-flex items-center gap-1"><Users className="h-3 w-3" /> {m.bettors}</span>
           </div>
           {myTotal > 0 && (
-            <div className="rounded-lg bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-200">
+            <div className="rounded-lg bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200">
               Tus apuestas: {(['H', 'D', 'A'] as Pick[]).filter((p) => mine[p] > 0).map((p) => `${pickCode(p)} ${fmt(mine[p], 0)}`).join(' · ')} TUNG
             </div>
           )}
@@ -468,11 +468,11 @@ function BetSlip({
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-4" onClick={onClose} role="dialog" aria-modal="true" aria-label="Boleto de apuesta">
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl border border-emerald-400/30 bg-gradient-to-b from-[#0a2a1d] to-[#03100b] shadow-[0_0_60px_-10px_rgba(16,185,129,0.6)] sm:rounded-3xl [animation:spPop_.25s_ease-out]"
+        className="max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl border border-amber-400/30 bg-gradient-to-b from-[#241a07] to-[#0d0903] shadow-[0_0_60px_-10px_rgba(245,158,11,0.6)] sm:rounded-3xl [animation:spPop_.25s_ease-out]"
       >
-        <div className="relative border-b border-white/10 bg-[repeating-linear-gradient(90deg,rgba(16,185,129,0.12)_0_24px,rgba(16,185,129,0.04)_24px_48px)] px-4 py-3">
+        <div className="relative border-b border-white/10 bg-[repeating-linear-gradient(90deg,rgba(245,158,11,0.12)_0_24px,rgba(245,158,11,0.04)_24px_48px)] px-4 py-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-300">Boleto de apuesta</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">Boleto de apuesta</span>
             <button type="button" onClick={onClose} className="rounded-full p-1 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Cerrar"><X className="h-5 w-5" /></button>
           </div>
           <div className="mt-2 flex items-center justify-center gap-3">
@@ -516,12 +516,12 @@ function BetSlip({
               value={amount}
               onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, '').slice(0, 9))}
               onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-center font-mono text-2xl font-black text-white outline-none focus:border-emerald-400"
+              className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-center font-mono text-2xl font-black text-white outline-none focus:border-amber-400"
             />
             <div className="mt-2 grid grid-cols-4 gap-1.5 sm:grid-cols-7">
               {CHIPS.map((c) => (
                 <button key={c} type="button" onClick={() => { casinoSfx.chip(); setAmount(String(c)); }}
-                  className="rounded-lg bg-white/5 py-1.5 text-xs font-bold text-white/80 ring-1 ring-white/10 hover:bg-emerald-500/20 hover:text-white">
+                  className="rounded-lg bg-white/5 py-1.5 text-xs font-bold text-white/80 ring-1 ring-white/10 hover:bg-amber-500/20 hover:text-white">
                   {c >= 1000 ? `${c / 1000}k` : c}
                 </button>
               ))}
@@ -536,7 +536,7 @@ function BetSlip({
             <div className="flex justify-between text-white/60"><span>Cuota estimada</span><b className="font-mono text-white">{mult ? `x${fmt(mult, 2)}` : '—'}</b></div>
             <div className="mt-1 flex justify-between text-white/60">
               <span>Si gana {pickLabel(m, pick)}</span>
-              <b className="font-mono text-emerald-300">{valid ? `${fmt(ret, 2)} TUNG` : '—'}</b>
+              <b className="font-mono text-amber-300">{valid ? `${fmt(ret, 2)} TUNG` : '—'}</b>
             </div>
             <p className="mt-2 text-[11px] leading-snug text-white/40">
               {mult
@@ -555,7 +555,7 @@ function BetSlip({
             type="button"
             disabled={busy || !valid || !!problem}
             onClick={submit}
-            className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-500 py-3.5 text-base font-black uppercase tracking-wider text-emerald-950 shadow-[0_8px_30px_-6px_rgba(16,185,129,0.8)] transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 py-3.5 text-base font-black uppercase tracking-wider text-amber-950 shadow-[0_8px_30px_-6px_rgba(245,158,11,0.8)] transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="sp-anim absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent [animation:spShine_2.5s_ease-in-out_infinite]" />
             <span className="relative inline-flex items-center justify-center gap-2">
@@ -572,14 +572,14 @@ function BetSlip({
 function ScoreLine({ t, h, a, result }: { t: Teams & { home_crest: string | null }; h: number | null; a: number | null; result?: Pick | null }) {
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-      <div className={`flex min-w-0 items-center justify-end gap-2 ${result === 'H' ? 'text-emerald-300' : 'text-white'}`}>
+      <div className={`flex min-w-0 items-center justify-end gap-2 ${result === 'H' ? 'text-amber-300' : 'text-white'}`}>
         <span className="truncate text-sm font-bold">{teamShort(t, 'home')}</span>
         <Crest src={t.home_crest} tla={t.home_tla} name={t.home_name} size={26} />
       </div>
       <span className={`min-w-[64px] rounded-lg px-2 py-0.5 text-center font-mono text-lg font-black ${result === 'D' ? 'bg-amber-400/20 text-amber-100' : 'bg-white/10 text-white'}`}>
         {h ?? '-'} : {a ?? '-'}
       </span>
-      <div className={`flex min-w-0 items-center gap-2 ${result === 'A' ? 'text-emerald-300' : 'text-white'}`}>
+      <div className={`flex min-w-0 items-center gap-2 ${result === 'A' ? 'text-amber-300' : 'text-white'}`}>
         <Crest src={t.away_crest} tla={t.away_tla} name={t.away_name} size={26} />
         <span className="truncate text-sm font-bold">{teamShort(t, 'away')}</span>
       </div>
@@ -589,13 +589,13 @@ function ScoreLine({ t, h, a, result }: { t: Teams & { home_crest: string | null
 
 const BET_STATUS: Record<MyBet['status'], { label: string; cls: string }> = {
   open: { label: 'En juego', cls: 'bg-amber-500/20 text-amber-200' },
-  won: { label: 'Ganada', cls: 'bg-emerald-500/20 text-emerald-200' },
+  won: { label: 'Ganada', cls: 'bg-amber-500/20 text-amber-200' },
   lost: { label: 'Perdida', cls: 'bg-red-500/20 text-red-200' },
   refunded: { label: 'Devuelta', cls: 'bg-slate-500/20 text-slate-200' },
 };
 
 function MyBetsList({ bets, loading, error, onRetry }: { bets: MyBet[] | null; loading: boolean; error: string | null; onRetry: () => void }) {
-  if (loading && !bets) return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-emerald-300" /></div>;
+  if (loading && !bets) return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-amber-300" /></div>;
   if (error && !bets) {
     return (
       <div className="rounded-2xl bg-red-500/15 p-6 text-center text-red-200">
@@ -632,7 +632,7 @@ function MyBetsList({ bets, loading, error, onRetry }: { bets: MyBet[] | null; l
             </div>
             {b.status !== 'open' && (
               <div className="mt-1 text-right text-xs">
-                {b.status === 'won' && <b className="text-emerald-300">Cobrado {fmt(b.payout)} TUNG (+{fmt(net)})</b>}
+                {b.status === 'won' && <b className="text-amber-300">Cobrado {fmt(b.payout)} TUNG (+{fmt(net)})</b>}
                 {b.status === 'lost' && <span className="text-red-300">-{fmt(b.amount, 0)} TUNG</span>}
                 {b.status === 'refunded' && (
                   <span className="text-slate-300">Devuelto {fmt(b.payout)} TUNG{b.void_reason ? ` · ${b.void_reason}` : num(b.fee) > 0 ? ' · nadie acertó' : ''}</span>
@@ -666,7 +666,7 @@ function ResultsList({ results }: { results: ResultRow[] }) {
                 <span className="text-white/50">Ganó: <b className="text-white">{r.result ? `${pickCode(r.result)} · ${pickLabel(r, r.result)}` : '—'}</b> · Bote {fmt(totalPool(r), 0)}</span>
               )}
               {num(r.my_staked) > 0 && (
-                <b className={net > 0 ? 'text-emerald-300' : net < 0 ? 'text-red-300' : 'text-slate-300'}>
+                <b className={net > 0 ? 'text-amber-300' : net < 0 ? 'text-red-300' : 'text-slate-300'}>
                   {net > 0 ? '+' : ''}{fmt(net)} TUNG
                 </b>
               )}
@@ -719,11 +719,11 @@ function Rules({ cfg }: { cfg: Config }) {
     <div className="space-y-5">
       {/* Paso a paso */}
       <section>
-        <h3 className="mb-2 flex items-center gap-2 font-bold text-emerald-200"><ListChecks className="h-4 w-4" /> Cómo apostar paso a paso</h3>
+        <h3 className="mb-2 flex items-center gap-2 font-bold text-amber-200"><ListChecks className="h-4 w-4" /> Cómo apostar paso a paso</h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map(([n, t, d]) => (
-            <div key={n} className="relative rounded-xl border border-emerald-400/20 bg-gradient-to-b from-emerald-500/10 to-black/40 p-4">
-              <span className="absolute right-3 top-2 font-mono text-3xl font-black text-emerald-400/20">{n}</span>
+            <div key={n} className="relative rounded-xl border border-amber-400/20 bg-gradient-to-b from-amber-500/10 to-black/40 p-4">
+              <span className="absolute right-3 top-2 font-mono text-3xl font-black text-amber-400/20">{n}</span>
               <div className="font-bold text-white">{t}</div>
               <p className="mt-1 text-sm leading-relaxed text-white/70">{d}</p>
             </div>
@@ -735,7 +735,7 @@ function Rules({ cfg }: { cfg: Config }) {
       <section className="rounded-xl border border-amber-400/25 bg-amber-500/5 p-4">
         <h3 className="flex items-center gap-2 font-bold text-amber-200"><Coins className="h-4 w-4" /> Ejemplo de cómo se calcula el premio</h3>
         <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
-          {([['1', ex.H, 'text-emerald-300'], ['X', ex.D, 'text-amber-200'], ['2', ex.A, 'text-sky-300']] as [string, number, string][]).map(([k, v, c]) => (
+          {([['1', ex.H, 'text-amber-300'], ['X', ex.D, 'text-stone-200'], ['2', ex.A, 'text-red-300']] as [string, number, string][]).map(([k, v, c]) => (
             <div key={k} className="rounded-lg bg-black/40 py-2">
               <div className={`text-lg font-black ${c}`}>{k}</div>
               <div className="font-mono text-white">{fmt(v, 0)} TUNG</div>
@@ -746,17 +746,17 @@ function Rules({ cfg }: { cfg: Config }) {
           <li>• Bote total: <b className="text-white">{fmt(exT, 0)} TUNG</b>. Tú apostaste <b className="text-white">{fmt(ex.mine, 0)} TUNG</b> al 1, y gana el local.</li>
           <li>• Dinero de los que fallaron (X + 2): <b className="text-white">{fmt(exL, 0)} TUNG</b>. Comisión: {fee}% del bote = <b className="text-white">{fmt(exFee, 2)} TUNG</b>.</li>
           <li>• Quedan <b className="text-white">{fmt(exL - exFee, 2)} TUNG</b> para los acertantes. Tú pusiste el {fmt((ex.mine / ex.H) * 100, 0)}% de lo apostado al 1, así que te llevas <b className="text-white">{fmt(exGain, 2)} TUNG</b> de ganancia.</li>
-          <li>• Cobras <b className="text-emerald-300">{fmt(exRet, 2)} TUNG</b> (tu apuesta + ganancia) → cuota <b className="text-emerald-300">x{fmt(exRet / ex.mine, 2)}</b>.</li>
+          <li>• Cobras <b className="text-amber-300">{fmt(exRet, 2)} TUNG</b> (tu apuesta + ganancia) → cuota <b className="text-amber-300">x{fmt(exRet / ex.mine, 2)}</b>.</li>
         </ul>
       </section>
 
       {/* Reglas */}
       <section>
-        <h3 className="mb-2 flex items-center gap-2 font-bold text-emerald-200"><Info className="h-4 w-4" /> Reglas</h3>
+        <h3 className="mb-2 flex items-center gap-2 font-bold text-amber-200"><Info className="h-4 w-4" /> Reglas</h3>
         <div className="grid gap-3 md:grid-cols-2">
           {items.map(([t, d]) => (
             <div key={t} className="rounded-xl border border-white/10 bg-black/40 p-4">
-              <div className="flex items-center gap-2 font-bold text-emerald-200"><Info className="h-4 w-4" /> {t}</div>
+              <div className="flex items-center gap-2 font-bold text-amber-200"><Info className="h-4 w-4" /> {t}</div>
               <p className="mt-1 text-sm leading-relaxed text-white/70">{d}</p>
             </div>
           ))}
@@ -799,7 +799,7 @@ function AdminPanel({ info, cfg, busy, onAction }: {
             {stat('En juego (custodia)', `${fmt(info.escrow)} TUNG`, 'text-amber-200')}
             {stat('Total apostado', `${fmt(info.total_wagered)} TUNG`)}
             {stat('Comisiones', `${fmt(info.total_fees)} TUNG`)}
-            {stat('Para la casa', `${fmt(info.total_company)} TUNG`, 'text-emerald-300')}
+            {stat('Para la casa', `${fmt(info.total_company)} TUNG`, 'text-amber-300')}
             {stat('Pagado', `${fmt(info.total_paid)} TUNG`)}
           </div>
           {info.last_sync_error && (
@@ -838,7 +838,7 @@ function AdminPanel({ info, cfg, busy, onAction }: {
 
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={busy} onClick={() => onAction(cfg.enabled ? 'disable' : 'enable')}
-              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold disabled:opacity-40 ${cfg.enabled ? 'bg-red-500/80 text-white hover:bg-red-500' : 'bg-emerald-500 text-emerald-950 hover:bg-emerald-400'}`}>
+              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold disabled:opacity-40 ${cfg.enabled ? 'bg-red-500/80 text-white hover:bg-red-500' : 'bg-amber-500 text-amber-950 hover:bg-amber-400'}`}>
               <Power className="h-4 w-4" /> {cfg.enabled ? 'Pausar apuestas' : 'Abrir apuestas'}
             </button>
             <button type="button" disabled={busy || !info.token_set} onClick={() => onAction('sync_now')}
@@ -911,7 +911,7 @@ export function SportsBettingPage() {
   const load = useCallback(async () => {
     const { data, error } = await supabase.rpc('sports_lobby');
     if (error || !data?.success) {
-      setLoadError(error?.message || data?.error || 'No se pudo cargar el estadio');
+      setLoadError(error?.message || data?.error || 'No se pudo cargar el Coliseo');
     } else {
       const l = data as Lobby;
       offsetRef.current = new Date(l.server_time).getTime() - Date.now();
@@ -1083,7 +1083,7 @@ export function SportsBettingPage() {
         @keyframes spPop { from { transform: translateY(30px) scale(.96); opacity: 0 } to { transform: none; opacity: 1 } }
         @keyframes spShine { 0% { transform: translateX(-100%) } 60%,100% { transform: translateX(100%) } }
         @keyframes spBall { 0%,100% { transform: translateY(0) rotate(0) } 50% { transform: translateY(-18px) rotate(180deg) } }
-        @keyframes spGlow { 0%,100% { text-shadow: 0 0 18px rgba(52,211,153,.55) } 50% { text-shadow: 0 0 36px rgba(52,211,153,.95) } }
+        @keyframes spGlow { 0%,100% { text-shadow: 0 0 18px rgba(245,158,11,.55) } 50% { text-shadow: 0 0 36px rgba(245,158,11,.95) } }
         @media (prefers-reduced-motion: reduce) { .sp-anim { animation: none !important } }
       `}</style>
       <StadiumBackdrop />
@@ -1092,7 +1092,7 @@ export function SportsBettingPage() {
       <div className="relative mx-auto max-w-6xl space-y-4">
         {/* Cabecera */}
         <header className="flex flex-wrap items-center justify-between gap-3">
-          <Link to="/game/galaxy" className="inline-flex items-center gap-1 text-sm text-emerald-300 hover:text-emerald-200">
+          <Link to="/game/galaxy" className="inline-flex items-center gap-1 text-sm text-amber-300 hover:text-amber-200">
             <ArrowLeft className="h-4 w-4" /> Galaxia
           </Link>
           <div className="flex items-center gap-2">
@@ -1104,20 +1104,20 @@ export function SportsBettingPage() {
           </div>
         </header>
 
-        <section className="relative overflow-hidden rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-emerald-900/50 via-black/40 to-emerald-950/60 p-5 sm:p-7">
+        <section className="relative overflow-hidden rounded-3xl border border-amber-400/25 bg-gradient-to-br from-amber-900/50 via-black/40 to-yellow-950/60 p-5 sm:p-7">
           <div className="absolute -right-6 -top-6 text-[140px] leading-none opacity-10 sp-anim [animation:spBall_4s_ease-in-out_infinite]" aria-hidden>⚽</div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-emerald-300/80">
+          <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-amber-300/80">
             Planeta [{SPORTS_COORDS.galaxy}:{SPORTS_COORDS.system}:{SPORTS_COORDS.position}]
           </div>
-          <h1 className="mt-1 bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-3xl font-black uppercase tracking-tight text-transparent sm:text-5xl sp-anim [animation:spGlow_3s_ease-in-out_infinite]">
-            Estadio Galáctico
+          <h1 className="mt-1 bg-gradient-to-r from-amber-50 via-amber-200 to-amber-500 bg-clip-text font-serif text-3xl font-black uppercase tracking-wide text-transparent sm:text-5xl sp-anim [animation:spGlow_3s_ease-in-out_infinite]">
+            Coliseo Imperial
           </h1>
           <p className="mt-1 text-sm text-white/60">Apuestas deportivas de fútbol en TUNG · Premier, LaLiga, Serie A, Bundesliga, Ligue 1 y Champions</p>
           <div className="mt-4 flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-black/40 px-3 py-1 text-white/70"><b className="text-emerald-300">1</b> Local · <b className="text-amber-200">X</b> Empate · <b className="text-sky-300">2</b> Visitante</span>
+            <span className="rounded-full bg-black/40 px-3 py-1 text-white/70"><b className="text-amber-300">1</b> Local · <b className="text-stone-200">X</b> Empate · <b className="text-red-300">2</b> Visitante</span>
             <span className="rounded-full bg-black/40 px-3 py-1 text-white/70">Comisión {Math.round((cfg?.fee_rate ?? 0.2) * 100)}% · nunca pierdes si aciertas</span>
             {lobby && num(lobby.my_open.count) > 0 && (
-              <button type="button" onClick={() => setTab('mybets')} className="rounded-full bg-emerald-500/20 px-3 py-1 font-semibold text-emerald-200 hover:bg-emerald-500/30">
+              <button type="button" onClick={() => setTab('mybets')} className="rounded-full bg-amber-500/20 px-3 py-1 font-semibold text-amber-200 hover:bg-amber-500/30">
                 🎟️ {lobby.my_open.count} apuestas en juego · {fmt(lobby.my_open.amount, 0)} TUNG
               </button>
             )}
@@ -1131,7 +1131,7 @@ export function SportsBettingPage() {
               {[...lobby.big_wins, ...lobby.big_wins].map((w, i) => (
                 <span key={i} className="inline-flex items-center gap-1.5 text-white/70">
                   <Trophy className="h-3.5 w-3.5 text-amber-300" />
-                  <b className="text-white">{w.username || 'Jugador'}</b> ganó <b className="text-emerald-300">{fmt(w.payout)} TUNG</b>
+                  <b className="text-white">{w.username || 'Jugador'}</b> ganó <b className="text-amber-300">{fmt(w.payout)} TUNG</b>
                   con {w.pick === 'H' ? w.home_name : w.pick === 'A' ? w.away_name : 'el empate'} ({w.home_name} vs {w.away_name})
                 </span>
               ))}
@@ -1148,7 +1148,7 @@ export function SportsBettingPage() {
         {loading ? (
           <div className="flex flex-col items-center py-24">
             <span className="text-6xl sp-anim [animation:spBall_1s_ease-in-out_infinite]">⚽</span>
-            <span className="mt-4 text-sm text-white/50">Entrando al estadio…</span>
+            <span className="mt-4 text-sm text-white/50">Entrando al Coliseo…</span>
           </div>
         ) : !lobby || !cfg ? (
           <div className="rounded-2xl bg-red-500/15 p-6 text-center text-red-200">
@@ -1161,9 +1161,9 @@ export function SportsBettingPage() {
             {lobby.admin && <AdminPanel info={lobby.admin} cfg={cfg} busy={adminBusy} onAction={adminAction} />}
 
             {!cfg.ready && !isAdmin && (
-              <div className="rounded-2xl border border-emerald-400/20 bg-black/50 p-6 text-center">
+              <div className="rounded-2xl border border-amber-400/20 bg-black/50 p-6 text-center">
                 <div className="text-5xl">🏟️</div>
-                <div className="mt-2 font-bold">El estadio está preparando la temporada</div>
+                <div className="mt-2 font-bold">El Coliseo está preparando la temporada</div>
                 <p className="text-sm text-white/50">Muy pronto podrás apostar por tus equipos favoritos.</p>
               </div>
             )}
@@ -1183,11 +1183,11 @@ export function SportsBettingPage() {
               ] as [Tab, string, JSX.Element][]).map(([k, label, icon]) => (
                 <button key={k} type="button" onClick={() => setTab(k)}
                   className={`relative inline-flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-center text-[11px] font-semibold leading-tight transition-all sm:flex-row sm:gap-1.5 sm:whitespace-nowrap sm:px-3 sm:py-2 sm:text-sm ${
-                    tab === k ? 'bg-gradient-to-b from-emerald-500 to-emerald-700 text-white shadow-lg' : 'text-white/60 hover:bg-white/5 hover:text-white'
+                    tab === k ? 'bg-gradient-to-b from-amber-500 to-amber-700 text-white shadow-lg' : 'text-white/60 hover:bg-white/5 hover:text-white'
                   }`}>
                   {icon} {label}
                   {k === 'mybets' && num(lobby.my_open.count) > 0 && (
-                    <span className={`absolute right-1 top-1 rounded-full px-1.5 text-[10px] font-black leading-4 sm:static ${tab === k ? 'bg-white text-emerald-700' : 'bg-emerald-500 text-white'}`}>{lobby.my_open.count}</span>
+                    <span className={`absolute right-1 top-1 rounded-full px-1.5 text-[10px] font-black leading-4 sm:static ${tab === k ? 'bg-white text-amber-800' : 'bg-amber-500 text-white'}`}>{lobby.my_open.count}</span>
                   )}
                 </button>
               ))}
@@ -1197,12 +1197,12 @@ export function SportsBettingPage() {
               <div ref={listRef} className="scroll-mt-4 space-y-4">
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   <button type="button" onClick={() => pickLeague('ALL')}
-                    className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold ring-1 transition-all ${league === 'ALL' ? 'bg-white text-emerald-950 ring-white' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
+                    className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold ring-1 transition-all ${league === 'ALL' ? 'bg-white text-amber-950 ring-white' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
                     Todas <span className="opacity-60">({lobby.matches.length})</span>
                   </button>
                   {leagues.map((l) => (
                     <button key={l.code} type="button" onClick={() => pickLeague(l.code)}
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold ring-1 transition-all ${league === l.code ? 'bg-white text-emerald-950 ring-white' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
+                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold ring-1 transition-all ${league === l.code ? 'bg-white text-amber-950 ring-white' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
                       {l.emblem ? <img src={imgUrl(l.emblem) ?? undefined} alt="" referrerPolicy="no-referrer" className="h-4 w-4 object-contain" /> : <span>{LEAGUES[l.code]?.icon ?? '⚽'}</span>}
                       {LEAGUES[l.code]?.name ?? l.code} <span className="opacity-60">({l.count})</span>
                     </button>
@@ -1212,7 +1212,7 @@ export function SportsBettingPage() {
                 {days.length > 0 && (
                   <div className="-mt-1 flex items-stretch gap-2 overflow-x-auto pb-1 pr-1 pt-2">
                     <button type="button" onClick={() => pickDay('ALL')}
-                      className={`flex shrink-0 flex-col items-center justify-center rounded-xl px-3 py-1.5 ring-1 transition-all ${activeDay === 'ALL' ? 'bg-emerald-500 text-white ring-emerald-300 shadow-lg' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
+                      className={`flex shrink-0 flex-col items-center justify-center rounded-xl px-3 py-1.5 ring-1 transition-all ${activeDay === 'ALL' ? 'bg-amber-500 text-white ring-amber-300 shadow-lg' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
                       <CalendarDays className="h-4 w-4" />
                       <span className="text-[11px] font-bold">Todos</span>
                     </button>
@@ -1221,10 +1221,10 @@ export function SportsBettingPage() {
                       const on = activeDay === d.key;
                       return (
                         <button key={d.key} type="button" onClick={() => pickDay(d.key)}
-                          className={`relative flex min-w-[64px] shrink-0 flex-col items-center justify-center rounded-xl px-3 py-1.5 ring-1 transition-all ${on ? 'bg-emerald-500 text-white ring-emerald-300 shadow-lg' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
+                          className={`relative flex min-w-[64px] shrink-0 flex-col items-center justify-center rounded-xl px-3 py-1.5 ring-1 transition-all ${on ? 'bg-amber-500 text-white ring-amber-300 shadow-lg' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
                           <span className="text-[11px] font-black uppercase tracking-wider">{c.top}</span>
                           <span className="text-xs font-semibold opacity-80">{c.bottom}</span>
-                          <span className={`absolute -right-1 -top-1 rounded-full px-1.5 text-[10px] font-bold ${on ? 'bg-white text-emerald-700' : 'bg-emerald-600 text-white'}`}>{d.count}</span>
+                          <span className={`absolute -right-1 -top-1 rounded-full px-1.5 text-[10px] font-bold ${on ? 'bg-white text-amber-800' : 'bg-amber-600 text-white'}`}>{d.count}</span>
                         </button>
                       );
                     })}
@@ -1246,7 +1246,7 @@ export function SportsBettingPage() {
 
                 {groups.map((g) => (
                   <div key={g.label}>
-                    <h2 className="sticky top-0 z-10 mb-2 inline-block rounded-full bg-black/70 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-200 backdrop-blur">
+                    <h2 className="sticky top-0 z-10 mb-2 inline-block rounded-full bg-black/70 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-200 backdrop-blur">
                       {g.label}
                     </h2>
                     <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]">
@@ -1265,7 +1265,7 @@ export function SportsBettingPage() {
                     </button>
                     {Array.from({ length: pages }).map((_, i) => (
                       <button key={i} type="button" onClick={() => goPage(i)} aria-current={i === curPage ? 'page' : undefined}
-                        className={`h-9 min-w-[36px] rounded-xl px-2 text-sm font-bold ring-1 transition-all ${i === curPage ? 'bg-white text-emerald-950 ring-white' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
+                        className={`h-9 min-w-[36px] rounded-xl px-2 text-sm font-bold ring-1 transition-all ${i === curPage ? 'bg-white text-amber-950 ring-white' : 'bg-black/40 text-white/70 ring-white/10 hover:text-white'}`}>
                         {i + 1}
                       </button>
                     ))}
@@ -1307,15 +1307,15 @@ export function SportsBettingPage() {
       {celebrate && (
         <div className="fixed inset-0 z-[65] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={() => setCelebrate(null)}>
           <div onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-3xl border border-emerald-400/40 bg-gradient-to-b from-emerald-800/80 to-[#03100b] p-6 text-center shadow-[0_0_80px_-10px_rgba(16,185,129,0.9)] [animation:spPop_.35s_ease-out]">
+            className="w-full max-w-sm rounded-3xl border border-amber-400/40 bg-gradient-to-b from-amber-800/80 to-[#0d0903] p-6 text-center shadow-[0_0_80px_-10px_rgba(245,158,11,0.9)] [animation:spPop_.35s_ease-out]">
             <div className="text-6xl sp-anim [animation:spBall_1.2s_ease-in-out_infinite]">⚽</div>
-            <div className="mt-2 text-4xl font-black uppercase text-emerald-200 sp-anim [animation:spGlow_1.5s_ease-in-out_infinite]">¡Golazo!</div>
+            <div className="mt-2 text-4xl font-black uppercase text-amber-200 sp-anim [animation:spGlow_1.5s_ease-in-out_infinite]">¡Golazo!</div>
             <p className="mt-1 text-sm text-white/70">Has ganado tus apuestas</p>
             <div className="mt-4 max-h-[40vh] space-y-2 overflow-y-auto">
               {celebrate.map((w) => (
                 <div key={w.id} className="rounded-xl bg-black/40 px-3 py-2 text-sm">
                   <div className="truncate text-white/80">{teamShort(w, 'home')} {w.score_home}-{w.score_away} {teamShort(w, 'away')}</div>
-                  <div className="font-mono text-lg font-black text-emerald-300">+{fmt(num(w.my_paid) - num(w.my_staked))} TUNG</div>
+                  <div className="font-mono text-lg font-black text-amber-300">+{fmt(num(w.my_paid) - num(w.my_staked))} TUNG</div>
                 </div>
               ))}
             </div>
