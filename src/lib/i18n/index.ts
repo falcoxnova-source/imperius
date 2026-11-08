@@ -320,21 +320,21 @@ export function getShipImage(code: string, fallback: string | null | undefined):
  * Se activan a medida que se generan las imágenes en /Imagenes/Defensas/.
  */
 const defenseImageTheme: Record<string, string> = {
-  rocket_launcher: '/Imagenes/Defensas/Funditor_11zon.webp',
-  light_laser: '/Imagenes/Defensas/Turris_11zon.webp',
-  heavy_laser: '/Imagenes/Defensas/Turris Magna_11zon.webp',
-  gauss_cannon: '/Imagenes/Defensas/Ballista_11zon.webp',
-  ion_cannon: '/Imagenes/Defensas/Scorpio_11zon.webp',
-  plasma_turret: '/Imagenes/Defensas/Turris Ignea_11zon.webp',
-  small_shield_dome: '/Imagenes/Defensas/Tholus Menor_11zon.webp',
-  large_shield_dome: '/Imagenes/Defensas/Tholus Mayor_11zon.webp',
-  anti_ballistic_missiles: '/Imagenes/Defensas/Pilum_11zon.webp',
-  anti_ballistic_missile: '/Imagenes/Defensas/Pilum_11zon.webp',
-  interplanetary_missiles: '/Imagenes/Defensas/Pilum de Asedio_11zon.webp',
-  interplanetary_missile: '/Imagenes/Defensas/Pilum de Asedio_11zon.webp',
-  graviton_cannon: '/Imagenes/Defensas/Catapulta_11zon.webp',
-  outer_protection_dome: '/Imagenes/Defensas/Vallum_11zon.webp',
-  orbital_defense_platform: '/Imagenes/Defensas/Arx Caeli_11zon.webp',
+  rocket_launcher: '/Imagenes/Defensas/Legionario romano lanzando una piedra ígnea a la batalla.webp',
+  light_laser: '/Imagenes/Defensas/Torre de asedio romana al atardecer_11zon.webp',
+  heavy_laser: '/Imagenes/Defensas/Fortaleza Romana del Rayo Dorado_11zon.webp',
+  gauss_cannon: '/Imagenes/Defensas/Asedio romano al atardecer (1)_11zon.webp',
+  ion_cannon: '/Imagenes/Defensas/Ballesta romana al atardecer_11zon.webp',
+  plasma_turret: '/Imagenes/Defensas/Torre romana de fuego bajo la luna_11zon.webp',
+  small_shield_dome: '/Imagenes/Defensas/Centinela romano tras el muro dorado_11zon.webp',
+  large_shield_dome: '/Imagenes/Defensas/Ciudad Romana bajo Cúpula Dorada.webp',
+  anti_ballistic_missiles: '/Imagenes/Defensas/Legionarios romanos lanzan jabalinas al atardecer_11zon.webp',
+  anti_ballistic_missile: '/Imagenes/Defensas/Legionarios romanos lanzan jabalinas al atardecer_11zon.webp',
+  interplanetary_missiles: '/Imagenes/Defensas/Asedio romano al atardecer_11zon.webp',
+  interplanetary_missile: '/Imagenes/Defensas/Asedio romano al atardecer_11zon.webp',
+  graviton_cannon: '/Imagenes/Defensas/Asedio romano bajo un cielo de fuego_11zon.webp',
+  outer_protection_dome: '/Imagenes/Defensas/Fortificación romana al atardecer.webp',
+  orbital_defense_platform: '/Imagenes/Defensas/Ciudadela romana sobre las nubes_11zon.webp',
 };
 
 export function getDefenseImage(code: string, fallback: string | null | undefined): string | null | undefined {
