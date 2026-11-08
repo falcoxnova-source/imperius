@@ -788,7 +788,7 @@ function ShipCard({
               <MediaDisplay
                 src={imageUrl}
                 alt={translateShipName(t, shipType.code, shipType.name)}
-                className={`w-full h-full transition-transform duration-300 ${isThemedImage ? 'object-contain p-3 group-hover:scale-105 [-webkit-mask-image:radial-gradient(ellipse_62%_58%_at_50%_50%,black_52%,transparent_98%)] [mask-image:radial-gradient(ellipse_62%_58%_at_50%_50%,black_52%,transparent_98%)]' : 'object-cover group-hover:scale-110'}`}
+                className={`w-full h-full object-cover transition-transform duration-300 ${isThemedImage ? 'group-hover:scale-105' : 'group-hover:scale-110'}`}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
