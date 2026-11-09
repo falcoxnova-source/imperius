@@ -8,7 +8,7 @@
  * Los datos se guardan en localStorage con versionado para invalidacion
  */
 
-const CACHE_VERSION = 'v14';
+const CACHE_VERSION = 'v15';
 const CACHE_PREFIX = 'falcox_cache_';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas en ms
 

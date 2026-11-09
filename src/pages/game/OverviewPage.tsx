@@ -221,7 +221,7 @@ type PlanetAutopilotRole = NonNullable<Planet['autopilot_role']>;
 
 // Imagenes decorativas de la Vista General. Vacio ('') => fondo degradado.
 // Subirlas a public/Imagenes/Vista General/ y poner aqui la ruta.
-const OVERVIEW_BANNER_IMG = '/Imagenes/Defensas/Arx Caeli_11zon.webp';
+const OVERVIEW_BANNER_IMG = '/Imagenes/Defensas/Ciudadela romana sobre las nubes_11zon.webp';
 const OVERVIEW_PLANET_DECOR_IMG = '';
 const OVERVIEW_FLEET_IMG = '';
 const OVERVIEW_CARD_IMG = {
@@ -928,7 +928,7 @@ export function OverviewPage() {
                   planetGlow ? `ring-4 ${planetGlow.ring} shadow-2xl border-white/20` : 'border-amber-600/40'
                 }`}>
                   <img
-                    src="/Imagenes/Visuales/overview_city.webp"
+                    src={currentPlanet.planet_type === 'moon' ? '/Imagenes/castra de diana/Campamento romano bajo la luna llena_11zon.webp' : '/Imagenes/Visuales/overview_city.webp'}
                     alt={t.galaxy.planet}
                     className="w-full h-full object-cover"
                     draggable={false}

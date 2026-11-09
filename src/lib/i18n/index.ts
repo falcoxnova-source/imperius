@@ -272,8 +272,10 @@ const buildingImageTheme: Record<string, string> = {
   missile_silo: '/Imagenes/Edificios/Arsenal medieval bajo estandartes dorados.webp',
   nanite_factory: '/Imagenes/Edificios/Taller de ingeniería medieval steampunk.webp',
   terraformer: '/Imagenes/Edificios/Construcción del castillo bajo estandartes dorados.webp',
-  sensor_phalanx: '/Imagenes/Edificios/Torre Imperial del Telescopio Celestial.webp',
-  jump_gate: '/Imagenes/Edificios/Portal imperial de luz dorada.webp',
+  sensor_phalanx: '/Imagenes/castra de diana/Moonlit Roman Watchtower Overlooking Camp_11zon.webp',
+  jump_gate: '/Imagenes/castra de diana/Moonlit Roman Triumph Gate_11zon.webp',
+  space_dock: '/Imagenes/castra de diana/Forja Romana bajo la Luna Llena-2_11zon.webp',
+  lunar_base: '/Imagenes/castra de diana/Praetorium romano bajo la luna llena_11zon.webp',
   university: '/Imagenes/Edificios/Sunlit Fantasy Academy Courtyard and Library.webp',
 };
 
