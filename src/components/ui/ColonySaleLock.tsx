@@ -130,7 +130,7 @@ export function ColonySaleLock({ children }: { children: React.ReactNode }) {
         <div className="flex-1 text-center sm:text-left">
           <p className="text-sm font-bold text-amber-200">Colonia en venta: bloqueada</p>
           <p className="text-xs text-amber-100/80">
-            Mientras esté en el mercado no puedes construir, investigar, fabricar naves o defensas ni enviar flotas desde o hacia ella.
+            Mientras esté en el mercado no puedes construir, investigar, fabricar tropas o defensas ni enviar ejércitos desde o hacia ella.
             La producción está pausada y la IA desactivada. Cancela la venta para volver a usarla.
           </p>
           {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
@@ -204,7 +204,7 @@ export function ColonySaleLock({ children }: { children: React.ReactNode }) {
                     <Factory className="w-4 h-4 flex-shrink-0" /> La producción se reanuda desde ahora
                   </div>
                   <div className="flex items-center gap-2 text-sm text-emerald-300">
-                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> Podrás construir, investigar y mover flotas
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> Podrás construir, investigar y mover ejércitos
                   </div>
                   <div className="flex items-center gap-2 text-sm text-cyan-300">
                     <Cpu className="w-4 h-4 flex-shrink-0" /> La IA queda apagada; puedes reactivarla tú
@@ -252,7 +252,7 @@ export function ColonySaleLock({ children }: { children: React.ReactNode }) {
         <Lock className="w-12 h-12 text-amber-400 mx-auto" />
         <h2 className="text-lg font-bold text-amber-200">Esta colonia está en venta</h2>
         <p className="text-sm text-gray-300 max-w-md mx-auto">
-          No puedes usar esta sección mientras la colonia esté publicada en el mercado. Cambia a otro planeta o cancela la venta.
+          No puedes usar esta sección mientras la colonia esté publicada en el mercado. Cambia a otra ciudad o cancela la venta.
         </p>
       </div>
     </>

@@ -266,7 +266,7 @@ export function MessagesPage() {
                          message.body.includes('moon has formed');
       if (hasNewMoon && profile) {
         await fetchPlanets(profile.id);
-        alert('🌙 ¡Nueva luna detectada! Selecciónala desde el selector de planetas para construir');
+        alert('🌙 ¡Nueva Castra de Diana detectada! Selecciónala desde el selector de ciudades para construir');
       }
     }
   };
@@ -663,7 +663,7 @@ function EspionageReportView({ body }: { body: string }) {
   const techsVisible = visibility >= 5;
 
   const missingSections = [
-    !shipsVisible && 'la flota',
+    !shipsVisible && 'el ejército',
     !defensesVisible && 'las defensas',
     !buildingsVisible && 'los edificios',
     !techsVisible && 'las tecnologias',
@@ -691,11 +691,11 @@ function EspionageReportView({ body }: { body: string }) {
       <div className="flex items-center gap-2 text-cyber-blue">
         <Eye className="w-5 h-5" />
         <span className="font-orbitron">
-          {report.target_type === 'moon' && '🌙 '}{report.planet_name}{report.target_type === 'moon' && ' (Luna)'}{' '}
+          {report.target_type === 'moon' && '🌙 '}{report.planet_name}{report.target_type === 'moon' && ' (Castra de Diana)'}{' '}
           <button
             type="button"
             onClick={goToGalaxy}
-            title="Ver en galaxia"
+            title="Ver en continente"
             className="font-orbitron text-cyber-blue hover:text-white underline decoration-dotted underline-offset-2 transition-colors cursor-pointer"
           >
             {report.coordinates}
@@ -738,8 +738,8 @@ function EspionageReportView({ body }: { body: string }) {
           </p>
           {!shipsVisible && (
             <p className="text-xs text-red-200 font-semibold mt-2 leading-relaxed">
-              ⚠️ CUIDADO: no puedes ver su flota. Que aparezca vacio NO significa que no tenga naves.
-              Si atacas a ciegas puedes perder toda tu flota.
+              ⚠️ CUIDADO: no puedes ver su ejército. Que aparezca vacio NO significa que no tenga tropas.
+              Si atacas a ciegas puedes perder todo tu ejército.
             </p>
           )}
           <p className="text-[11px] text-gray-400 mt-2">
@@ -787,7 +787,7 @@ function EspionageReportView({ body }: { body: string }) {
         <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/20 rounded-lg p-4 border border-blue-500/20">
           <h4 className="text-sm font-semibold text-blue-400 mb-3 flex items-center gap-2">
             <Users className="w-4 h-4" />
-            🛡️ Flotas Aliadas Estacionadas
+            🛡️ Ejércitos Aliados Estacionados
           </h4>
           <div className="space-y-3">
             {report.allied_fleets.map((allyFleet, i) => (
@@ -1002,7 +1002,7 @@ function BattleReportView({ body }: { body: string }) {
           border: 'border-cyber-green/40',
           grad: 'from-cyber-green/25 via-cyber-green/5 to-transparent',
           Icon: Trophy,
-          tagline: isAttacker ? 'Tu flota ha arrasado el objetivo' : 'Tus defensas han repelido el ataque',
+          tagline: isAttacker ? 'Tu ejército ha arrasado el objetivo' : 'Tus defensas han repelido el ataque',
         }
       : outcome === 'lost'
         ? {
@@ -1011,7 +1011,7 @@ function BattleReportView({ body }: { body: string }) {
             border: 'border-cyber-red/40',
             grad: 'from-cyber-red/25 via-cyber-red/5 to-transparent',
             Icon: Skull,
-            tagline: isAttacker ? 'Tu flota ha sido aniquilada' : 'El enemigo ha superado tus defensas',
+            tagline: isAttacker ? 'Tu ejército ha sido aniquilado' : 'El enemigo ha superado tus defensas',
           }
         : {
             label: 'EMPATE',
@@ -1019,7 +1019,7 @@ function BattleReportView({ body }: { body: string }) {
             border: 'border-cyber-yellow/40',
             grad: 'from-cyber-yellow/25 via-cyber-yellow/5 to-transparent',
             Icon: Swords,
-            tagline: 'Ninguna flota logro imponerse',
+            tagline: 'Ningún ejército logro imponerse',
           };
 
   const atkLoss = { metal: report.attacker_losses?.metal || 0, crystal: report.attacker_losses?.crystal || 0 };
@@ -1062,7 +1062,7 @@ function BattleReportView({ body }: { body: string }) {
           <div className="bg-space-900/50 rounded-lg px-2.5 py-2">
             <div className="text-gray-500">Objetivo</div>
             <div className="text-white font-orbitron truncate">
-              {report.planet_name || 'Planeta'}
+              {report.planet_name || 'Ciudad'}
             </div>
           </div>
           <div className="bg-space-900/50 rounded-lg px-2.5 py-2">
@@ -1110,10 +1110,10 @@ function BattleReportView({ body }: { body: string }) {
       {/* ===== Fuerzas ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <BattleForcePanel
-          title={`Flota atacante - ${report.attacker}`}
+          title={`Ejército atacante - ${report.attacker}`}
           accent="blue"
           icon={<Target className="w-4 h-4" />}
-          groups={[{ label: 'Naves', units: report.attacker_ships }]}
+          groups={[{ label: 'Tropas', units: report.attacker_ships }]}
           lossMetal={atkLoss.metal}
           lossCrystal={atkLoss.crystal}
         />
@@ -1122,7 +1122,7 @@ function BattleReportView({ body }: { body: string }) {
           accent="orange"
           icon={<Shield className="w-4 h-4" />}
           groups={[
-            { label: 'Naves', units: report.defender_ships },
+            { label: 'Tropas', units: report.defender_ships },
             { label: 'Defensas', units: report.defender_defenses },
           ]}
           lossMetal={defLoss.metal}
@@ -1219,13 +1219,13 @@ function BattleReportView({ body }: { body: string }) {
           <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
             <Moon className={`w-4 h-4 ${moonCreated ? 'text-cyber-purple' : 'text-gray-400'}`} />
             <span className={moonCreated ? 'text-cyber-purple' : 'text-gray-300'}>
-              {moonCreated ? 'Se ha formado una LUNA!' : 'Probabilidad de luna'}
+              {moonCreated ? '¡Se ha formado una Castra de Diana!' : 'Probabilidad de Castra de Diana'}
             </span>
           </h4>
 
           {moonCreated ? (
             <p className="text-sm text-gray-300">
-              Los escombros de la batalla se fusionaron y formaron una luna de{' '}
+              Los escombros de la batalla se fusionaron y formaron una Castra de Diana de{' '}
               <span className="text-white font-orbitron">{formatNumber(report.moon?.moon_diameter || 0)} km</span> en [{report.coordinates}].
             </p>
           ) : (
@@ -1244,7 +1244,7 @@ function BattleReportView({ body }: { body: string }) {
               <p className="text-[11px] text-gray-500 mt-2">
                 Cada 100.000 de escombros = +1% de probabilidad (maximo 20%). En esta batalla se generaron{' '}
                 <span className="text-gray-300">{formatNumber(debrisTotal)}</span> de escombros.
-                {report.moon?.reason === 'Ya existe una luna' && ' Ya existe una luna en esta posicion.'}
+                {report.moon?.reason === 'Ya existe una luna' && ' Ya existe una Castra de Diana en esta posicion.'}
               </p>
             </>
           )}
@@ -1504,9 +1504,9 @@ function PlainTextBattleReport({ body }: { body: string }) {
   const attackerSectionFound = attackerSection.found;
   const defenderSectionFound = defenderSection.found;
   const attackerEmptyMsg = (attackerSectionFound || /ninguna/i.test(attackerUnitsRaw))
-    ? '🛰️ Sin naves ni defensas' : 'Sin datos';
+    ? '🛰️ Sin tropas ni defensas' : 'Sin datos';
   const defenderEmptyMsg = (defenderSectionFound || /ninguna/i.test(defenderUnitsRaw))
-    ? '🛰️ Planeta sin naves ni defensas' : 'Sin datos';
+    ? '🛰️ Ciudad sin tropas ni defensas' : 'Sin datos';
 
   // Result banner
   const resultEmoji = userWon ? '🏆' : userLost ? '💥' : '⚔️';
@@ -1518,7 +1518,7 @@ function PlainTextBattleReport({ body }: { body: string }) {
 
   // Motivational message
   const motivationalMsg = userWon
-    ? '🚀 ¡Tu flota ha dominado el campo de batalla! La galaxia tiembla ante tu poder.'
+    ? '🚀 ¡Tu ejército ha dominado el campo de batalla! El continente tiembla ante tu poder.'
     : userLost
       ? '🛡️ Cada derrota forja un comandante más fuerte. Reconstruye, investiga y vuelve con más fuerza.'
       : '⚡ Un empate honroso. Ambos bandos han demostrado su valía. La próxima vez, la victoria será tuya.';
@@ -1532,7 +1532,7 @@ function PlainTextBattleReport({ body }: { body: string }) {
         </p>
         <p className="text-sm text-gray-400">
           {isTreasureDefenseReport
-            ? `💎 Planeta del Tesoro [${coord1}]${enemyName ? ` — atacado por ${enemyName}` : ''}`
+            ? `💎 Ciudad del Tesoro [${coord1}]${enemyName ? ` — atacada por ${enemyName}` : ''}`
             : isFortressDefenseReport
               ? `🏰 Tu fortaleza [${coord1}]${enemyName ? ` — atacada por ${enemyName}` : ''}`
             : isSoloCombatReport
@@ -1541,7 +1541,7 @@ function PlainTextBattleReport({ body }: { body: string }) {
                 ? `📍 ${coord1} ➜ ${coord2}`
                 : (coord2 && coord2 !== '?')
                   ? `📍 ${coord1} ← ${coord2}${enemyName ? ` (${enemyName})` : ''}`
-                  : `🛡️ Tu planeta [${coord1}]${enemyName ? ` — atacado por ${enemyName}` : ''}`
+                  : `🛡️ Tu ciudad [${coord1}]${enemyName ? ` — atacada por ${enemyName}` : ''}`
           }
         </p>
       </div>
@@ -1626,8 +1626,8 @@ function PlainTextBattleReport({ body }: { body: string }) {
             </p>
             <p className="text-[11px] text-gray-500 mt-1.5">
               {isUserAttacker
-                ? 'Se los quitaste al defensor y viajan de vuelta con tu flota.'
-                : 'El atacante solo puede robar lo que tenías almacenado en el planeta. Los recursos ya gastados en edificios, investigaciones o naves no se pueden saquear.'}
+                ? 'Se los quitaste al defensor y viajan de vuelta con tu ejército.'
+                : 'El atacante solo puede robar lo que tenías almacenado en la ciudad. Los recursos ya gastados en edificios, investigaciones o tropas no se pueden saquear.'}
             </p>
           </div>
         )}
@@ -1649,7 +1649,7 @@ function PlainTextBattleReport({ body }: { body: string }) {
       {/* Moon creation */}
       {moonMatch && (
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 text-center">
-          <p className="text-purple-400 text-sm font-semibold">🌙 ¡Se ha creado una Luna en [{moonMatch[1]}]!</p>
+          <p className="text-purple-400 text-sm font-semibold">🌙 ¡Se ha creado una Castra de Diana en [{moonMatch[1]}]!</p>
         </div>
       )}
     </div>
@@ -1728,7 +1728,7 @@ function ExpeditionReportView({ body }: { body: string }) {
 
       {report.ships && report.ships.length > 0 && (
         <div className="bg-space-800 rounded-lg p-4">
-          <h4 className="text-sm font-semibold text-green-400 mb-2">Naves Encontradas</h4>
+          <h4 className="text-sm font-semibold text-green-400 mb-2">Tropas Encontradas</h4>
           <div className="grid grid-cols-2 gap-2">
             {report.ships.map((ship, i) => (
               <div key={i} className="flex justify-between text-sm">
@@ -1888,21 +1888,21 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
     : TONE.green;
 
   const emoji = isDisaster ? '💀' : isDamaged ? '⚠️' : isJackpot ? '🏆' : isEmpty ? '🌌' : '🧭';
-  const title = isDisaster ? 'FLOTA PERDIDA'
+  const title = isDisaster ? 'EJÉRCITO PERDIDO'
     : isDamaged ? 'EXPEDICIÓN DAÑADA'
     : isJackpot ? '¡TESORO LEGENDARIO!'
     : isEmpty ? 'SIN HALLAZGOS'
     : '¡EXPEDICIÓN EXITOSA!';
 
   const note = isDisaster
-    ? '🕯️ La flota no volverá. Envía expediciones más pequeñas para arriesgar menos.'
+    ? '🕯️ El ejército no volverá. Envía expediciones más pequeñas para arriesgar menos.'
     : isDamaged
-      ? '🔧 Las naves supervivientes ya están de regreso. Repón la flota y vuelve a intentarlo.'
+      ? '🔧 Las tropas supervivientes ya están de regreso. Repón el ejército y vuelve a intentarlo.'
       : isJackpot
-        ? '🎉 Un hallazgo entre un millón. ¡Tu flota ha hecho historia en el espacio profundo!'
+        ? '🎉 Un hallazgo entre un millón. ¡Tu ejército ha hecho historia en tierras desconocidas!'
         : isEmpty
-          ? '🔭 El espacio profundo no siempre recompensa. Insiste: el próximo viaje puede ser el bueno.'
-          : '📦 El cargamento ya está en tu cuenta. ¡Sigue explorando el espacio profundo!';
+          ? '🔭 Las tierras desconocidas no siempre recompensan. Insiste: el próximo viaje puede ser el bueno.'
+          : '📦 El cargamento ya está en tu cuenta. ¡Sigue explorando tierras desconocidas!';
 
   const hasFindings =
     metal || crystal || deuterium || darkMatter || fxu || shipCount;
@@ -1914,15 +1914,15 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
       {hasFindings && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {metal !== null && (
-            <FindingCard icon={<Hammer className="w-5 h-5" />} label="Metal"
+            <FindingCard icon={<Hammer className="w-5 h-5" />} label="Hierro"
               value={`+${formatNumber(metal)}`} color="text-gray-100" />
           )}
           {crystal !== null && (
-            <FindingCard icon={<Sparkles className="w-5 h-5" />} label="Cristal"
+            <FindingCard icon={<Sparkles className="w-5 h-5" />} label="Piedra"
               value={`+${formatNumber(crystal)}`} color="text-cyan-400" />
           )}
           {deuterium !== null && (
-            <FindingCard icon={<Flame className="w-5 h-5" />} label="Deuterio"
+            <FindingCard icon={<Flame className="w-5 h-5" />} label="Comida"
               value={`+${formatNumber(deuterium)}`} color="text-green-400" />
           )}
           {darkMatter !== null && (
@@ -1944,7 +1944,7 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
         <div className="bg-space-800/80 rounded-lg p-4 border border-red-500/30">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-400 flex items-center gap-2">
-              <Skull className="w-4 h-4 text-red-400" /> Flota perdida
+              <Skull className="w-4 h-4 text-red-400" /> Ejército perdido
             </span>
             <span className="font-orbitron text-red-400">{lossPct}%</span>
           </div>
@@ -2021,7 +2021,7 @@ function FleetWarningView({ body }: { body: string }) {
           <button
             onClick={goToGalaxy}
             className="mt-1 text-cyan-300 font-mono text-sm hover:text-cyan-200 hover:underline"
-            title="Ver en la galaxia"
+            title="Ver en el continente"
           >
             [{origin}]
           </button>
@@ -2082,7 +2082,7 @@ function SystemNoticeView({ subject, body }: { subject: string; body: string }) 
     cancel: { icon: <Ban className="w-6 h-6" />, tone: TONE.orange, title: 'Operación Cancelada' },
     commission: { icon: <Percent className="w-6 h-6" />, tone: TONE.green, title: 'Comisión de Referido' },
     lottery: { icon: <Sparkles className="w-6 h-6" />, tone: TONE.purple, title: '¡Premio de Lotería!' },
-    moon: { icon: <Moon className="w-6 h-6" />, tone: TONE.blue, title: '¡Nueva Luna!' },
+    moon: { icon: <Moon className="w-6 h-6" />, tone: TONE.blue, title: '¡Nueva Castra de Diana!' },
     reward: { icon: <Trophy className="w-6 h-6" />, tone: TONE.gold, title: '¡Recompensa Recibida!' },
     transfer: { icon: <Coins className="w-6 h-6" />, tone: TONE.gold, title: 'Transferencia Recibida' },
     info: { icon: <AlertCircle className="w-6 h-6" />, tone: TONE.gray, title: 'Aviso del Sistema' },
@@ -2105,11 +2105,11 @@ function SystemNoticeView({ subject, body }: { subject: string; body: string }) 
       {(metal !== null || crystal !== null || fxu !== null) && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {metal !== null && (
-            <FindingCard icon={<Hammer className="w-5 h-5" />} label="Metal"
+            <FindingCard icon={<Hammer className="w-5 h-5" />} label="Hierro"
               value={formatNumber(metal)} color="text-gray-100" />
           )}
           {crystal !== null && (
-            <FindingCard icon={<Sparkles className="w-5 h-5" />} label="Cristal"
+            <FindingCard icon={<Sparkles className="w-5 h-5" />} label="Piedra"
               value={formatNumber(crystal)} color="text-cyan-400" />
           )}
           {fxu !== null && (

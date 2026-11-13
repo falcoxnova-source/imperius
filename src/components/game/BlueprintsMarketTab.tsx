@@ -224,10 +224,10 @@ export function BlueprintsMarketTab({ fxuBalance, onChange }: Props) {
       if (!data?.success) throw new Error(data?.error || 'Error al comprar plano');
       setSuccess(
         data.resources_granted
-          ? `Plano "${bp.name}" añadido. Recursos de fabricacion depositados en ${data.planet_name || 'tu planeta'}: ` +
-            `${formatNumber(Number(data.metal || 0))} metal, ` +
-            `${formatNumber(Number(data.crystal || 0))} cristal, ` +
-            `${formatNumber(Number(data.deuterium || 0))} deuterio`
+          ? `Plano "${bp.name}" añadido. Recursos de fabricacion depositados en ${data.planet_name || 'tu ciudad'}: ` +
+            `${formatNumber(Number(data.metal || 0))} hierro, ` +
+            `${formatNumber(Number(data.crystal || 0))} piedra, ` +
+            `${formatNumber(Number(data.deuterium || 0))} comida`
           : `Plano "${bp.name}" añadido a tu inventario`
       );
       await refreshAll();
@@ -367,19 +367,19 @@ export function BlueprintsMarketTab({ fxuBalance, onChange }: Props) {
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-400 leading-snug mb-2">
-                  Al comprarlo se depositan en tu planeta los recursos exactos para fabricar la unidad.
+                  Al comprarlo se depositan en tu ciudad los recursos exactos para fabricar la unidad.
                 </p>
                 <div className="grid grid-cols-3 gap-1.5 text-center">
                   <div className="rounded bg-space-900/70 px-1 py-1">
-                    <p className="text-[9px] text-gray-500 uppercase">Metal</p>
+                    <p className="text-[9px] text-gray-500 uppercase">Hierro</p>
                     <p className="text-[11px] font-orbitron text-gray-100">{formatNumber(res.metal)}</p>
                   </div>
                   <div className="rounded bg-space-900/70 px-1 py-1">
-                    <p className="text-[9px] text-gray-500 uppercase">Cristal</p>
+                    <p className="text-[9px] text-gray-500 uppercase">Piedra</p>
                     <p className="text-[11px] font-orbitron text-cyan-200">{formatNumber(res.crystal)}</p>
                   </div>
                   <div className="rounded bg-space-900/70 px-1 py-1">
-                    <p className="text-[9px] text-gray-500 uppercase">Deuterio</p>
+                    <p className="text-[9px] text-gray-500 uppercase">Comida</p>
                     <p className="text-[11px] font-orbitron text-emerald-200">{formatNumber(res.deuterium)}</p>
                   </div>
                 </div>
@@ -418,8 +418,8 @@ export function BlueprintsMarketTab({ fxuBalance, onChange }: Props) {
             </button>
             <p className="text-xs text-gray-400 mt-2 text-center">
               {owned
-                ? `Se gasta 1 plano por nave — te alcanza para ${ownedQty} ${ownedQty === 1 ? 'nave' : 'naves'}`
-                : 'Consumible — se gasta 1 plano por cada nave construida'}
+                ? `Se gasta 1 plano por tropa — te alcanza para ${ownedQty} ${ownedQty === 1 ? 'tropa' : 'tropas'}`
+                : 'Consumible — se gasta 1 plano por cada tropa construida'}
             </p>
             </div>
           </div>
@@ -493,7 +493,7 @@ export function BlueprintsMarketTab({ fxuBalance, onChange }: Props) {
               Solo las cuentas con <span className="text-cyber-yellow font-semibold">VIP Plus</span> activo pueden
               publicar planos en el mercado P2P. Los jugadores sin VIP igualmente pueden
               <span className="text-emerald-300 font-semibold"> consumir sus planos </span>
-              para construir naves o conseguir más en
+              para construir tropas o conseguir más en
               <span className="text-cyan-300 font-semibold"> expediciones</span>.
             </p>
           </div>
@@ -657,11 +657,11 @@ export function BlueprintsMarketTab({ fxuBalance, onChange }: Props) {
       <div>
         <h2 className="font-orbitron text-xl text-white flex items-center gap-2 mb-1">
           <Tag className="w-6 h-6 text-cyber-yellow" />
-          Planos de Naves
+          Planos de Tropas
         </h2>
         <p className="text-sm text-gray-400">
           Los planos son <span className="text-emerald-300 font-semibold">consumibles</span>:{' '}
-          <span className="text-emerald-300 font-semibold">1 plano = 1 nave</span>. Al construir se gasta un plano por
+          <span className="text-emerald-300 font-semibold">1 plano = 1 tropa</span>. Al construir se gasta un plano por
           cada unidad en cola y te saltas los requisitos de tecnologías y edificios (solo necesitas{' '}
           <span className="text-cyber-yellow">Barraca Nv 1</span> y los recursos). Si no te alcanzan los planos, deberás
           cumplir todos los requisitos normales. Acumula los que quieras: cómpralos a la empresa, encuéntralos en

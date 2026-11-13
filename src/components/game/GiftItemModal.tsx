@@ -36,8 +36,8 @@ interface Ally {
 
 const DELIVERY_NOTE: Record<GiftKind, string> = {
   blueprint: 'El plano llega a su inventario de planos.',
-  supply_box: 'Los recursos se depositan en su planeta principal.',
-  instant_unit: 'Las unidades se entregan al instante en su planeta principal.',
+  supply_box: 'Los recursos se depositan en su ciudad principal.',
+  instant_unit: 'Las unidades se entregan al instante en su ciudad principal.',
   officer: 'El oficial se activa al instante en su cuenta.',
 };
 

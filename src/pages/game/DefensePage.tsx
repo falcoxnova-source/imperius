@@ -154,10 +154,10 @@ export function DefensePage() {
       const cost = data?.cost ? formatNumber(Number(data.cost)) : '';
       const gotResources = data?.resources_granted === true;
       const resourcesMsg = gotResources
-        ? `\n\nRecursos depositados en ${data.planet_name || 'tu planeta'}:` +
-          `\n- Metal: ${formatNumber(Number(data.metal || 0))}` +
-          `\n- Cristal: ${formatNumber(Number(data.crystal || 0))}` +
-          `\n- Deuterio: ${formatNumber(Number(data.deuterium || 0))}`
+        ? `\n\nRecursos depositados en ${data.planet_name || 'tu ciudad'}:` +
+          `\n- Hierro: ${formatNumber(Number(data.metal || 0))}` +
+          `\n- Piedra: ${formatNumber(Number(data.crystal || 0))}` +
+          `\n- Comida: ${formatNumber(Number(data.deuterium || 0))}`
         : '';
       window.alert((cost ? `Plano comprado por ${cost} TUNG` : 'Plano comprado') + resourcesMsg);
     } finally {
@@ -806,7 +806,7 @@ function DefenseCard({
             <div className="text-xs sm:text-sm text-pink-300 bg-pink-500/10 border border-pink-500/30 rounded-lg p-2">
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span className="font-semibold">{t.defense.maxReached} — {t.defense.maxOnePerPlanet || 'Solo 1 por planeta'}</span>
+                <span className="font-semibold">{t.defense.maxReached} — {t.defense.maxOnePerPlanet || 'Solo 1 por ciudad'}</span>
               </div>
             </div>
             <button

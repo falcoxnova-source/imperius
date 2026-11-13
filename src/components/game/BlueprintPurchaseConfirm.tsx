@@ -192,25 +192,25 @@ export function BlueprintPurchaseConfirm({
                 {targetPlanetName ? (
                   <span className="text-white font-semibold"> {targetPlanetName} </span>
                 ) : (
-                  ' tu planeta '
+                  ' tu ciudad '
                 )}
                 los recursos exactos que cuesta fabricar la unidad. No tienes que reunirlos tu.
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <div className="rounded-lg bg-space-900/70 border border-space-600 px-2 py-1.5 text-center">
-                  <p className="text-[9px] text-gray-500 uppercase tracking-wider">Metal</p>
+                  <p className="text-[9px] text-gray-500 uppercase tracking-wider">Hierro</p>
                   <p className="font-orbitron text-xs sm:text-sm text-gray-100 leading-tight">
                     {formatNumber(includedResources!.metal)}
                   </p>
                 </div>
                 <div className="rounded-lg bg-space-900/70 border border-space-600 px-2 py-1.5 text-center">
-                  <p className="text-[9px] text-gray-500 uppercase tracking-wider">Cristal</p>
+                  <p className="text-[9px] text-gray-500 uppercase tracking-wider">Piedra</p>
                   <p className="font-orbitron text-xs sm:text-sm text-cyan-200 leading-tight">
                     {formatNumber(includedResources!.crystal)}
                   </p>
                 </div>
                 <div className="rounded-lg bg-space-900/70 border border-space-600 px-2 py-1.5 text-center">
-                  <p className="text-[9px] text-gray-500 uppercase tracking-wider">Deuterio</p>
+                  <p className="text-[9px] text-gray-500 uppercase tracking-wider">Comida</p>
                   <p className="font-orbitron text-xs sm:text-sm text-emerald-200 leading-tight">
                     {formatNumber(includedResources!.deuterium)}
                   </p>

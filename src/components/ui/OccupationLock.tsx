@@ -89,7 +89,7 @@ export function OccupationLock({ children }: { children: React.ReactNode }) {
           </p>
           <p className="text-xs text-red-100/80">
             {es
-              ? 'Tus colas de construcción y barraca están congeladas y el ocupante se queda con la producción. Recupérala atacando la guarnición desde otro planeta (en solitario o con un SAC creado por ti).'
+              ? 'Tus colas de construcción y barraca están congeladas y el ocupante se queda con la producción. Recupérala atacando la guarnición desde otra ciudad (en solitario o con un SAC creado por ti).'
               : 'Your building and shipyard queues are frozen and the occupier takes the production. Recover it by attacking the garrison from another planet (solo or with an ACS you create).'}
           </p>
         </div>
@@ -120,7 +120,7 @@ export function OccupationLock({ children }: { children: React.ReactNode }) {
         <h2 className="text-lg font-bold text-red-200">{es ? 'Esta colonia está ocupada' : 'This colony is occupied'}</h2>
         <p className="text-sm text-gray-300 max-w-md mx-auto">
           {es
-            ? 'No puedes usar esta sección mientras la colonia esté ocupada. Cambia a otro planeta para preparar la recuperación.'
+            ? 'No puedes usar esta sección mientras la colonia esté ocupada. Cambia a otra ciudad para preparar la recuperación.'
             : 'You cannot use this section while the colony is occupied. Switch to another planet to prepare the recovery.'}
         </p>
       </div>

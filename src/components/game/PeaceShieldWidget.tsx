@@ -237,7 +237,7 @@ function PeaceShieldModal({
     : status.incoming_attack
       ? 'Tienes ataques enemigos en camino. No puedes activar el escudo hasta que lleguen.'
       : status.outgoing_attack
-        ? 'Tienes flotas de ataque en vuelo. Espera a que impacten o retíralas.'
+        ? 'Tienes ejércitos de ataque en marcha. Espera a que impacten o retíralos.'
         : status.tung_price == null
           ? 'Precio de TUNG no disponible ahora mismo. Inténtalo en unos minutos.'
           : null;
@@ -310,7 +310,7 @@ function PeaceShieldModal({
           {/* Reglas */}
           <div className="grid gap-1.5 text-xs sm:text-sm">
             <p className="flex items-start gap-2 text-slate-200"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" /> Nadie puede atacarte, espiarte ni lanzarte misiles.</p>
-            <p className="flex items-start gap-2 text-slate-200"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" /> Protege todos tus planetas y lunas. Ampliable hasta 15 días acumulados.</p>
+            <p className="flex items-start gap-2 text-slate-200"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" /> Protege todas tus ciudades y Castras de Diana. Ampliable hasta 15 días acumulados.</p>
             <p className="flex items-start gap-2 text-slate-200"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" /> Puedes seguir construyendo, investigando, comerciando, transportando y espiando.</p>
             <div className="flex items-start gap-2 p-2.5 mt-1 rounded-lg border border-red-500/40 bg-red-500/10 text-red-200">
               <Swords className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />

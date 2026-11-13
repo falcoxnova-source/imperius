@@ -277,7 +277,7 @@ export function SolarSystemView({
                     type="button"
                     className="relative cursor-pointer group focus:outline-none flex flex-col items-center"
                     onClick={(e) => { e.stopPropagation(); onBattleshipClick(); }}
-                    title={`Batalla de Naves [${currentGalaxy}:${currentSystem}:${planet.position}]`}
+                    title={`Batalla de Tropas [${currentGalaxy}:${currentSystem}:${planet.position}]`}
                   >
                     <div className="relative">
                       <div className="absolute rounded-full animate-pulse pointer-events-none" style={{ inset: '-8px', background: 'radial-gradient(circle, rgba(56,189,248,0.5) 0%, rgba(99,102,241,0.18) 55%, transparent 75%)' }} />
@@ -385,7 +385,7 @@ export function SolarSystemView({
 
                     {/* Moon */}
                     {planet.hasMoon && (
-                      <button type="button" className="absolute rounded-full hover:scale-150 transition-transform cursor-pointer focus:outline-none" style={{ width: '10px', height: '10px', background: 'radial-gradient(circle at 35% 30%, #e4e4e7, #71717a)', boxShadow: '0 0 5px rgba(220,220,220,0.6)', top: '-6px', right: '-6px' }} onClick={(e) => handlePlanetClick(e, planet, true)} title="🌙 Luna — clic para espiar, atacar o transportar" />
+                      <button type="button" className="absolute rounded-full hover:scale-150 transition-transform cursor-pointer focus:outline-none" style={{ width: '10px', height: '10px', background: 'radial-gradient(circle at 35% 30%, #e4e4e7, #71717a)', boxShadow: '0 0 5px rgba(220,220,220,0.6)', top: '-6px', right: '-6px' }} onClick={(e) => handlePlanetClick(e, planet, true)} title="🌙 Castra de Diana — clic para espiar, atacar o transportar" />
                     )}
 
                     {/* Debris */}
@@ -421,7 +421,7 @@ export function SolarSystemView({
         {/* Bottom label */}
         <div className="absolute bottom-4 left-0 right-0 text-center z-30 pointer-events-none">
           <span className="text-sm text-slate-400 tracking-wider">
-            Galaxia {currentGalaxy || '?'} — Sistema Solar {currentSystem}
+            Continente {currentGalaxy || '?'} — Región {currentSystem}
           </span>
         </div>
       </div>
@@ -431,17 +431,17 @@ export function SolarSystemView({
         <div className="mb-3">
           <Globe className="w-14 h-14 text-slate-500" strokeWidth={1} />
         </div>
-        <h3 className="font-orbitron text-base text-white mb-1 tracking-wide">Galaxia</h3>
-        <p className="text-xs text-slate-400 mb-8">Galaxia {currentGalaxy || '?'} — Sistema Solar {currentSystem}</p>
+        <h3 className="font-orbitron text-base text-white mb-1 tracking-wide">Continente</h3>
+        <p className="text-xs text-slate-400 mb-8">Continente {currentGalaxy || '?'} — Región {currentSystem}</p>
 
         <div className="space-y-3 w-full">
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-emerald-400 shrink-0" style={{ boxShadow: '0 0 6px rgba(52,211,153,0.5)' }} />
-            <span className="text-sm text-slate-300">Tu planeta</span>
+            <span className="text-sm text-slate-300">Tu ciudad</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-blue-400 shrink-0" style={{ boxShadow: '0 0 6px rgba(96,165,250,0.5)' }} />
-            <span className="text-sm text-slate-300">Planeta ocupado</span>
+            <span className="text-sm text-slate-300">Ciudad ocupada</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-slate-500 shrink-0" />
@@ -449,7 +449,7 @@ export function SolarSystemView({
           </div>
           <div className="flex items-center gap-3">
             <Sparkles className="w-3 h-3 text-yellow-400 shrink-0" />
-            <span className="text-sm text-slate-300">Espacio Profundo (Pos 16)</span>
+            <span className="text-sm text-slate-300">Tierras Desconocidas (Pos 16)</span>
           </div>
           {onCasinoClick && planets.some(p => p.isCasino) && (
             <div className="flex items-center gap-3">
@@ -475,7 +475,7 @@ export function SolarSystemView({
 
         <div className="mt-8 w-full space-y-2 border-t border-slate-700/50 pt-4">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-500">Planetas</span>
+            <span className="text-slate-500">Ciudades</span>
             <span className="text-slate-300 font-mono">{planets.filter(p => !p.isEmpty && !p.isExpedition).length}</span>
           </div>
           <div className="flex justify-between text-xs">
@@ -498,7 +498,7 @@ export function SolarSystemView({
         >
           <div className="px-2 py-1.5 bg-slate-800 border-b border-slate-700 flex items-center justify-between">
             <span className="text-[11px] font-semibold text-white">
-              {currentPlanetData.isFortress ? `🏰 Fortaleza Pos ${actionMenu.position}` : currentPlanetData.isTreasurePlanet ? `💎 Planeta del Tesoro Pos ${actionMenu.position}` : currentPlanetData.isEmpty ? `🚀 Pos ${actionMenu.position}` : actionMenu.isMoon ? `🌙 Luna Pos ${actionMenu.position}` : `🌍 Pos ${actionMenu.position}`}
+              {currentPlanetData.isFortress ? `🏰 Fortaleza Pos ${actionMenu.position}` : currentPlanetData.isTreasurePlanet ? `💎 Ciudad del Tesoro Pos ${actionMenu.position}` : currentPlanetData.isEmpty ? `🚀 Pos ${actionMenu.position}` : actionMenu.isMoon ? `🌙 Castra de Diana Pos ${actionMenu.position}` : `🌍 Pos ${actionMenu.position}`}
             </span>
             <button onClick={closeMenu} className="text-gray-400 hover:text-white ml-2" type="button">
               <X className="w-3 h-3" />
@@ -511,7 +511,7 @@ export function SolarSystemView({
               </button>
             ) : currentPlanetData.isTreasurePlanet ? (
               <button type="button" onClick={() => { onAttackClick?.(actionMenu.position); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-yellow-300 hover:bg-yellow-400/20 rounded transition-colors">
-                ⚔️ Atacar Planeta del Tesoro
+                ⚔️ Atacar Ciudad del Tesoro
               </button>
             ) : currentPlanetData.isEmpty ? (
               <button type="button" onClick={() => { onColonizeClick?.(actionMenu.position); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-green-400 hover:bg-green-500/20 rounded transition-colors">
@@ -529,7 +529,7 @@ export function SolarSystemView({
             ) : currentPlanetData.isOwn && (actionMenu.isMoon ? currentPlanetData.isCurrentMoon : currentPlanetData.isCurrentPlanet) ? (
               <>
                 {actionMenu.isMoon ? (
-                  <p className="px-2 py-1.5 text-[11px] text-slate-400">Ya estás en esta luna</p>
+                  <p className="px-2 py-1.5 text-[11px] text-slate-400">Ya estás en esta Castra de Diana</p>
                 ) : (
                   <button type="button" onClick={() => { onOverviewClick?.(actionMenu.position); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-emerald-400 hover:bg-emerald-500/20 rounded transition-colors">
                     <Home className="w-3.5 h-3.5" />Visión General
@@ -539,19 +539,19 @@ export function SolarSystemView({
             ) : currentPlanetData.isOwn ? (
               <>
                 <button type="button" onClick={() => { onTransportClick?.(actionMenu.position, actionMenu.isMoon); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-cyan-400 hover:bg-cyan-500/20 rounded transition-colors">
-                  <Truck className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Transportar a la luna' : 'Transportar'}
+                  <Truck className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Transportar a la Castra de Diana' : 'Transportar'}
                 </button>
                 <button type="button" onClick={() => { onDeployClick?.(actionMenu.position, actionMenu.isMoon); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-amber-400 hover:bg-amber-500/20 rounded transition-colors">
-                  <ArrowRightLeft className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Desplegar en la luna' : 'Desplegar'}
+                  <ArrowRightLeft className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Desplegar en la Castra de Diana' : 'Desplegar'}
                 </button>
               </>
             ) : (
               <>
                 <button type="button" onClick={() => { onSpyClick?.(actionMenu.position, actionMenu.isMoon); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-blue-400 hover:bg-blue-500/20 rounded transition-colors">
-                  <Eye className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Espiar luna' : 'Espiar'}
+                  <Eye className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Espiar Castra de Diana' : 'Espiar'}
                 </button>
                 <button type="button" onClick={() => { onAttackClick?.(actionMenu.position, actionMenu.isMoon); closeMenu(); }} className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/20 rounded transition-colors">
-                  <Crosshair className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Atacar luna' : 'Atacar'}
+                  <Crosshair className="w-3.5 h-3.5" />{actionMenu.isMoon ? 'Atacar Castra de Diana' : 'Atacar'}
                 </button>
               </>
             )}
@@ -576,11 +576,11 @@ export function SolarSystemView({
           </div>
           <div className="p-2 space-y-1 border-b border-slate-700">
             <div className="flex justify-between text-[10px]">
-              <span className="text-gray-400">Metal:</span>
+              <span className="text-gray-400">Hierro:</span>
               <span className="text-gray-200 font-semibold">{debrisMenu.metal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-[10px]">
-              <span className="text-cyan-400">Cristal:</span>
+              <span className="text-cyan-400">Piedra:</span>
               <span className="text-gray-200 font-semibold">{debrisMenu.crystal.toLocaleString()}</span>
             </div>
           </div>

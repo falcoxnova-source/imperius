@@ -216,7 +216,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               ) : (
                 <>
               <h3 className="font-serif text-sm text-amber-100 truncate hover:text-amber-300 transition-colors">
-                {currentPlanet ? translatePlanetName(currentPlanet.name) : 'Sin planeta'}
+                {currentPlanet ? translatePlanetName(currentPlanet.name) : 'Sin ciudad'}
               </h3>
               {currentPlanet && (
                 <p className="text-[11px] text-amber-300">
@@ -236,7 +236,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <button
               onClick={() => setIsPlanetListOpen(!isPlanetListOpen)}
               className="p-2 hover:bg-space-600 rounded-lg transition-colors flex-shrink-0"
-              title={isPlanetListOpen ? 'Ocultar planetas' : 'Ver todos los planetas'}
+              title={isPlanetListOpen ? 'Ocultar ciudades' : 'Ver todas las ciudades'}
             >
               {isPlanetListOpen ? (
                 <ChevronUp className="w-5 h-5 text-amber-300" />
@@ -336,14 +336,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               {asOccupier.length > 0 && (
                 <>
                   <p className="pt-2 pb-1 px-1 text-[10px] font-orbitron uppercase tracking-wider text-red-300 flex items-center gap-1 border-t border-red-500/20">
-                    <Flag className="w-3 h-3" /> {es ? 'Planetas ocupados' : 'Occupied planets'}
+                    <Flag className="w-3 h-3" /> {es ? 'Ciudades ocupadas' : 'Occupied planets'}
                   </p>
                   {asOccupier.map((o) => (
                     <button
                       key={o.occupation_id}
                       onClick={() => handleOpenOccupation(o.occupation_id)}
                       className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors text-left border ${o.occupation_id === activeOccupationId ? 'border-red-500 bg-red-900/40' : 'border-red-500/30 bg-red-950/20 hover:bg-red-900/30'}`}
-                      title={es ? 'Seleccionar: ver el planeta, producir naves/defensas y transportar recursos' : 'Select: view the planet, build ships/defenses and transport resources'}
+                      title={es ? 'Seleccionar: ver la ciudad, producir tropas/defensas y transportar recursos' : 'Select: view the planet, build ships/defenses and transport resources'}
                     >
                       <div className="relative w-8 h-8 flex-shrink-0">
                         <div className="w-8 h-8 rounded-full overflow-hidden border border-red-500/50">

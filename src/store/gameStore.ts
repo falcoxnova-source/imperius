@@ -1909,7 +1909,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       return data;
     } catch (error) {
       console.error('Error deploying to fortress:', error);
-      return { success: false, error: 'Error al enviar naves' };
+      return { success: false, error: 'Error al enviar tropas' };
     }
   },
 
@@ -1923,7 +1923,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       return data;
     } catch (error) {
       console.error('Error recalling from fortress:', error);
-      return { success: false, error: 'Error al retirar naves' };
+      return { success: false, error: 'Error al retirar tropas' };
     }
   },
 
@@ -1968,7 +1968,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       return data;
     } catch (error) {
       console.error('Error recalling from treasure planet:', error);
-      return { success: false, error: 'Error al retirar naves' };
+      return { success: false, error: 'Error al retirar tropas' };
     }
   },
 

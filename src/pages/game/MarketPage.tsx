@@ -1602,7 +1602,7 @@ export function MarketPage() {
                                 {listing.listing_type === 'colony' ? (
                                   listing.planet_id && colonyInfo[listing.planet_id]?.has_moon ? (
                                     <span className="absolute top-2 right-2 text-[10px] px-2 py-0.5 rounded-full border border-indigo-400/40 bg-black/50 text-indigo-200 backdrop-blur-sm flex items-center gap-1">
-                                      <Moon className="w-3 h-3" /> Incluye luna
+                                      <Moon className="w-3 h-3" /> Incluye Castra de Diana
                                     </span>
                                   ) : null
                                 ) : (
@@ -3100,7 +3100,7 @@ export function MarketPage() {
                 {isColony ? (
                   <p className="text-xs text-gray-300">
                     {bColony ? <>{bColony.name} · Campos {bColony.fields_used}/{bColony.fields_max}</> : null}
-                    {bColony?.has_moon && <span className="ml-1 text-indigo-300">· Incluye luna</span>}
+                    {bColony?.has_moon && <span className="ml-1 text-indigo-300">· Incluye Castra de Diana</span>}
                   </p>
                 ) : (
                 <p className="text-xs text-gray-300">
@@ -3116,7 +3116,7 @@ export function MarketPage() {
               {isColony ? (
                 <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-200 space-y-1">
                   <p className="flex items-center gap-1 font-semibold"><Globe className="w-4 h-4" /> Compra de Sub-Ciudad</p>
-                  <p>Recibes la ciudad con sus edificios{bColony?.has_moon ? ' y su luna' : ''}.</p>
+                  <p>Recibes la ciudad con sus edificios{bColony?.has_moon ? ' y su Castra de Diana' : ''}.</p>
                   <p>Las tropas NO se incluyen: el vendedor las conserva en su ciudad principal. Las defensas se destruyen en la venta.</p>
                   <p>La recibes con los recursos en 0; despues de tenerla en tu poder recaudara recursos segun el nivel de sus minas.</p>
                   <p>Puedes comprar todas las sub-ciudades que quieras: la compra no depende de Augurium.</p>

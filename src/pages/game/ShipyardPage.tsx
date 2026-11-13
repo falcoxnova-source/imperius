@@ -182,10 +182,10 @@ export function ShipyardPage() {
       const cost = data?.cost ? formatNumber(Number(data.cost)) : '';
       const gotResources = data?.resources_granted === true;
       const resourcesMsg = gotResources
-        ? `\n\nRecursos depositados en ${data.planet_name || 'tu planeta'}:` +
-          `\n- Metal: ${formatNumber(Number(data.metal || 0))}` +
-          `\n- Cristal: ${formatNumber(Number(data.crystal || 0))}` +
-          `\n- Deuterio: ${formatNumber(Number(data.deuterium || 0))}`
+        ? `\n\nRecursos depositados en ${data.planet_name || 'tu ciudad'}:` +
+          `\n- Hierro: ${formatNumber(Number(data.metal || 0))}` +
+          `\n- Piedra: ${formatNumber(Number(data.crystal || 0))}` +
+          `\n- Comida: ${formatNumber(Number(data.deuterium || 0))}`
         : '';
       window.alert((cost ? `Plano comprado por ${cost} TUNG` : 'Plano comprado') + resourcesMsg);
     } finally {
@@ -886,7 +886,7 @@ function ShipCard({
           <div className="space-y-2">
             {reqsBypassed ? (
               <div className="text-[11px] rounded-lg px-2 py-2 border border-emerald-600/40 bg-emerald-500/10 text-emerald-300">
-                <span className="font-semibold">✓ Plano activo.</span> Se construye solo con Barraca Nv 1 · se gasta 1 plano por nave.
+                <span className="font-semibold">✓ Plano activo.</span> Se construye solo con Barraca Nv 1 · se gasta 1 plano por tropa.
               </div>
             ) : isLocked ? (
               <div className="text-[11px] rounded-lg px-2 py-2 border border-amber-600/40 bg-amber-500/10 text-amber-300">

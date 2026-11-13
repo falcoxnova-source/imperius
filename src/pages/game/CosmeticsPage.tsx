@@ -24,8 +24,8 @@ interface CosmeticItem {
 const TYPE_LABELS: Record<string, string> = {
   title: '🏷️ Títulos',
   badge: '🎖️ Insignias',
-  planet_effect: '🪐 Efectos de Planeta',
-  hero_skin: '🚀 Skins de Nave Héroe',
+  planet_effect: '🪐 Efectos de Ciudad',
+  hero_skin: '🚀 Skins de Tropa Héroe',
   battle_effect: '⚡ Efectos de Batalla',
 };
 
@@ -242,7 +242,7 @@ export function CosmeticsPage() {
                   {equipped && battleStyle && (
                     <div className={`relative mb-3 rounded-lg border ${battleStyle.border} bg-black/30 px-2 py-1.5 flex items-center gap-2 overflow-hidden`}>
                       <span className="text-base animate-pulse">{battleStyle.emoji}</span>
-                      <span className="text-[10px] text-gray-300">Se muestra en <b>Flota</b> y <b>Combate</b></span>
+                      <span className="text-[10px] text-gray-300">Se muestra en <b>Ejército</b> y <b>Combate</b></span>
                       <div className={`absolute bottom-0 left-0 h-0.5 w-full ${battleStyle.particle} animate-pulse`} />
                     </div>
                   )}

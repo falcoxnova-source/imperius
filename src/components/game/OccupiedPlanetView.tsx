@@ -125,7 +125,7 @@ function BuildCard({ opt, label, owned, inQueue, stats, qty, res, busy, disabled
         {!opt.available ? (
           <div className="text-xs sm:text-sm text-cyber-orange flex items-center gap-2">
             <Lock className="w-4 h-4 flex-shrink-0" />
-            {es ? 'Requisitos no cumplidos en este planeta' : 'Requirements not met on this planet'}
+            {es ? 'Requisitos no cumplidos en esta ciudad' : 'Requirements not met on this planet'}
           </div>
         ) : (
           <>
@@ -405,15 +405,15 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
       <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
         <Flag className="w-5 h-5 text-red-400 flex-shrink-0" />
         <p className="flex-1 text-center sm:text-left text-xs sm:text-sm text-red-100">
-          <span className="font-bold text-red-200">{tx('Planeta ocupado', 'Occupied planet')}: {occ.planet_name} {formatCoordinates(occ.galaxy, occ.solar_system, occ.position)}</span>
+          <span className="font-bold text-red-200">{tx('Ciudad ocupada', 'Occupied planet')}: {occ.planet_name} {formatCoordinates(occ.galaxy, occ.solar_system, occ.position)}</span>
           {' · '}{tx('Dueño', 'Owner')}: <span className="text-red-300">{owner}</span>
-          {' · '}{tx('La tecnología del planeta pertenece al dueño.', 'The planet technology belongs to the owner.')}
+          {' · '}{tx('La tecnología de la ciudad pertenece al dueño.', 'The planet technology belongs to the owner.')}
         </p>
         <button
           onClick={handleExit}
           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium bg-space-700 hover:bg-space-600 text-gray-200 flex-shrink-0"
         >
-          <Globe className="w-4 h-4" /> {tx('Volver a mis planetas', 'Back to my planets')}
+          <Globe className="w-4 h-4" /> {tx('Volver a mis ciudades', 'Back to my planets')}
         </button>
       </div>
     </div>
@@ -472,7 +472,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
     <div className="card-glass p-4">
       <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Shield className="w-5 h-5 text-red-400" /> {tx('Guarnición', 'Garrison')}</h3>
       {detail.garrison.length === 0 ? (
-        <p className="text-sm text-gray-500">{tx('Sin naves.', 'No ships.')}</p>
+        <p className="text-sm text-gray-500">{tx('Sin tropas.', 'No ships.')}</p>
       ) : (
         <div className="space-y-1">
           {detail.garrison.map((g) => (
@@ -567,8 +567,8 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
       <div className="flex items-center gap-3">
         <Lock className="w-6 h-6 text-cyber-orange" />
         <div>
-          <p className="text-white font-semibold">{tx('Este planeta no tiene Hangar', 'This planet has no Shipyard')}</p>
-          <p className="text-sm text-gray-400">{tx('No puedes construir edificios en un planeta ocupado.', 'You cannot construct buildings on an occupied planet.')}</p>
+          <p className="text-white font-semibold">{tx('Esta ciudad no tiene Hangar', 'This planet has no Shipyard')}</p>
+          <p className="text-sm text-gray-400">{tx('No puedes construir edificios en una ciudad ocupada.', 'You cannot construct buildings on an occupied planet.')}</p>
         </div>
       </div>
     </div>
@@ -620,7 +620,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
             <p className="text-sm text-amber-200 font-semibold">{tx('Abandonar ocupación', 'Abandon occupation')}</p>
             <p className="text-xs text-gray-400">
               {tx(
-                'Tu guarnición y el Guardián regresan a su planeta de origen según su velocidad de vuelo. La producción pendiente se devuelve al planeta y el dueño recupera el control.',
+                'Tu guarnición y el Guardián regresan a su ciudad de origen según su velocidad de vuelo. La producción pendiente se devuelve a la ciudad y el dueño recupera el control.',
                 'Your garrison and the Guardian fly back to their origin planet at their flight speed. Pending production is refunded to the planet and the owner regains control.'
               )}
             </p>
@@ -652,7 +652,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
               <p className="text-white font-semibold">{tx(`Tecnología de ${owner}`, `${owner}'s technology`)}</p>
               <p className="text-sm text-gray-400">
                 {tx(
-                  'Puedes ver los edificios de este planeta, pero no puedes construir, mejorar ni demoler nada: pertenecen al dueño del planeta.',
+                  'Puedes ver los edificios de esta ciudad, pero no puedes construir, mejorar ni demoler nada: pertenecen al dueño de la ciudad.',
                   'You can see the buildings of this planet, but you cannot build, upgrade or demolish anything: they belong to the planet owner.'
                 )}
               </p>
@@ -704,7 +704,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
             <Info className="w-6 h-6 text-cyber-green flex-shrink-0" />
             <p className="text-sm text-gray-300">
               {tx(
-                'La producción de este planeta es tuya mientras dure la ocupación. No puedes cambiar los porcentajes de producción porque las minas pertenecen al dueño.',
+                'La producción de esta ciudad es tuya mientras dure la ocupación. No puedes cambiar los porcentajes de producción porque las minas pertenecen al dueño.',
                 'This planet production is yours while the occupation lasts. You cannot change production percentages because the mines belong to the owner.'
               )}
             </p>
@@ -752,15 +752,15 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
         <PageTitle icon={Microscope} color="text-cyber-purple" title={t.nav.research} />
         <div className="rounded-xl border border-red-500/30 bg-space-800/70 p-8 text-center space-y-3">
           <Lock className="w-12 h-12 text-red-400 mx-auto" />
-          <h2 className="text-lg font-bold text-red-200">{tx('No puedes investigar en este planeta', 'You cannot research on this planet')}</h2>
+          <h2 className="text-lg font-bold text-red-200">{tx('No puedes investigar en esta ciudad', 'You cannot research on this planet')}</h2>
           <p className="text-sm text-gray-300 max-w-lg mx-auto">
             {tx(
-              `El laboratorio y la tecnología pertenecen a ${owner}. La investigación queda bloqueada en este planeta mientras esté ocupado. Investiga desde tus propios planetas.`,
+              `El laboratorio y la tecnología pertenecen a ${owner}. La investigación queda bloqueada en esta ciudad mientras esté ocupada. Investiga desde tus propias ciudades.`,
               `The lab and technology belong to ${owner}. Research is locked on this planet while it is occupied. Research from your own planets.`
             )}
           </p>
           <button onClick={handleExit} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-space-700 hover:bg-space-600 text-gray-200 text-sm font-semibold">
-            <Globe className="w-4 h-4" /> {tx('Volver a mis planetas', 'Back to my planets')}
+            <Globe className="w-4 h-4" /> {tx('Volver a mis ciudades', 'Back to my planets')}
           </button>
         </div>
       </>
@@ -773,7 +773,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
         <p className="text-xs text-gray-400 flex items-start gap-1">
           <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
           {tx(
-            'Se paga con los recursos de este planeta. Las naves producidas se unen a tu guarnición.',
+            'Se paga con los recursos de esta ciudad. Las tropas producidas se unen a tu guarnición.',
             'Paid with this planet resources. Produced ships join your garrison.'
           )}
         </p>
@@ -789,7 +789,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
         <p className="text-xs text-gray-400 flex items-start gap-1">
           <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
           {tx(
-            'Se paga con los recursos de este planeta. Las defensas quedan en el planeta aunque lo pierdas.',
+            'Se paga con los recursos de esta ciudad. Las defensas quedan en la ciudad aunque la pierdas.',
             'Paid with this planet resources. Defenses stay on the planet even if you lose it.'
           )}
         </p>
@@ -805,9 +805,9 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
           <div className="lg:col-span-1">{garrisonPanel}</div>
           <div className="lg:col-span-2 space-y-4">
           <div className="card-glass p-4">
-            <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Truck className="w-5 h-5 text-cyan-400" /> {tx('Transportar a tus planetas', 'Transport to your planets')}</h3>
+            <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Truck className="w-5 h-5 text-cyan-400" /> {tx('Transportar a tus ciudades', 'Transport to your planets')}</h3>
             {detail.transport_targets.length === 0 ? (
-              <p className="text-sm text-gray-500">{tx('No tienes planetas de destino disponibles.', 'No destination planets available.')}</p>
+              <p className="text-sm text-gray-500">{tx('No tienes ciudades de destino disponibles.', 'No destination planets available.')}</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -831,7 +831,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
                     </div>
                   ))}
                   <p className="text-[11px] text-gray-500 pt-1">
-                    {tx('Debe quedar al menos 1 nave como guarnición.', 'At least 1 ship must stay as garrison.')} ({formatNumber(selectedCount)}/{formatNumber(garrisonTotal)})
+                    {tx('Debe quedar al menos 1 tropa como guarnición.', 'At least 1 ship must stay as garrison.')} ({formatNumber(selectedCount)}/{formatNumber(garrisonTotal)})
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -859,7 +859,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
                     <select value={tTarget} onChange={(e) => setTTarget(e.target.value)} className="flex-1 px-2 py-1 rounded bg-space-900 border border-space-600 text-white text-sm">
                       {detail.transport_targets.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.name} {formatCoordinates(p.galaxy, p.solar_system, p.position)}{p.planet_type === 'moon' ? ` (${tx('Luna', 'Moon')})` : ''}
+                          {p.name} {formatCoordinates(p.galaxy, p.solar_system, p.position)}{p.planet_type === 'moon' ? ` (${tx('Castra de Diana', 'Moon')})` : ''}
                         </option>
                       ))}
                     </select>
@@ -880,13 +880,13 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
             <p className="text-xs text-gray-500 mt-3 flex items-start gap-1">
               <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
               {tx(
-                'Los transportes desde un planeta ocupado solo pueden ir a tus planetas.',
+                'Los transportes desde una ciudad ocupada solo pueden ir a tus ciudades.',
                 'Transports from an occupied planet can only go to your planets.'
               )}
             </p>
           </div>
           <div className="card-glass p-4">
-            <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Swords className="w-5 h-5 text-red-400" /> {tx('Atacar desde este planeta', 'Attack from this planet')}</h3>
+            <h3 className="font-orbitron text-white mb-3 flex items-center gap-2"><Swords className="w-5 h-5 text-red-400" /> {tx('Atacar desde esta ciudad', 'Attack from this planet')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 {detail.garrison.filter((g) => g.code !== 'occupation_ship' && g.code !== 'espionage_probe').map((g) => (
@@ -909,7 +909,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
                   </div>
                 ))}
                 <p className="text-[11px] text-gray-500 pt-1">
-                  {tx('Debe quedar al menos 1 nave como guarnición.', 'At least 1 ship must stay as garrison.')} ({formatNumber(attackCount)}/{formatNumber(garrisonTotal)})
+                  {tx('Debe quedar al menos 1 tropa como guarnición.', 'At least 1 ship must stay as garrison.')} ({formatNumber(attackCount)}/{formatNumber(garrisonTotal)})
                 </p>
               </div>
               <div className="space-y-2">
@@ -933,8 +933,8 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
                 </div>
                 <div className="flex gap-2">
                   <select value={aType} onChange={(e) => setAType(e.target.value as 'planet' | 'moon')} className="flex-1 px-2 py-1 rounded bg-space-900 border border-space-600 text-white text-sm">
-                    <option value="planet">{tx('Planeta', 'Planet')}</option>
-                    <option value="moon">{tx('Luna', 'Moon')}</option>
+                    <option value="planet">{tx('Ciudad', 'Planet')}</option>
+                    <option value="moon">{tx('Castra de Diana', 'Moon')}</option>
                   </select>
                   <select value={aSpeed} onChange={(e) => setASpeed(parseInt(e.target.value))} className="w-20 px-2 py-1 rounded bg-space-900 border border-space-600 text-white text-sm">
                     {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10].map((s) => <option key={s} value={s}>{s}%</option>)}
@@ -952,7 +952,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
             <p className="text-xs text-gray-500 mt-3 flex items-start gap-1">
               <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
               {tx(
-                'Mientras controles esta colonia puedes atacar a otros jugadores con las naves de la guarnición (saqueo normal). El combustible sale de este planeta y, al volver, las naves se unen a la guarnición y el botín se descarga aquí. Si pierdes la colonia antes, vuelven a tu planeta principal.',
+                'Mientras controles esta colonia puedes atacar a otros jugadores con las tropas de la guarnición (saqueo normal). El combustible sale de esta ciudad y, al volver, las tropas se unen a la guarnición y el botín se descarga aquí. Si pierdes la colonia antes, vuelven a tu ciudad principal.',
                 'While you control this colony you can attack other players with the garrison ships (normal looting). Fuel is taken from this planet and, on return, ships rejoin the garrison and loot is unloaded here. If you lose the colony first, they return to your main planet.'
               )}
             </p>

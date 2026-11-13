@@ -848,7 +848,7 @@ export function FleetPage() {
               )}
               <p className="mt-4 text-sm text-gray-300">{defendBlock.reason}</p>
               <p className="mt-3 text-xs text-gray-500">
-                Una flota estacionada en un planeta protegido sería intocable para los jugadores de tu rango.
+                Un ejército estacionado en una ciudad protegida sería intocable para los jugadores de tu rango.
                 Para mantener el universo justo, solo puedes defender a aliados que también podrías atacar.
               </p>
               <button onClick={() => setDefendBlock(null)} className="btn-cyber mt-5 w-full flex items-center justify-center gap-2">
@@ -1531,7 +1531,7 @@ export function FleetPage() {
                         : 'bg-space-700 text-gray-400 hover:bg-space-600'
                     }`}
                   >
-                    🌍 Planeta
+                    🌍 Ciudad
                   </button>
                   <button
                     onClick={() => setTargetType('moon')}
@@ -1541,14 +1541,14 @@ export function FleetPage() {
                         : 'bg-space-700 text-gray-400 hover:bg-space-600'
                     }`}
                   >
-                    🌙 Luna
+                    🌙 Castra de Diana
                   </button>
                 </div>
 
                 {/* Selector rápido de planetas y lunas propios */}
                 {planets.length > 1 && (
                   <div className="mt-4">
-                    <label className="block text-sm text-gray-400 mb-2">📍 {t.fleet.quickSelect || 'Selección rápida - Mis colonias y lunas'}</label>
+                    <label className="block text-sm text-gray-400 mb-2">📍 {t.fleet.quickSelect || 'Selección rápida - Mis colonias y Castras de Diana'}</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
                       {planets
                         .filter(p => p.id !== currentPlanet?.id && !p.is_destroyed)
@@ -1589,7 +1589,7 @@ export function FleetPage() {
                                     ? isMoon ? 'text-cyber-purple' : 'text-cyber-green' 
                                     : 'text-white'
                                 }`}>
-                                  {translatePlanetName(p.name)} {isMoon ? '(Luna)' : ''}
+                                  {translatePlanetName(p.name)} {isMoon ? '(Castra de Diana)' : ''}
                                 </p>
                                 <p className="text-[10px] text-gray-500">
                                   [{p.galaxy}:{p.solar_system}:{p.position}] {isMoon ? '🌙' : '🌍'}
@@ -1913,7 +1913,7 @@ export function FleetPage() {
                   <span className="text-gray-400">{t.fleet.destination}:</span>
                   <span className="text-white ml-2">
                     {formatCoordinates(target.galaxy, target.system, target.position)}
-                    {targetType === 'moon' && <span className="ml-1.5 text-gray-300">🌙 Luna</span>}
+                    {targetType === 'moon' && <span className="ml-1.5 text-gray-300">🌙 Castra de Diana</span>}
                   </span>
                 </div>
                 <div>
@@ -2256,7 +2256,7 @@ export function FleetPage() {
 
             <p className="text-gray-300 text-sm mb-4">
               {accelerateAcsId
-                ? 'Aceleras TODAS las flotas del ataque ACS. El costo es la suma de todas y lo pagas tu como creador. Solo se puede hacer una vez y despues nadie mas podra unirse.'
+                ? 'Aceleras TODOS los ejércitos del ataque ACS. El costo es la suma de todos y lo pagas tu como creador. Solo se puede hacer una vez y despues nadie mas podra unirse.'
                 : t.fleet.accelerateDesc}
             </p>
 

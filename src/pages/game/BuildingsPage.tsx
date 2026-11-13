@@ -99,7 +99,7 @@ function DepositBar({ planetId }: { planetId: string }) {
   return (
     <div className="card-glass p-3 border-l-4 border-amber-500/50 text-xs space-y-1.5">
       <p className="text-amber-400 font-semibold text-xs flex items-center gap-1">
-        ⛏️ Recursos restantes del planeta
+        ⛏️ Recursos restantes de la ciudad
       </p>
       {(['metal', 'crystal', 'deuterium'] as const).map(res => {
         const amt = deposits[`${res}_deposit` as keyof typeof deposits] as number | null;

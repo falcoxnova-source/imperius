@@ -976,7 +976,7 @@ export function RankingPage() {
                       <div className="flex flex-col items-center gap-3">
                         <span className="text-4xl">🏟️</span>
                         <p className="font-orbitron text-sm">Aún no hay batallas registradas</p>
-                        <p className="text-xs text-gray-600">¡Lanza tu primera flota para entrar en el ranking!</p>
+                        <p className="text-xs text-gray-600">¡Lanza tu primer ejército para entrar en el ranking!</p>
                       </div>
                     </td>
                   </tr>
@@ -1103,7 +1103,7 @@ export function RankingPage() {
                       <div className="flex flex-col items-center gap-3">
                         <span className="text-4xl">🔥</span>
                         <p className="font-orbitron text-sm">{t.ranking.noPlayersInRanking}</p>
-                        <p className="text-xs text-gray-600">¡Destruye flotas enemigas para entrar en el ranking!</p>
+                        <p className="text-xs text-gray-600">¡Destruye ejércitos enemigos para entrar en el ranking!</p>
                       </div>
                     </td>
                   </tr>

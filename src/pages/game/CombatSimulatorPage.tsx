@@ -637,7 +637,7 @@ export function CombatSimulatorPage() {
             <span className="font-semibold text-white">{spySource.planet_name}</span>{' '}
             <span className="font-mono text-cyber-blue">{spySource.coordinates}</span>. Revisa que
             la informacion siga siendo valida: el informe es una foto del momento en que llegaron
-            tus sondas y el oponente puede haber cambiado su flota o sus defensas.
+            tus sondas y el oponente puede haber cambiado su ejército o sus defensas.
           </p>
         </div>
       )}
@@ -690,7 +690,7 @@ export function CombatSimulatorPage() {
                 <div className="space-y-1">
                   <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold px-1 flex items-center gap-1.5">
                     <Flame className="w-3 h-3 text-red-400" />
-                    Naves de combate
+                    Tropas de combate
                   </h3>
                   <div className="space-y-0.5">
                     {combatShips.map((s) => (
@@ -712,7 +712,7 @@ export function CombatSimulatorPage() {
                 <div className="space-y-1">
                   <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold px-1 flex items-center gap-1.5">
                     <Package className="w-3 h-3 text-blue-400" />
-                    Naves civiles
+                    Tropas civiles
                   </h3>
                   <div className="space-y-0.5">
                     {civilShips.map((s) => (
@@ -735,7 +735,7 @@ export function CombatSimulatorPage() {
                   <div className="space-y-1">
                     <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold px-1 flex items-center gap-1.5">
                       <Sparkles className="w-3 h-3 text-purple-400" />
-                      Naves especiales
+                      Tropas especiales
                     </h3>
                     <div className="space-y-0.5">
                       {specialShips.map((s) => (
@@ -807,7 +807,7 @@ export function CombatSimulatorPage() {
                 <div className="space-y-1">
                   <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold px-1 flex items-center gap-1.5">
                     <Flame className="w-3 h-3 text-red-400" />
-                    Naves de combate
+                    Tropas de combate
                   </h3>
                   <div className="space-y-0.5">
                     {combatShips.map((s) => (
@@ -829,7 +829,7 @@ export function CombatSimulatorPage() {
                 <div className="space-y-1">
                   <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold px-1 flex items-center gap-1.5">
                     <Package className="w-3 h-3 text-blue-400" />
-                    Naves civiles
+                    Tropas civiles
                   </h3>
                   <div className="space-y-0.5">
                     {civilShips.map((s) => (
@@ -852,7 +852,7 @@ export function CombatSimulatorPage() {
                   <div className="space-y-1">
                     <h3 className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold px-1 flex items-center gap-1.5">
                       <Sparkles className="w-3 h-3 text-purple-400" />
-                      Naves especiales
+                      Tropas especiales
                     </h3>
                     <div className="space-y-0.5">
                       {specialShips.map((s) => (
@@ -901,7 +901,7 @@ export function CombatSimulatorPage() {
                   </h3>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-space-800/60 rounded-lg px-2 py-1.5 border border-white/5">
-                      <span className="text-[10px] text-gray-500 block">Metal</span>
+                      <span className="text-[10px] text-gray-500 block">Hierro</span>
                       <input
                         type="number"
                         min="0"
@@ -912,7 +912,7 @@ export function CombatSimulatorPage() {
                       />
                     </div>
                     <div className="bg-space-800/60 rounded-lg px-2 py-1.5 border border-white/5">
-                      <span className="text-[10px] text-gray-500 block">Cristal</span>
+                      <span className="text-[10px] text-gray-500 block">Piedra</span>
                       <input
                         type="number"
                         min="0"
@@ -923,7 +923,7 @@ export function CombatSimulatorPage() {
                       />
                     </div>
                     <div className="bg-space-800/60 rounded-lg px-2 py-1.5 border border-white/5">
-                      <span className="text-[10px] text-gray-500 block">Deuterio</span>
+                      <span className="text-[10px] text-gray-500 block">Comida</span>
                       <input
                         type="number"
                         min="0"
@@ -999,7 +999,7 @@ export function CombatSimulatorPage() {
             <div className="flex items-start gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-amber-950/60 to-space-900/60 border border-amber-500/30">
               <Info className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
               <p className="text-[11px] text-amber-200/80 leading-relaxed">
-                Las flotas son tan grandes que la simulación alcanzó el límite de cálculo del
+                Los ejércitos son tan grandes que la simulación alcanzó el límite de cálculo del
                 navegador y se detuvo antes de terminar. El resultado mostrado es orientativo:
                 reduce las cantidades para obtener una simulación completa.
               </p>
@@ -1073,7 +1073,7 @@ export function CombatSimulatorPage() {
               <div className="relative">
                 <h3 className="font-orbitron text-xs text-red-400 mb-2 flex items-center gap-2">
                   <Crosshair className="w-3.5 h-3.5" />
-                  Flota atacante
+                  Ejército atacante
                 </h3>
                 <div className="space-y-1">
                   {simResult.attackerUnits.map((u) => (
@@ -1104,7 +1104,7 @@ export function CombatSimulatorPage() {
               <div className="relative">
                 <h3 className="font-orbitron text-xs text-cyan-400 mb-2 flex items-center gap-2">
                   <Shield className="w-3.5 h-3.5" />
-                  Flota/Defensas del defensor
+                  Ejército/Defensas del defensor
                 </h3>
                 <div className="space-y-1">
                   {simResult.defenderUnits.map((u) => (
@@ -1149,15 +1149,15 @@ export function CombatSimulatorPage() {
                 </h3>
                 <div className="space-y-1 text-xs font-mono">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Metal:</span>
+                    <span className="text-gray-500">Hierro:</span>
                     <span className="text-red-300">{formatNumber(simResult.attackerLosses.metal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Cristal:</span>
+                    <span className="text-gray-500">Piedra:</span>
                     <span className="text-red-300">{formatNumber(simResult.attackerLosses.crystal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Deuterio:</span>
+                    <span className="text-gray-500">Comida:</span>
                     <span className="text-red-300">{formatNumber(simResult.attackerLosses.deuterium)}</span>
                   </div>
                   <div className="flex justify-between border-t border-white/5 pt-1 mt-1">
@@ -1184,15 +1184,15 @@ export function CombatSimulatorPage() {
                 </h3>
                 <div className="space-y-1 text-xs font-mono">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Metal:</span>
+                    <span className="text-gray-500">Hierro:</span>
                     <span className="text-cyan-300">{formatNumber(simResult.defenderLosses.metal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Cristal:</span>
+                    <span className="text-gray-500">Piedra:</span>
                     <span className="text-cyan-300">{formatNumber(simResult.defenderLosses.crystal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Deuterio:</span>
+                    <span className="text-gray-500">Comida:</span>
                     <span className="text-cyan-300">{formatNumber(simResult.defenderLosses.deuterium)}</span>
                   </div>
                   <div className="flex justify-between border-t border-white/5 pt-1 mt-1">
@@ -1206,7 +1206,7 @@ export function CombatSimulatorPage() {
                     </span>
                   </div>
                   <div className="flex justify-between text-[10px] pt-1">
-                    <span className="text-gray-600">· Naves:</span>
+                    <span className="text-gray-600">· Tropas:</span>
                     <span className="text-cyan-400/60">
                       {formatNumber(
                         simResult.defenderFleetLosses.metal +
@@ -1240,11 +1240,11 @@ export function CombatSimulatorPage() {
                   </h3>
                   <div className="space-y-1 text-xs font-mono">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Metal:</span>
+                      <span className="text-gray-500">Hierro:</span>
                       <span className="text-amber-300">{formatNumber(simResult.debrisMetal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Cristal:</span>
+                      <span className="text-gray-500">Piedra:</span>
                       <span className="text-amber-300">{formatNumber(simResult.debrisCrystal)}</span>
                     </div>
                   </div>
@@ -1258,15 +1258,15 @@ export function CombatSimulatorPage() {
                     </h3>
                     <div className="space-y-1 text-xs font-mono">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Metal:</span>
+                        <span className="text-gray-500">Hierro:</span>
                         <span className="text-green-300">{formatNumber(simResult.loot.metal)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Cristal:</span>
+                        <span className="text-gray-500">Piedra:</span>
                         <span className="text-green-300">{formatNumber(simResult.loot.crystal)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Deuterio:</span>
+                        <span className="text-gray-500">Comida:</span>
                         <span className="text-green-300">{formatNumber(simResult.loot.deuterium)}</span>
                       </div>
                     </div>
@@ -1287,7 +1287,7 @@ export function CombatSimulatorPage() {
               absorbido por completo, y bajas calculadas sobre el casco acumulado del grupo. Los
               escombros son el{' '}
               <span className="text-amber-400/80">{Math.round(FLEET_DEBRIS_RATIO * 100)}%</span> del
-              metal y cristal de las naves destruidas
+              metal y cristal de las tropas destruidas
               {DEFENSE_DEBRIS_RATIO > 0
                 ? ` y el ${Math.round(DEFENSE_DEBRIS_RATIO * 100)}% de las defensas`
                 : ' (las defensas no generan escombros)'}

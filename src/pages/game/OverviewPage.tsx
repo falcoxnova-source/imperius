@@ -99,7 +99,7 @@ function DepositInfo({ planetId }: { planetId: string }) {
 
   return (
     <div className="card-glass p-3 border-l-4 border-amber-500/50 text-xs space-y-1.5">
-      <p className="text-amber-400 font-semibold text-xs">⛏️ Recursos restantes del planeta</p>
+      <p className="text-amber-400 font-semibold text-xs">⛏️ Recursos restantes de la ciudad</p>
       {items.map(i => (
         <div key={i.label} className="flex items-center gap-2">
           <span className="w-20 text-gray-400">{i.label}</span>
@@ -1209,7 +1209,7 @@ export function OverviewPage() {
                       />
                       {/* Ships */}
                       <CustomOrderSection
-                        title="⚔️ Naves"
+                        title="⚔️ Tropas"
                         subtitle="Cantidad deseada"
                         items={[
                           { code: 'small_cargo', name: t.shipyard.smallCargo },
@@ -1629,7 +1629,7 @@ export function OverviewPage() {
                 </div>
                 <div>
                   <h3 className="font-orbitron text-sm sm:text-base text-white flex items-center gap-2">
-                    Planeta del Tesoro
+                    Ciudad del Tesoro
                   </h3>
                   <p className="text-[10px] text-slate-500">Ver detalles →</p>
                 </div>
@@ -1661,7 +1661,7 @@ export function OverviewPage() {
                 )}
               </div>
               <div className="mt-2 text-[10px] text-center text-yellow-500/50 group-hover:text-yellow-400/80 transition-colors relative z-10">
-                Ver página del Planeta del Tesoro →
+                Ver página de la Ciudad del Tesoro →
               </div>
             </div>
           )}
@@ -1726,9 +1726,9 @@ export function OverviewPage() {
                 </p>
                 <ul className="text-gray-400 text-xs space-y-1 ml-5 list-disc">
                   <li>Todos los edificios serán destruidos</li>
-                  <li>Todas las naves y defensas serán eliminadas</li>
-                  <li>Todos los recursos del planeta se perderán</li>
-                  <li>La posición en la galaxia quedará libre</li>
+                  <li>Todas las tropas y defensas serán eliminadas</li>
+                  <li>Todos los recursos de la ciudad se perderán</li>
+                  <li>La posición en el continente quedará libre</li>
                 </ul>
               </div>
 

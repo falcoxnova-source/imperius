@@ -781,10 +781,10 @@ function TechCard({
             <p className="text-gray-300 leading-relaxed">
               Tu informe de espionaje depende de tu nivel <span className="text-white font-semibold">comparado con el del oponente</span>.
               Si el enemigo tiene esta tecnologia a un nivel mas alto que el tuyo,{' '}
-              <span className="text-white font-semibold">no veras su flota, defensas ni edificios</span>.
+              <span className="text-white font-semibold">no veras su ejército, defensas ni edificios</span>.
             </p>
             <p className="text-amber-200/90 leading-relaxed">
-              ⚠️ Que el informe salga vacio NO significa que no tenga naves: si atacas a ciegas puedes perder toda tu flota.
+              ⚠️ Que el informe salga vacio NO significa que no tenga tropas: si atacas a ciegas puedes perder todo tu ejército.
             </p>
           </div>
         )}
@@ -794,12 +794,12 @@ function TechCard({
           <div className="text-xs p-2.5 bg-cyan-500/10 border border-cyan-500/40 rounded-lg space-y-1">
             <div className="flex items-center gap-1.5 text-cyan-300 font-semibold">
               <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>LIMITE DE PLANETAS</span>
+              <span>LIMITE DE CIUDADES</span>
             </div>
             <p className="text-gray-300 leading-relaxed">
               Con <span className="text-white font-semibold">nivel {currentLevel}</span> puedes tener hasta{' '}
-              <span className="text-white font-semibold">{maxPlanetsNow} planeta{maxPlanetsNow === 1 ? '' : 's'}</span>{' '}
-              en total (incluyendo tu planeta principal). Ahora tienes{' '}
+              <span className="text-white font-semibold">{maxPlanetsNow} ciudad{maxPlanetsNow === 1 ? '' : 'es'}</span>{' '}
+              en total (incluyendo tu ciudad principal). Ahora tienes{' '}
               <span className={ownedPlanets >= maxPlanetsNow ? 'text-cyber-orange font-semibold' : 'text-cyber-green font-semibold'}>
                 {ownedPlanets}
               </span>.
@@ -807,8 +807,8 @@ function TechCard({
             {!isMaxLevel && (
               <p className="text-cyan-200/90 leading-relaxed">
                 {maxPlanetsNext > maxPlanetsNow
-                  ? <>Al subir al nivel {currentLevel + 1} podras tener {maxPlanetsNext} planetas.</>
-                  : <>El nivel {currentLevel + 1} no da plaza nueva; la siguiente llega en el nivel {currentLevel + 2} ({maxPlanetsNow + 1} planetas).</>
+                  ? <>Al subir al nivel {currentLevel + 1} podras tener {maxPlanetsNext} ciudades.</>
+                  : <>El nivel {currentLevel + 1} no da plaza nueva; la siguiente llega en el nivel {currentLevel + 2} ({maxPlanetsNow + 1} ciudades).</>
                 }
               </p>
             )}

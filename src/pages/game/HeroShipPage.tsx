@@ -122,7 +122,7 @@ function VisualSlot({ slotKey, slotData, onUnequip, expeditionActive }: { slotKe
               expeditionActive
                 ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                 : 'bg-red-500/80 hover:bg-red-500 text-white'
-            }`} title={expeditionActive ? '🚀 Equipo bloqueado — la nave esta en expedicion' : 'Desequipar'}>{"\n"}
+            }`} title={expeditionActive ? '🚀 Equipo bloqueado — la tropa esta en expedicion' : 'Desequipar'}>{"\n"}
             ×{"\n"}
           </button>
         </>
@@ -759,7 +759,7 @@ function HeroShipPageInner() {
                         <div className="rounded-xl bg-black/30 border border-white/5 p-2 text-center">
                           <Zap className="w-3.5 h-3.5 text-purple-400 mx-auto mb-0.5" />
                           <div className="text-xs font-bold font-mono text-purple-300">{deuterio.toLocaleString()}</div>
-                          <div className="text-[8px] text-slate-600">Deuterio</div>
+                          <div className="text-[8px] text-slate-600">Comida</div>
                         </div>
                       </div>
                       {(() => {
@@ -848,7 +848,7 @@ function HeroShipPageInner() {
                             locked || active !== null
                               ? 'bg-slate-800/50 border-slate-600/30 text-slate-600 cursor-not-allowed'
                               : 'bg-cyan-700/40 hover:bg-cyan-600/50 text-cyan-300 border-cyan-500/30'
-                          }`} title={active !== null ? '🚀 La nave esta en expedicion — espera a que regrese' : ''}>
+                          }`} title={active !== null ? '🚀 La tropa esta en expedicion — espera a que regrese' : ''}>
                           {locked ? `Requiere Nv. ${item.item_level}` : active !== null ? 'En expedicion' : 'Equipar'}
                         </button>
                       )}
@@ -1277,7 +1277,7 @@ function HeroDuelSection() {
       <div className="rounded-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 shadow-lg p-4">
         <h3 className="text-xs font-bold text-cyan-400 tracking-wide uppercase mb-2">Crear duelo</h3>
         <div className="text-[11px] text-slate-400 space-y-0.5 mb-3">
-          <p>Cada jugador apuesta lo mismo (minimo 10 TUNG). Al aceptar, las naves tardan 10 minutos en llegar al punto de batalla y alli se resuelve el combate.</p>
+          <p>Cada jugador apuesta lo mismo (minimo 10 TUNG). Al aceptar, las tropas tardan 10 minutos en llegar al punto de batalla y alli se resuelve el combate.</p>
           <p>Comision: 20% de una apuesta (50% pool jackpot / 50% empresa). El ganador se lleva el resto del bote.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -1416,7 +1416,7 @@ function HeroRankingSection() {
     <div className="rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/80 border border-slate-700/50 shadow-lg p-4 space-y-3">
       <div className="flex items-center gap-2 mb-2">
         <Trophy className="w-4 h-4 text-yellow-400" />
-        <h3 className="text-sm font-bold text-white tracking-wide">Ranking de Naves Heroe</h3>
+        <h3 className="text-sm font-bold text-white tracking-wide">Ranking de Tropas Heroe</h3>
         <span className="text-[10px] text-slate-500 ml-auto">{ranking.length} capitanes</span>
       </div>
 

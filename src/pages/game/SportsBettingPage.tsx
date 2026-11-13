@@ -1093,7 +1093,7 @@ export function SportsBettingPage() {
         {/* Cabecera */}
         <header className="flex flex-wrap items-center justify-between gap-3">
           <Link to="/game/galaxy" className="inline-flex items-center gap-1 text-sm text-amber-300 hover:text-amber-200">
-            <ArrowLeft className="h-4 w-4" /> Galaxia
+            <ArrowLeft className="h-4 w-4" /> Continente
           </Link>
           <div className="flex items-center gap-2">
             <SoundToggle />
@@ -1107,7 +1107,7 @@ export function SportsBettingPage() {
         <section className="relative overflow-hidden rounded-3xl border border-amber-400/25 bg-gradient-to-br from-amber-900/50 via-black/40 to-yellow-950/60 p-5 sm:p-7">
           <div className="absolute -right-6 -top-6 text-[140px] leading-none opacity-10 sp-anim [animation:spBall_4s_ease-in-out_infinite]" aria-hidden>⚽</div>
           <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-amber-300/80">
-            Planeta [{SPORTS_COORDS.galaxy}:{SPORTS_COORDS.system}:{SPORTS_COORDS.position}]
+            Ciudad [{SPORTS_COORDS.galaxy}:{SPORTS_COORDS.system}:{SPORTS_COORDS.position}]
           </div>
           <h1 className="mt-1 bg-gradient-to-r from-amber-50 via-amber-200 to-amber-500 bg-clip-text font-serif text-3xl font-black uppercase tracking-wide text-transparent sm:text-5xl sp-anim [animation:spGlow_3s_ease-in-out_infinite]">
             Coliseo Imperial

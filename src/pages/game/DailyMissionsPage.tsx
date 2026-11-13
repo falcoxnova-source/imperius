@@ -95,20 +95,20 @@ const missionActionColors: Record<string, string> = {
 };
 
 const missionTargetLabels: Record<string, string> = {
-  attack: 'flotas enemigas',
-  spy: 'planetas',
+  attack: 'ejércitos enemigos',
+  spy: 'ciudades',
   expedition: 'expediciones',
   build: 'niveles',
   research: 'tecnologias',
-  collect_metal: 'de metal',
-  collect_crystal: 'de cristal',
-  collect_deuterium: 'de deuterio',
+  collect_metal: 'de hierro',
+  collect_crystal: 'de piedra',
+  collect_deuterium: 'de comida',
 };
 
 // Etiquetas específicas para cada misión premium (evita el genérico "Aplica a velocidad")
 const premiumBonusLabel: Record<string, string> = {
-  premium_build_10:     '🏭 Producción de metal, cristal y deuterio',
-  premium_expedition_8: '🚀 Velocidad de naves y edificios',
+  premium_build_10:     '🏭 Producción de hierro, piedra y comida',
+  premium_expedition_8: '🚀 Velocidad de tropas y edificios',
   premium_research_5:   '🔬 Velocidad de investigación tecnológica',
   premium_destroy_10:   '🏭 Producción de todos los recursos',
   premium_collect_5m:   '🏗️ Velocidad de construcción de edificios',

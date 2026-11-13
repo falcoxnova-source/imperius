@@ -115,7 +115,7 @@ function normalizeSide(initialRaw?: ReportUnit[], remainingRaw?: ReportUnit[]): 
 
 function UnitList({ units }: { units: NormalizedUnit[] }) {
   if (units.length === 0) {
-    return <p className="text-gray-500 text-sm">🛰️ Sin naves ni defensas</p>;
+    return <p className="text-gray-500 text-sm">🛰️ Sin tropas ni defensas</p>;
   }
   const ships = units.filter((u) => !u.isDefense);
   const defenses = units.filter((u) => u.isDefense);
@@ -140,7 +140,7 @@ function UnitList({ units }: { units: NormalizedUnit[] }) {
     );
   return (
     <div>
-      {renderGroup(ships, 'Naves')}
+      {renderGroup(ships, 'Tropas')}
       {renderGroup(defenses, 'Defensas')}
     </div>
   );
@@ -333,7 +333,7 @@ export function TopBattlesPage() {
       ) : battles.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
           <Swords className="w-12 h-12 mx-auto mb-3 opacity-40" />
-          <p>Aún no hay batallas registradas. ¡Sé el primero en dejar tu huella en la galaxia!</p>
+          <p>Aún no hay batallas registradas. ¡Sé el primero en dejar tu huella en el continente!</p>
         </div>
       ) : (
         <div className="space-y-2">

@@ -122,7 +122,7 @@ export function InstantShipyardTab({ fxuBalance, onChange }: Props) {
 
   const buy = async (item: CatalogItem) => {
     if (!targetPlanet) {
-      setError('Elige un planeta de destino');
+      setError('Elige una ciudad de destino');
       return;
     }
     const quantity = quantityOf(item);
@@ -170,9 +170,9 @@ export function InstantShipyardTab({ fxuBalance, onChange }: Props) {
           <div className="min-w-0">
             <h3 className="font-orbitron text-base sm:text-lg text-white mb-1">Astillero Corporativo</h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Las líneas de montaje de la Corporación trabajan sin descanso. Compra naves y
+              Las líneas de montaje de la Corporación trabajan sin descanso. Compra tropas y
               defensas <span className="text-cyan-300">ya ensambladas</span>: se entregan al
-              instante en el planeta que elijas, sin cola de construcción y sin gastar un solo
+              instante en la ciudad que elijas, sin cola de construcción y sin gastar un solo
               gramo de tus recursos. Se paga en TUNG al cambio del momento.
             </p>
           </div>
@@ -201,7 +201,7 @@ export function InstantShipyardTab({ fxuBalance, onChange }: Props) {
                 : 'bg-space-700 text-gray-400 hover:bg-space-600'
             }`}
           >
-            <Rocket className="w-4 h-4" /> Naves
+            <Rocket className="w-4 h-4" /> Tropas
           </button>
           <button
             onClick={() => setSection('defense')}
@@ -351,7 +351,7 @@ export function InstantShipyardTab({ fxuBalance, onChange }: Props) {
 
         {items.length === 0 && (
           <div className="col-span-full text-center py-12 text-gray-400">
-            El astillero no tiene {section === 'ship' ? 'naves' : 'defensas'} a la venta
+            El astillero no tiene {section === 'ship' ? 'tropas' : 'defensas'} a la venta
           </div>
         )}
       </div>

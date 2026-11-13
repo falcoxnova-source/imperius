@@ -348,7 +348,7 @@ export function OccupationsPage() {
 
   const tabs: { key: Tab; icon: typeof Flag; label: string }[] = [
     { key: 'occupations', icon: Flag, label: tx('Mis ocupaciones', 'My occupations') },
-    { key: 'buy', icon: ShoppingCart, label: tx('Comprar nave', 'Buy ship') },
+    { key: 'buy', icon: ShoppingCart, label: tx('Comprar tropa', 'Buy ship') },
     { key: 'ranking', icon: Trophy, label: tx('Salón de Conquistadores', 'Hall of Conquerors') },
   ];
 
@@ -449,12 +449,12 @@ export function OccupationsPage() {
               <p className="text-gray-300">{tx('No tienes colonias ocupadas.', 'You have no occupied colonies.')}</p>
               <p className="text-sm text-gray-500 max-w-lg mx-auto">
                 {tx(
-                  'Compra un Guardián y envíalo en una misión de Ataque contra una colonia enemiga junto con otras naves.',
+                  'Compra un Guardián y envíalo en una misión de Ataque contra una colonia enemiga junto con otras tropas.',
                   'Buy a Guardian and send it on an Attack mission against an enemy colony together with other ships.'
                 )}
               </p>
               <button onClick={() => setTab('buy')} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold">
-                <ShoppingCart className="w-4 h-4" /> {tx('Comprar nave', 'Buy ship')}
+                <ShoppingCart className="w-4 h-4" /> {tx('Comprar tropa', 'Buy ship')}
               </button>
             </div>
           ) : (
@@ -506,7 +506,7 @@ export function OccupationsPage() {
                     <p className="text-xs text-gray-500 mt-2 flex items-start gap-1">
                       <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
                       {tx(
-                        'La producción del planeta es tuya mientras dure la ocupación. Úsala para producir aquí o transpórtala a tus planetas.',
+                        'La producción de la ciudad es tuya mientras dure la ocupación. Úsala para producir aquí o transpórtala a tus ciudades.',
                         'The planet production is yours while the occupation lasts. Use it to produce here or transport it to your planets.'
                       )}
                     </p>
@@ -517,7 +517,7 @@ export function OccupationsPage() {
                     <div className="card-glass p-4">
                       <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Shield className="w-5 h-5 text-amber-400" /> {tx('Guarnición', 'Garrison')}</h3>
                       {detail.garrison.length === 0 ? (
-                        <p className="text-sm text-gray-500">{tx('Sin naves.', 'No ships.')}</p>
+                        <p className="text-sm text-gray-500">{tx('Sin tropas.', 'No ships.')}</p>
                       ) : (
                         <div className="space-y-1">
                           {detail.garrison.map((g) => (
@@ -577,14 +577,14 @@ export function OccupationsPage() {
                             onClick={() => setBuildType(bt)}
                             className={`px-3 py-1.5 rounded-md text-sm font-semibold ${buildType === bt ? 'bg-orange-600 text-white' : 'bg-space-700 text-gray-400 hover:bg-space-600'}`}
                           >
-                            {bt === 'ship' ? tx('Naves', 'Ships') : tx('Defensas', 'Defenses')}
+                            {bt === 'ship' ? tx('Tropas', 'Ships') : tx('Defensas', 'Defenses')}
                           </button>
                         ))}
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mb-3">
                       {tx(
-                        `Barraca del planeta: nivel ${detail.shipyard_level}. Las naves producidas se unen a tu guarnición; las defensas quedan en el planeta aunque lo pierdas. No se pueden construir edificios ni investigar.`,
+                        `Barraca de la ciudad: nivel ${detail.shipyard_level}. Las tropas producidas se unen a tu guarnición; las defensas quedan en la ciudad aunque la pierdas. No se pueden construir edificios ni investigar.`,
                         `Planet shipyard: level ${detail.shipyard_level}. Produced ships join your garrison; defenses stay on the planet even if you lose it. Buildings and research are not allowed.`
                       )}
                     </p>
@@ -625,7 +625,7 @@ export function OccupationsPage() {
                                 </button>
                               </div>
                             ) : (
-                              <p className="text-[11px] text-amber-400/80 mt-2">{tx('Requisitos no cumplidos en este planeta', 'Requirements not met on this planet')}</p>
+                              <p className="text-[11px] text-amber-400/80 mt-2">{tx('Requisitos no cumplidos en esta ciudad', 'Requirements not met on this planet')}</p>
                             )}
                           </div>
                         );
@@ -635,9 +635,9 @@ export function OccupationsPage() {
 
                   {/* Transporte */}
                   <div className="card-glass p-4">
-                    <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Truck className="w-5 h-5 text-amber-400" /> {tx('Transportar a tus planetas', 'Transport to your planets')}</h3>
+                    <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Truck className="w-5 h-5 text-amber-400" /> {tx('Transportar a tus ciudades', 'Transport to your planets')}</h3>
                     {detail.transport_targets.length === 0 ? (
-                      <p className="text-sm text-gray-500">{tx('No tienes planetas de destino disponibles.', 'No destination planets available.')}</p>
+                      <p className="text-sm text-gray-500">{tx('No tienes ciudades de destino disponibles.', 'No destination planets available.')}</p>
                     ) : (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div className="space-y-1">
@@ -661,7 +661,7 @@ export function OccupationsPage() {
                             </div>
                           ))}
                           <p className="text-[11px] text-gray-500 pt-1">
-                            {tx('Debe quedar al menos 1 nave como guarnición.', 'At least 1 ship must stay as garrison.')} ({formatNumber(selectedCount)}/{formatNumber(garrisonTotal)})
+                            {tx('Debe quedar al menos 1 tropa como guarnición.', 'At least 1 ship must stay as garrison.')} ({formatNumber(selectedCount)}/{formatNumber(garrisonTotal)})
                           </p>
                         </div>
                         <div className="space-y-2">
@@ -689,7 +689,7 @@ export function OccupationsPage() {
                             <select value={tTarget} onChange={(e) => setTTarget(e.target.value)} className="flex-1 px-2 py-1 rounded bg-space-900 border border-space-600 text-white text-sm">
                               {detail.transport_targets.map((p) => (
                                 <option key={p.id} value={p.id}>
-                                  {translatePlanetName(p.name)} {coords(p.galaxy, p.solar_system, p.position)}{p.planet_type === 'moon' ? ` (${tx('Luna', 'Moon')})` : ''}
+                                  {translatePlanetName(p.name)} {coords(p.galaxy, p.solar_system, p.position)}{p.planet_type === 'moon' ? ` (${tx('Castra de Diana', 'Moon')})` : ''}
                                 </option>
                               ))}
                             </select>
@@ -715,7 +715,7 @@ export function OccupationsPage() {
                       <p className="text-sm text-amber-200 font-semibold">{tx('Abandonar ocupación', 'Abandon occupation')}</p>
                       <p className="text-xs text-gray-400">
                         {tx(
-                          'Tu guarnición y el Guardián regresan a su planeta de origen según su velocidad de vuelo. La producción pendiente se devuelve al planeta y el dueño recupera el control.',
+                          'Tu guarnición y el Guardián regresan a su ciudad de origen según su velocidad de vuelo. La producción pendiente se devuelve a la ciudad y el dueño recupera el control.',
                           'Your garrison and the Guardian fly back to their origin planet at their flight speed. Pending production is refunded to the planet and the owner regains control.'
                         )}
                       </p>
@@ -773,7 +773,7 @@ export function OccupationsPage() {
                   </div>
                 )}
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-gray-400">{tx('Precio por nave', 'Price per ship')}</span><span className="text-white">{info.unit_price_usd} USD</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">{tx('Precio por tropa', 'Price per ship')}</span><span className="text-white">{info.unit_price_usd} USD</span></div>
                   <div className="flex justify-between"><span className="text-gray-400">{tx('Precio TUNG en vivo', 'Live TUNG price')}</span><span className="text-white">{info.tung_price_usd ? `$${Number(info.tung_price_usd).toFixed(6)}` : tx('No disponible', 'Unavailable')}</span></div>
                   <div className="flex justify-between"><span className="text-gray-400">{tx('Tu saldo', 'Your balance')}</span><span className="text-amber-300">{formatNumber(Math.floor(Number(info.balance)))} TUNG</span></div>
                   <div className="flex justify-between">
@@ -811,19 +811,19 @@ export function OccupationsPage() {
           <div className="card-glass p-5">
             <h3 className="font-serif text-amber-100 mb-3 flex items-center gap-2"><Info className="w-5 h-5 text-amber-400" /> {tx('Cómo funciona', 'How it works')}</h3>
             <ul className="space-y-2 text-sm text-gray-300 list-disc pl-5">
-              <li>{tx('Envía la nave en una misión de Ataque contra una colonia enemiga, acompañada de al menos otra nave.', 'Send the ship on an Attack mission against an enemy colony, together with at least one other ship.')}</li>
-              <li>{tx('Si ganas y el Guardián sobrevive, el planeta queda ocupado. La nave no se gasta: se queda con tu flota como guarnición.', 'If you win and the Guardian survives, the planet becomes occupied. The ship is not consumed: it stays with your fleet as garrison.')}</li>
+              <li>{tx('Envía la tropa en una misión de Ataque contra una colonia enemiga, acompañada de al menos otra tropa.', 'Send the ship on an Attack mission against an enemy colony, together with at least one other ship.')}</li>
+              <li>{tx('Si ganas y el Guardián sobrevive, la ciudad queda ocupada. La tropa no se gasta: se queda con tu ejército como guarnición.', 'If you win and the Guardian survives, the planet becomes occupied. The ship is not consumed: it stays with your fleet as garrison.')}</li>
               <li>{tx('Si el dueño gana la batalla de recuperación, el Guardián se destruye. Si abandonas, vuelve a tu base con toda la guarnición según su velocidad de vuelo.', 'If the owner wins the recovery battle, the Guardian is destroyed. If you abandon, it flies back to your base with the whole garrison at its flight speed.')}</li>
-              <li>{tx('Solo colonias: nunca planetas principales ni lunas. Sin límite total, pero máximo 3 colonias ocupadas de un mismo jugador.', 'Colonies only: never main planets or moons. No total limit, but at most 3 occupied colonies from the same player.')}</li>
-              <li>{tx('Te quedas con la producción, puedes fabricar naves y defensas y transportar recursos. No puedes construir edificios ni investigar.', 'You keep the production, can produce ships and defenses and transport resources. No buildings or research.')}</li>
+              <li>{tx('Solo colonias: nunca ciudades principales ni Castras de Diana. Sin límite total, pero máximo 3 colonias ocupadas de un mismo jugador.', 'Colonies only: never main planets or moons. No total limit, but at most 3 occupied colonies from the same player.')}</li>
+              <li>{tx('Te quedas con la producción, puedes fabricar tropas y defensas y transportar recursos. No puedes construir edificios ni investigar.', 'You keep the production, can produce ships and defenses and transport resources. No buildings or research.')}</li>
               <li>{tx('El dueño puede recuperarla atacando tu guarnición (solo o con su SAC). Puedes abandonarla cuando quieras.', 'The owner can recover it by attacking your garrison (solo or with their ACS). You can abandon it anytime.')}</li>
-              <li>{tx('Si ganas pero no se puede ocupar, la flota regresa a casa con la nave y recibes un mensaje con el motivo.', 'If you win but the occupation is not possible, the fleet returns home with the ship and you get a message with the reason.')}</li>
+              <li>{tx('Si ganas pero no se puede ocupar, el ejército regresa a casa con la tropa y recibes un mensaje con el motivo.', 'If you win but the occupation is not possible, the fleet returns home with the ship and you get a message with the reason.')}</li>
             </ul>
             <button
               onClick={() => navigate('/game/fleet?mission=attack')}
               className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-space-700 hover:bg-space-600 text-gray-200 text-sm font-semibold"
             >
-              <Swords className="w-4 h-4" /> {tx('Ir a Flota', 'Go to Fleet')}
+              <Swords className="w-4 h-4" /> {tx('Ir a Ejército', 'Go to Fleet')}
             </button>
           </div>
         </div>

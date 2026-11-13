@@ -35,7 +35,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
       en: 'Welcome, Commander',
     },
     text: {
-      es: 'Acabas de recibir tu primer planeta. Te voy a guiar paso a paso para que empieces con buen pie. Solo tomara un minuto y no volvera a aparecer.',
+      es: 'Acabas de recibir tu primera ciudad. Te voy a guiar paso a paso para que empieces con buen pie. Solo tomara un minuto y no volvera a aparecer.',
       en: 'You just received your first planet. I will guide you step by step so you get a strong start. It only takes a minute and will not show again.',
     },
     advance: { type: 'manual' },
@@ -45,11 +45,11 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     target: '[data-tour="planet-selector"]',
     requiresSidebar: true,
     title: {
-      es: 'Tu planeta',
+      es: 'Tu ciudad',
       en: 'Your planet',
     },
     text: {
-      es: 'Aqui ves el planeta en el que estas trabajando y sus coordenadas. Cuando tengas mas colonias podras cambiar entre ellas desde aqui.',
+      es: 'Aqui ves la ciudad en la que estas trabajando y sus coordenadas. Cuando tengas mas colonias podras cambiar entre ellas desde aqui.',
       en: 'This is the planet you are working on and its coordinates. Once you have more colonies you can switch between them here.',
     },
     advance: { type: 'manual' },
@@ -89,7 +89,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
       en: 'Step 3: Upgrade the Crystal Mine',
     },
     text: {
-      es: 'El cristal hace falta para naves, defensas e investigacion. Sube la Mina de Cristal al nivel {level}.',
+      es: 'El cristal hace falta para tropas, defensas e investigacion. Sube la Mina de Cristal al nivel {level}.',
       en: 'Crystal is needed for ships, defenses and research. Take the Crystal Mine to level {level}.',
     },
     advance: { type: 'building', code: 'crystal_mine', level: 2 },
@@ -129,7 +129,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
       en: 'Step 6: Research',
     },
     text: {
-      es: 'Las tecnologias desbloquean naves, defensas y mejoras. Necesitaras una Academia Imperial. Entra para verlas.',
+      es: 'Las tecnologias desbloquean tropas, defensas y mejoras. Necesitaras una Academia Imperial. Entra para verlas.',
       en: 'Technologies unlock ships, defenses and upgrades. You will need a Research Lab. Open it to take a look.',
     },
     advance: { type: 'route', path: '/game/research' },
@@ -139,11 +139,11 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     target: '[data-tour="nav-galaxy"]',
     requiresSidebar: true,
     title: {
-      es: 'Paso 7: Explora la Galaxia',
+      es: 'Paso 7: Explora el Continente',
       en: 'Step 7: Explore the Galaxy',
     },
     text: {
-      es: 'Desde la Galaxia ves a tus vecinos, planetas libres para colonizar y objetivos. Echale un vistazo.',
+      es: 'Desde el Continente ves a tus vecinos, ciudades libres para colonizar y objetivos. Echale un vistazo.',
       en: 'From the Galaxy you can see your neighbours, free planets to colonize and targets. Take a look.',
     },
     advance: { type: 'route', path: '/game/galaxy' },

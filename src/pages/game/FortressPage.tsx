@@ -134,13 +134,13 @@ export function FortressPage() {
         <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl" />
         <div className="relative flex items-center gap-3">
           <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-purple-500/20 border border-amber-500/20"><Castle className="w-6 h-6 text-amber-400" /></div>
-          <div><h2 className="text-lg font-bold text-white">Fortalezas Galácticas</h2><p className="text-xs text-slate-400">Envía una flota de ataque normal a [Galaxia, 250:8] para conquistar</p></div>
+          <div><h2 className="text-lg font-bold text-white">Fortalezas Galácticas</h2><p className="text-xs text-slate-400">Envía un ejército de ataque normal a [Continente, 250:8] para conquistar</p></div>
         </div>
       </div>
 
       <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
         <p className="text-sm text-cyan-300">
-          💡 Para atacar una fortaleza, usa la <strong>página de Flotas</strong> normal. Selecciona tus naves y envíalas a las coordenadas de la fortaleza [Galaxia, 250:8] con misión <strong>Atacar</strong>. El sistema de vuelo usa la misma lógica de distancia, velocidad de naves y deuterio que cualquier ataque normal.
+          💡 Para atacar una fortaleza, usa la <strong>página de Ejércitos</strong> normal. Selecciona tus tropas y envíalas a las coordenadas de la fortaleza [Continente, 250:8] con misión <strong>Atacar</strong>. El sistema de vuelo usa la misma lógica de distancia, velocidad de tropas y comida que cualquier ataque normal.
         </p>
       </div>
 
@@ -150,20 +150,20 @@ export function FortressPage() {
         <div className="flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
           <p className="text-sm text-amber-200">
-            Tu alianza puede controlar <strong>una Fortaleza</strong> <u>o</u> el <strong>Planeta del Tesoro</strong>, nunca las dos cosas.
+            Tu alianza puede controlar <strong>una Fortaleza</strong> <u>o</u> la <strong>Ciudad del Tesoro</strong>, nunca las dos cosas.
             Atacar siempre está permitido, pero para <strong>capturar</strong> debes abandonar antes lo que ya controlas.
           </p>
         </div>
         {myTreasure && (
           <div className="mt-2 flex items-center gap-2 text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-2">
             <Gem className="w-3.5 h-3.5 shrink-0" />
-            <span>Tu alianza controla el <strong>Planeta del Tesoro</strong> de la Galaxia {myTreasure.galaxy}. No podrás capturar ninguna Fortaleza hasta abandonarlo.</span>
+            <span>Tu alianza controla la <strong>Ciudad del Tesoro</strong> del Continente {myTreasure.galaxy}. No podrás capturar ninguna Fortaleza hasta abandonarla.</span>
           </div>
         )}
         {myFortress && (
           <div className="mt-2 flex items-center gap-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-2">
             <Castle className="w-3.5 h-3.5 shrink-0" />
-            <span>Tu alianza controla la <strong>Fortaleza</strong> de la Galaxia {myFortress.galaxy}. No podrás capturar otra Fortaleza ni el Planeta del Tesoro hasta abandonarla.</span>
+            <span>Tu alianza controla la <strong>Fortaleza</strong> del Continente {myFortress.galaxy}. No podrás capturar otra Fortaleza ni la Ciudad del Tesoro hasta abandonarla.</span>
           </div>
         )}
       </div>
@@ -183,7 +183,7 @@ export function FortressPage() {
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${fortress.owner_alliance_id ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-400'}`}><Castle className="w-5 h-5" /></div>
                     <div>
-                      <div className="flex items-center gap-2"><h3 className="font-semibold text-white text-sm">Galaxia {fortress.galaxy}</h3><span className="text-[10px] text-slate-500">[{fortress.system}:{fortress.position}]</span></div>
+                      <div className="flex items-center gap-2"><h3 className="font-semibold text-white text-sm">Continente {fortress.galaxy}</h3><span className="text-[10px] text-slate-500">[{fortress.system}:{fortress.position}]</span></div>
                       <div className="flex items-center gap-3 mt-1">
                         <span className={`text-xs font-medium ${status.color}`}>{fortress.owner_alliance_name || 'Sin dueño'}</span>
                         {fortress.owner_alliance_tag && <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded font-semibold">[{fortress.owner_alliance_tag}]</span>}
@@ -210,11 +210,11 @@ export function FortressPage() {
                       <span className="text-sm font-bold text-amber-400 font-mono">{(detail.total_combat_power || 0).toLocaleString()}</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                      <div><h4 className="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1"><Swords className="w-3 h-3" /> Flota Defensora</h4>
-                        {detail.ships && detail.ships.length > 0 ? <div className="space-y-1 max-h-32 overflow-y-auto">{detail.ships.map((s: any) => <div key={s.ship_type_id} className="flex justify-between text-xs bg-slate-800/50 rounded px-2 py-1"><span className="text-slate-300">{s.ship_name}</span><div className="flex items-center gap-2"><span className="text-slate-400 font-mono">{s.total_quantity.toLocaleString()}</span><span className="text-[10px] text-amber-500/70">{((s.combat_power || 0)).toLocaleString()}⚔</span></div></div>)}</div> : <p className="text-xs text-slate-500">Sin naves</p>}
+                      <div><h4 className="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1"><Swords className="w-3 h-3" /> Ejército Defensor</h4>
+                        {detail.ships && detail.ships.length > 0 ? <div className="space-y-1 max-h-32 overflow-y-auto">{detail.ships.map((s: any) => <div key={s.ship_type_id} className="flex justify-between text-xs bg-slate-800/50 rounded px-2 py-1"><span className="text-slate-300">{s.ship_name}</span><div className="flex items-center gap-2"><span className="text-slate-400 font-mono">{s.total_quantity.toLocaleString()}</span><span className="text-[10px] text-amber-500/70">{((s.combat_power || 0)).toLocaleString()}⚔</span></div></div>)}</div> : <p className="text-xs text-slate-500">Sin tropas</p>}
                       </div>
                       <div><h4 className="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1"><Users className="w-3 h-3" /> Contribuidores</h4>
-                        {detail.contributors && detail.contributors.length > 0 ? <div className="space-y-1 max-h-32 overflow-y-auto">{detail.contributors.map((c: any) => <div key={c.user_id} className={`flex justify-between text-xs rounded px-2 py-1 ${c.user_id === profile?.id ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-slate-800/50'}`}><span className="text-slate-300 truncate mr-2">{c.username} {c.user_id === profile?.id ? '(tú)' : ''}</span><span className="text-slate-400 font-mono shrink-0">{c.total_ships.toLocaleString()} naves {(c.combat_power || 0) > 0 ? `· ${(c.combat_power || 0).toLocaleString()}⚔` : ''}</span></div>)}</div> : <p className="text-xs text-slate-500">Sin contribuidores</p>}
+                        {detail.contributors && detail.contributors.length > 0 ? <div className="space-y-1 max-h-32 overflow-y-auto">{detail.contributors.map((c: any) => <div key={c.user_id} className={`flex justify-between text-xs rounded px-2 py-1 ${c.user_id === profile?.id ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-slate-800/50'}`}><span className="text-slate-300 truncate mr-2">{c.username} {c.user_id === profile?.id ? '(tú)' : ''}</span><span className="text-slate-400 font-mono shrink-0">{c.total_ships.toLocaleString()} tropas {(c.combat_power || 0) > 0 ? `· ${(c.combat_power || 0).toLocaleString()}⚔` : ''}</span></div>)}</div> : <p className="text-xs text-slate-500">Sin contribuidores</p>}
                       </div>
                     </div>
 
@@ -223,8 +223,8 @@ export function FortressPage() {
                       <div className="mb-3 p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <div>
-                            <p className="text-xs text-cyan-300 font-semibold">Tus naves en esta fortaleza</p>
-                            <p className="text-[10px] text-slate-400">{myShips.toLocaleString()} naves · Poder: {(myContributor.combat_power || 0).toLocaleString()}</p>
+                            <p className="text-xs text-cyan-300 font-semibold">Tus tropas en esta fortaleza</p>
+                            <p className="text-[10px] text-slate-400">{myShips.toLocaleString()} tropas · Poder: {(myContributor.combat_power || 0).toLocaleString()}</p>
                           </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); handleRecall(fortress.galaxy); }}
@@ -270,7 +270,7 @@ export function FortressPage() {
                               {isLeader && (
                                 <button onClick={(e) => { e.stopPropagation(); setAbandonError(null); setAbandonTarget(fortress.galaxy); }}
                                   className="py-2.5 px-3 text-sm font-bold rounded-lg transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30"
-                                  title="Abandonar la fortaleza para poder capturar el Planeta del Tesoro"
+                                  title="Abandonar la fortaleza para poder capturar la Ciudad del Tesoro"
                                 >
                                   <LogOut className="w-4 h-4" /> Abandonar
                                 </button>
@@ -302,10 +302,10 @@ export function FortressPage() {
                     {strongholdLimitEnabled && fortress.owner_alliance_id !== userAllianceId && (myTreasure || (myFortress && myFortress.galaxy !== fortress.galaxy)) && (
                       <p className="text-[10px] text-amber-400/90 text-center mt-1.5 flex items-center justify-center gap-1">
                         <AlertTriangle className="w-3 h-3 shrink-0" />
-                        Puedes atacar, pero NO capturar: tu alianza ya controla {myTreasure ? 'el Planeta del Tesoro' : 'una Fortaleza'}.
+                        Puedes atacar, pero NO capturar: tu alianza ya controla {myTreasure ? 'la Ciudad del Tesoro' : 'una Fortaleza'}.
                       </p>
                     )}
-                    <p className="text-[10px] text-slate-500 text-center mt-1.5">Usa la página de Flotas para enviar ataques o refuerzos a [Galaxia {fortress.galaxy}, 250:8]</p>
+                    <p className="text-[10px] text-slate-500 text-center mt-1.5">Usa la página de Ejércitos para enviar ataques o refuerzos a [Continente {fortress.galaxy}, 250:8]</p>
                   </div>
                   );
                 })()}
@@ -324,12 +324,12 @@ export function FortressPage() {
               <h3 className="text-base font-bold text-white">Abandonar la Fortaleza</h3>
             </div>
             <p className="text-sm text-slate-300 mb-3">
-              Tu alianza dejará de controlar la Fortaleza de la <strong>Galaxia {abandonTarget}</strong> [{abandonTarget}:250:8] y quedará libre para cualquier otra alianza.
+              Tu alianza dejará de controlar la Fortaleza del <strong>Continente {abandonTarget}</strong> [{abandonTarget}:250:8] y quedará libre para cualquier otra alianza.
             </p>
             <ul className="text-xs text-slate-400 space-y-1 mb-3 list-disc list-inside">
-              <li>Todas las naves estacionadas <strong>regresan a los planetas principales</strong> de sus dueños.</li>
+              <li>Todas las tropas estacionadas <strong>regresan a las ciudades principales</strong> de sus dueños.</li>
               <li>Tu alianza dejará de recibir el reparto de la Fortaleza.</li>
-              <li>Después podrás capturar el <strong>Planeta del Tesoro</strong>.</li>
+              <li>Después podrás capturar la <strong>Ciudad del Tesoro</strong>.</li>
             </ul>
             <p className="text-xs text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2 mb-4">
               Esta acción es <strong>irreversible</strong>. Para recuperarla tendrías que volver a conquistarla.

@@ -304,7 +304,7 @@ export function GalaxyPage() {
       // Find closest phalanx moon in same galaxy for helpful message
       const sameGalaxyMoons = userMoonsPhalanx.filter(m => m.galaxy === targetGalaxy);
       if (sameGalaxyMoons.length === 0) {
-        alert(`${t.galaxy.phalanxOutOfRange}: ${t.galaxy.phalanxNoMoon} en galaxia ${targetGalaxy}`);
+        alert(`${t.galaxy.phalanxOutOfRange}: ${t.galaxy.phalanxNoMoon} en continente ${targetGalaxy}`);
       } else {
         const closest = sameGalaxyMoons.reduce((best, m) => {
           const dist = Math.abs(m.solar_system - targetSystem);
@@ -807,7 +807,7 @@ export function GalaxyPage() {
   const solarViewPlanets = useMemo(() => {
     return slots.map((slot) => ({
       position: slot.position,
-      name: slot.planet?.name || (slot.fortress ? '🏰 Fortaleza' : slot.treasurePlanet ? '💎 Planeta del Tesoro' : undefined),
+      name: slot.planet?.name || (slot.fortress ? '🏰 Fortaleza' : slot.treasurePlanet ? '💎 Ciudad del Tesoro' : undefined),
       isOwn: slot.planet?.user_id === currentPlanet?.user_id,
       isCurrentPlanet: slot.planet?.id === currentPlanet?.id,
       isCurrentMoon: !!slot.moon && slot.moon.id === currentPlanet?.id,
@@ -927,22 +927,22 @@ export function GalaxyPage() {
               <Moon className="w-3.5 h-3.5 text-gray-300" /> {moon.name}
             </p>
             <p className="text-[10px] text-gray-500">
-              {formatCoordinates(galaxy, system, slot.position)} · {es ? 'Luna' : 'Moon'}
+              {formatCoordinates(galaxy, system, slot.position)} · {es ? 'Castra de Diana' : 'Moon'}
               {isOwnMoon ? (es ? ' · tuya' : ' · yours') : ''}
             </p>
           </div>
           {isOwnMoon ? (
             isCurrent ? (
               <p className="px-3 py-2 text-xs text-gray-400">
-                {es ? 'Ya estás en esta luna. Cambia de planeta para enviarle flotas.' : 'You are on this moon. Switch planet to send fleets here.'}
+                {es ? 'Ya estás en esta Castra de Diana. Cambia de ciudad para enviarle ejércitos.' : 'You are on this moon. Switch planet to send fleets here.'}
               </p>
             ) : (
               <>
                 <button className={`${item} text-cyber-green hover:bg-cyber-green/10`} onClick={() => { close(); handleTransport(galaxy, system, slot.position, true); }}>
-                  <Package className="w-4 h-4" /> {es ? 'Transportar recursos a la luna' : 'Transport resources to moon'}
+                  <Package className="w-4 h-4" /> {es ? 'Transportar recursos a la Castra de Diana' : 'Transport resources to moon'}
                 </button>
                 <button className={`${item} text-teal-400 hover:bg-teal-500/10`} onClick={() => { close(); handleDeploy(galaxy, system, slot.position, true); }}>
-                  <Warehouse className="w-4 h-4" /> {es ? 'Desplegar flota en la luna' : 'Deploy fleet to moon'}
+                  <Warehouse className="w-4 h-4" /> {es ? 'Desplegar ejército en la Castra de Diana' : 'Deploy fleet to moon'}
                 </button>
               </>
             )
@@ -956,7 +956,7 @@ export function GalaxyPage() {
                 title={cannotSpy ? reason : undefined}
                 onClick={() => { close(); handleSpy(galaxy, system, slot.position, 'moon'); }}
               >
-                <Eye className="w-4 h-4" /> {es ? 'Espiar luna' : 'Spy moon'}
+                <Eye className="w-4 h-4" /> {es ? 'Espiar Castra de Diana' : 'Spy moon'}
                 {cannotSpy && <ShieldAlert className="w-3.5 h-3.5 ml-auto text-amber-400" />}
               </button>
               <button
@@ -965,7 +965,7 @@ export function GalaxyPage() {
                 title={isProtected ? reason : undefined}
                 onClick={() => { close(); handleAttack(galaxy, system, slot.position, true); }}
               >
-                <Rocket className="w-4 h-4" /> {es ? 'Atacar luna' : 'Attack moon'}
+                <Rocket className="w-4 h-4" /> {es ? 'Atacar Castra de Diana' : 'Attack moon'}
                 {isProtected && <ShieldAlert className="w-3.5 h-3.5 ml-auto text-amber-400" />}
               </button>
               {(isProtected || cannotSpy) && (
@@ -1005,7 +1005,7 @@ export function GalaxyPage() {
               label: 'Tesoro',
               sub: 'Botín',
               icon: '💎',
-              title: 'Planetas del Tesoro',
+              title: 'Ciudades del Tesoro',
               onClick: () => navigate('/game/treasure-planet'),
               grad: 'from-emerald-300 via-emerald-600 to-teal-900',
               edge: 'shadow-[0_5px_0_#134e4a,0_10px_22px_-6px_rgba(16,185,129,0.65)] hover:shadow-[0_7px_0_#134e4a,0_16px_30px_-6px_rgba(16,185,129,0.8)] active:shadow-[0_1px_0_#134e4a,0_4px_10px_-4px_rgba(16,185,129,0.6)]',
@@ -1280,7 +1280,7 @@ export function GalaxyPage() {
                               🚀
                             </div>
                             <div>
-                              <p className="text-sky-200 font-semibold">Batalla de Naves Galáctica</p>
+                              <p className="text-sky-200 font-semibold">Batalla de Tropas Galáctica</p>
                               <p className="text-xs text-gray-400">Duelos PvP 1 vs 1 apostando TUNG.</p>
                               <p className="text-xs text-gray-500">{formatCoordinates(galaxy, system, slot.position)}</p>
                             </div>
@@ -1497,7 +1497,7 @@ export function GalaxyPage() {
                               )}
                               {slot.fortress.total_ships > 0 && (
                                 <span className="ml-2 text-xs text-slate-400">
-                                  🛡️ {slot.fortress.total_ships.toLocaleString()} naves
+                                  🛡️ {slot.fortress.total_ships.toLocaleString()} tropas
                                 </span>
                               )}
                               <p className="text-xs text-gray-500">{coords}</p>
@@ -1510,7 +1510,7 @@ export function GalaxyPage() {
                               <span className="text-base">💎</span>
                             </div>
                             <div>
-                              <span className="text-yellow-300 text-sm font-semibold">Planeta del Tesoro</span>
+                              <span className="text-yellow-300 text-sm font-semibold">Ciudad del Tesoro</span>
                               {slot.treasurePlanet.owner_alliance_name ? (
                                 <span className="ml-2 text-xs text-yellow-200">
                                   [{slot.treasurePlanet.owner_alliance_tag}] {slot.treasurePlanet.owner_alliance_name}
@@ -1520,7 +1520,7 @@ export function GalaxyPage() {
                               )}
                               {slot.treasurePlanet.total_ships > 0 && (
                                 <span className="ml-2 text-xs text-slate-400">
-                                  🛡️ {slot.treasurePlanet.total_ships.toLocaleString()} naves
+                                  🛡️ {slot.treasurePlanet.total_ships.toLocaleString()} tropas
                                 </span>
                               )}
                               <p className="text-xs text-gray-500">{coords}</p>
@@ -1699,7 +1699,7 @@ export function GalaxyPage() {
                               <button
                                 onClick={() => handleAttack(galaxy, system, slot.position)}
                                 className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold animate-pulse transition-colors"
-                                title={language === 'es' ? 'Recuperar: destruye la flota del ocupante' : 'Recover: destroy the occupier fleet'}
+                                title={language === 'es' ? 'Recuperar: destruye el ejército del ocupante' : 'Recover: destroy the occupier fleet'}
                               >
                                 <Swords className="w-4 h-4" />
                                 <span className="hidden sm:inline">{language === 'es' ? 'Recuperar' : 'Recover'}</span>
@@ -1819,7 +1819,7 @@ export function GalaxyPage() {
                             <button
                               onClick={() => navigate('/game/treasure-planet')}
                               className="p-2 bg-yellow-500 rounded-lg hover:bg-yellow-400 text-black transition-colors"
-                              title="Atacar Planeta del Tesoro"
+                              title="Atacar Ciudad del Tesoro"
                             >
                               ⚔️
                             </button>

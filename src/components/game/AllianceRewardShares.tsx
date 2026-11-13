@@ -148,7 +148,7 @@ export function AllianceRewardShares() {
         <h3 className="font-orbitron text-lg text-white">Reparto de recompensas</h3>
       </div>
       <p className="text-sm text-gray-400 mb-4">
-        Fortalezas y Planeta del Tesoro. El porcentaje de cada miembro depende de su rango.
+        Fortalezas y Ciudad del Tesoro. El porcentaje de cada miembro depende de su rango.
         Todos tienen garantizado un minimo del {config.min_pct ?? MIN_PCT}%.
       </p>
 

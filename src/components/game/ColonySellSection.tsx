@@ -44,9 +44,9 @@ export function toColonyDeposits(row: DepositRow): ColonyDeposits {
 
 export function ColonyDepositsInfo({ deposits, compact }: { deposits: ColonyDeposits; compact?: boolean }) {
   const rows = [
-    { label: 'Metal', amount: deposits.metal, pct: deposits.metalPct },
-    { label: 'Cristal', amount: deposits.crystal, pct: deposits.crystalPct },
-    { label: 'Deuterio', amount: deposits.deuterium, pct: deposits.deuteriumPct },
+    { label: 'Hierro', amount: deposits.metal, pct: deposits.metalPct },
+    { label: 'Piedra', amount: deposits.crystal, pct: deposits.crystalPct },
+    { label: 'Comida', amount: deposits.deuterium, pct: deposits.deuteriumPct },
   ];
   if (rows.every((r) => r.amount === null)) return null;
   const barColor = (pct: number | null) =>
@@ -216,7 +216,7 @@ export function ColonySellSection({ isPlus, feePercent, disabled, onCreated, onE
           </div>
         </div>
       ) : colonies.length === 0 ? (
-        <p className="relative text-sm text-gray-400">No tienes colonias para vender (el planeta principal no se puede vender).</p>
+        <p className="relative text-sm text-gray-400">No tienes colonias para vender (la ciudad principal no se puede vender).</p>
       ) : (
         <div className="relative space-y-4">
           <div>
@@ -233,7 +233,7 @@ export function ColonySellSection({ isPlus, feePercent, disabled, onCreated, onE
                 );
                 return (
                   <option key={p.id} value={p.id} className="bg-space-800">
-                    {p.name} [{p.galaxy}:{p.solar_system}:{p.position}]{hasMoon ? ' + Luna' : ''}
+                    {p.name} [{p.galaxy}:{p.solar_system}:{p.position}]{hasMoon ? ' + Castra de Diana' : ''}
                   </option>
                 );
               })}
@@ -254,7 +254,7 @@ export function ColonySellSection({ isPlus, feePercent, disabled, onCreated, onE
                 </p>
                 {moon && (
                   <p className="text-indigo-300 text-xs flex items-center gap-1 mt-0.5">
-                    <Moon className="w-3 h-3" /> Incluye luna: {moon.name}
+                    <Moon className="w-3 h-3" /> Incluye Castra de Diana: {moon.name}
                   </p>
                 )}
               </div>
@@ -307,12 +307,12 @@ export function ColonySellSection({ isPlus, feePercent, disabled, onCreated, onE
 
           <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-300 space-y-1">
             <p className="flex items-center gap-1 font-semibold"><AlertCircle className="w-4 h-4" /> Importante</p>
-            <p>Al venderse, el comprador recibe la colonia con sus edificios{moon ? ' y tambien su luna' : ''}.</p>
-            <p>Las naves NO se incluyen en la venta: las naves de la colonia{moon ? ' y de su luna' : ''} se enviaran a tu planeta principal.</p>
-            <p>Los recursos almacenados tambien se envian a tu planeta principal. El comprador la recibe con los recursos en 0 y empezara a recaudar segun el nivel de sus minas.</p>
+            <p>Al venderse, el comprador recibe la colonia con sus edificios{moon ? ' y tambien su Castra de Diana' : ''}.</p>
+            <p>Las tropas NO se incluyen en la venta: las tropas de la colonia{moon ? ' y de su Castra de Diana' : ''} se enviaran a tu ciudad principal.</p>
+            <p>Los recursos almacenados tambien se envian a tu ciudad principal. El comprador la recibe con los recursos en 0 y empezara a recaudar segun el nivel de sus minas.</p>
             <p>Las defensas se destruyen al venderse la colonia.</p>
-            <p>No puede tener construcciones, investigaciones ni barraca en curso, ni flotas tuyas en camino hacia la colonia, para publicarla o venderse.</p>
-            <p>Las flotas que salieron de la colonia{moon ? ' o de su luna' : ''} y sigan en vuelo regresaran a tu planeta principal cuando se venda.</p>
+            <p>No puede tener construcciones, investigaciones ni barraca en curso, ni ejércitos tuyos en camino hacia la colonia, para publicarla o venderse.</p>
+            <p>Los ejércitos que salieron de la colonia{moon ? ' o de su Castra de Diana' : ''} y sigan en marcha regresaran a tu ciudad principal cuando se venda.</p>
             <p>La oferta caduca a las 24h (72h si eres VIP) como el resto del mercado y puedes cancelarla en "Mis listados".</p>
           </div>
 
@@ -323,7 +323,7 @@ export function ColonySellSection({ isPlus, feePercent, disabled, onCreated, onE
               onChange={(e) => setConfirmed(e.target.checked)}
               className="mt-0.5"
             />
-            Entiendo que perdere esta colonia{moon ? ' y su luna' : ''} y sus defensas cuando se venda; mis naves y recursos iran a mi planeta principal.
+            Entiendo que perdere esta colonia{moon ? ' y su Castra de Diana' : ''} y sus defensas cuando se venda; mis tropas y recursos iran a mi ciudad principal.
           </label>
 
           <button
