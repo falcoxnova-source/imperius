@@ -113,6 +113,17 @@ interface BattleReport {
     reason?: string;
   };
   building_damage?: { damaged?: boolean; building_name?: string; new_level?: number } | null;
+  heroes?: Array<{
+    side: 'attacker' | 'defender';
+    owner?: string;
+    name?: string;
+    level?: number;
+    hp_before?: number;
+    hp_after?: number;
+    hp_max?: number;
+    destroyed?: boolean;
+    xp_gained?: number;
+  }>;
 }
 
 interface ExpeditionReport {
@@ -1129,6 +1140,40 @@ function BattleReportView({ body }: { body: string }) {
           lossCrystal={defLoss.crystal}
         />
       </div>
+
+      {/* ===== Heroes en batalla ===== */}
+      {Array.isArray(report.heroes) && report.heroes.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {report.heroes.map((h, i) => {
+            const max = Math.max(1, h.hp_max || 0);
+            const after = Math.max(0, h.hp_after || 0);
+            const pct = Math.min(100, (after / max) * 100);
+            const isAtk = h.side === 'attacker';
+            return (
+              <div key={i} className={`rounded-lg p-3 border ${isAtk ? 'border-cyber-blue/40 bg-cyber-blue/5' : 'border-cyber-orange/40 bg-cyber-orange/5'}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className={`text-sm font-semibold ${isAtk ? 'text-cyber-blue' : 'text-cyber-orange'}`}>
+                    {h.name || 'Héroe Imperial'} Nv {h.level ?? '?'}
+                  </div>
+                  <div className="text-[11px] text-gray-400 truncate">
+                    {isAtk ? 'Atacante' : 'Defensor'}{h.owner ? ` - ${h.owner}` : ''}
+                  </div>
+                </div>
+                <div className="mt-2 h-2 rounded bg-space-900 overflow-hidden">
+                  <div className={`h-2 ${pct > 50 ? 'bg-cyber-green' : pct > 20 ? 'bg-cyber-yellow' : 'bg-cyber-red'}`} style={{ width: `${pct}%` }} />
+                </div>
+                <div className="mt-1 flex items-center justify-between text-xs">
+                  <span className="text-gray-300">
+                    Salud: {formatNumber(h.hp_before || 0)} → <span className="text-white font-orbitron">{formatNumber(after)}</span> / {formatNumber(max)}
+                    {h.destroyed && <span className="text-cyber-red"> (herido)</span>}
+                  </span>
+                  {(h.xp_gained || 0) > 0 && <span className="text-cyber-green">+{formatNumber(h.xp_gained || 0)} XP</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ===== Desarrollo del combate ===== */}
       {roundsData.length > 0 && (

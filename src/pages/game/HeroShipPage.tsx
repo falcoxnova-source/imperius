@@ -27,6 +27,7 @@ interface HeroShip {
   weapons_tech_level?: number; armour_tech_level?: number; shielding_tech_level?: number;
   research_attack?: number; research_defense?: number; research_shield?: number;
   regen_full_hours?: number;
+  in_army?: boolean;
 }
 
 interface Expedition {
@@ -61,9 +62,9 @@ interface InventoryItem {
 }
 
 const attrs = [
-  { key: 'total_attack' as const, baseKey: 'attack_points' as const, label: 'Ataque', icon: Swords, color: 'text-red-400', barColor: 'from-red-500 to-orange-400', desc: '+1% daño en batalla' },
-  { key: 'total_defense' as const, baseKey: 'defense_points' as const, label: 'Defensa', icon: Shield, color: 'text-blue-400', barColor: 'from-blue-500 to-cyan-400', desc: '-0.5% bajas propias' },
-  { key: 'total_shield' as const, baseKey: 'shield_points' as const, label: 'Escudo', icon: Gem, color: 'text-cyan-400', barColor: 'from-cyan-500 to-teal-400', desc: '+20.000 absorción por asalto' },
+  { key: 'total_attack' as const, baseKey: 'attack_points' as const, label: 'Ataque', icon: Swords, color: 'text-red-400', barColor: 'from-red-500 to-orange-400', desc: '+50 de daño en batalla' },
+  { key: 'total_defense' as const, baseKey: 'defense_points' as const, label: 'Defensa', icon: Shield, color: 'text-blue-400', barColor: 'from-blue-500 to-cyan-400', desc: '+500 de casco en batalla' },
+  { key: 'total_shield' as const, baseKey: 'shield_points' as const, label: 'Escudo', icon: Gem, color: 'text-cyan-400', barColor: 'from-cyan-500 to-teal-400', desc: '+20 de escudo en batalla' },
   { key: 'total_speed' as const, baseKey: 'speed_points' as const, label: 'Marcha', icon: Flame, color: 'text-yellow-400', barColor: 'from-yellow-500 to-amber-400', desc: '+1% velocidad de marcha' },
 ];
 
@@ -486,6 +487,12 @@ function HeroShipPageInner() {
       {/* TAB: STATS */}
       {tab === 'stats' && (
         <>
+          {ship.in_army && (
+            <div className="flex items-center gap-2 rounded-xl border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              <Swords className="w-4 h-4 text-amber-300" />
+              En ataque: tu Héroe va con un ejército. Volverá cuando regrese la tropa.
+            </div>
+          )}
           {/* HP + XP Bars */}
           <div className="rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-900/80 border border-slate-700/50 shadow-lg p-4 space-y-4">
             <div>

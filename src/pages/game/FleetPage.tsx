@@ -66,6 +66,7 @@ import { formatNumber, formatTime, formatTimeRemaining, formatCoordinates } from
 import type { MissionType } from '../../types/game';
 import { useI18n, translateShipName, translatePlanetName, getShipImage } from '../../lib/i18n';
 import { getBattleEffectStyle } from '../../lib/battleEffects';
+import { useHeroAccess } from '../../lib/casino';
 
 interface IncomingAttack {
   fleet_id: string;
@@ -112,6 +113,28 @@ export function FleetPage() {
   const [defendBlock, setDefendBlock] = useState<{ reason: string; host?: string; myPts?: number; hostPts?: number } | null>(null);
   const [checkingProtection, setCheckingProtection] = useState(false);
   const [incomingAttacks, setIncomingAttacks] = useState<IncomingAttack[]>([]);
+  // Héroe Imperial acompañando un ataque (validado en el servidor)
+  const heroAccess = useHeroAccess(profile?.id);
+  const [withHero, setWithHero] = useState(false);
+  const [heroInfo, setHeroInfo] = useState<{ level: number; hp: number; hp_max: number; in_army?: boolean; repair_until?: string | null } | null>(null);
+  const heroTargetAllowed = mission === 'attack' && !(target.system === 250 && (target.position === 8 || target.position === 9));
+  const heroBlockReason = !heroInfo
+    ? null
+    : heroInfo.in_army
+    ? 'Ya está con otro ejército'
+    : heroInfo.hp <= 0
+    ? 'Está herido (0 HP). Cúralo primero'
+    : heroInfo.repair_until && new Date(heroInfo.repair_until).getTime() > Date.now()
+    ? 'Está en reparación'
+    : null;
+  const sendWithHero = withHero && heroTargetAllowed && !!heroInfo && !heroBlockReason;
+
+  useEffect(() => {
+    if (!heroAccess || !profile || step !== 3 || mission !== 'attack') return;
+    supabase.rpc('get_hero_ship', { p_user_id: profile.id }).then(({ data }) => {
+      if (data) setHeroInfo(data as { level: number; hp: number; hp_max: number; in_army?: boolean; repair_until?: string | null });
+    });
+  }, [heroAccess, profile, step, mission]);
 
   // Fetch incoming attacks periodically
   useEffect(() => {
@@ -753,7 +776,7 @@ export function FleetPage() {
         }));
 
       const { data, error } = await rpcWithRetry<{ success: boolean; error?: string }>(
-        'secure_send_fleet',
+        sendWithHero ? 'send_fleet_with_hero' : 'secure_send_fleet',
         {
           p_origin_planet_id: currentPlanet.id,
           p_target_galaxy: target.galaxy,
@@ -789,6 +812,8 @@ export function FleetPage() {
       setSelectedShips({});
       setCargo({ metal: 0, crystal: 0, deuterium: 0 });
       setTargetType('planet');
+      setWithHero(false);
+      setHeroInfo(null);
     } catch (error) {
       console.error('Error sending fleet:', error);
       setFleetError(t.fleet.cannotSendFleet);
@@ -1993,6 +2018,31 @@ export function FleetPage() {
             )}
 
             {['attack', 'destroy'].includes(mission) && <PeaceShieldAttackWarning />}
+
+            {heroAccess && heroTargetAllowed && heroInfo && (
+              <label
+                className={`flex items-center gap-3 p-3 mb-6 rounded-lg border ${
+                  heroBlockReason ? 'border-slate-600/40 bg-slate-800/40 cursor-not-allowed' : 'border-amber-400/40 bg-amber-500/10 cursor-pointer'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 accent-amber-400"
+                  checked={sendWithHero}
+                  disabled={!!heroBlockReason || sendingFleet}
+                  onChange={(e) => setWithHero(e.target.checked)}
+                />
+                <Swords className="w-5 h-5 text-amber-300" />
+                <span className="text-sm">
+                  <span className="text-amber-200 font-semibold">
+                    Llevar al Héroe (Nv {heroInfo.level}, HP {Math.round(heroInfo.hp)}/{heroInfo.hp_max})
+                  </span>
+                  <span className="block text-xs text-gray-400">
+                    {heroBlockReason ?? 'Lucha como una unidad más. Si cae a 0 HP queda herido, no muere. Gana XP con las bajas enemigas.'}
+                  </span>
+                </span>
+              </label>
+            )}
 
             <div className="flex justify-between">
               <button onClick={() => setStep(2)} className="btn-secondary" disabled={sendingFleet}>
