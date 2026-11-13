@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { SEO, schemas } from '../../components/ui/SEO';
 
-const KEYWORDS = 'roadmap Xnova, hoja de ruta Xnova, novedades juego, próximas características, actualizaciones Xnova, xnova ogame';
+const KEYWORDS = 'roadmap Imperium, hoja de ruta Imperium, novedades juego, próximas características, actualizaciones Imperium, xnova ogame';
 
 const roadmapItems = [
   {
@@ -59,8 +59,8 @@ export function RoadmapPage() {
   return (
     <>
       <SEO
-        title="Roadmap de Xnova | Hoja de Ruta y Próximas Novedades"
-        description="Conoce la hoja de ruta de Xnova, el juego de estrategia espacial play-to-earn. Descubre las próximas características, actualizaciones y novedades planificadas."
+        title="Roadmap de Imperium | Hoja de Ruta y Próximas Novedades"
+        description="Conoce la hoja de ruta de Imperium, el juego de estrategia espacial play-to-earn. Descubre las próximas características, actualizaciones y novedades planificadas."
         keywords={KEYWORDS}
         schema={schemas.organization}
       />
@@ -70,8 +70,8 @@ export function RoadmapPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/navbar-logo.png" alt="Xnova" className="h-10 w-10 object-contain" loading="lazy" />
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Orbitron, sans-serif' }}>XNOVA</span>
+                <img src="/navbar-logo.png" alt="Imperium" className="h-10 w-10 object-contain" loading="lazy" />
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Orbitron, sans-serif' }}>IMPERIUM</span>
               </Link>
               <div className="flex items-center gap-4">
                 <Link to="/blog" className="text-sm text-slate-300 hover:text-cyan-400">Blog</Link>
@@ -95,7 +95,7 @@ export function RoadmapPage() {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-              Conoce las próximas características y actualizaciones planificadas para Xnova.
+              Conoce las próximas características y actualizaciones planificadas para Imperium.
               Este roadmap es nuestra visión y puede cambiar según el feedback de la comunidad.
             </p>
           </div>
@@ -167,7 +167,7 @@ export function RoadmapPage() {
               <span>·</span>
               <Link to="/blog" className="hover:text-cyan-400">Blog</Link>
             </div>
-            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Xnova. Todos los derechos reservados.</p>
+            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Imperium. Todos los derechos reservados.</p>
           </div>
         </footer>
       </div>

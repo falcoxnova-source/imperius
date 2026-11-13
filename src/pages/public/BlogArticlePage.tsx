@@ -17,17 +17,17 @@ interface ArticleData {
 
 const articles: Record<string, ArticleData> = {
   'novedades-xnova-octubre-2026': {
-    title: 'Novedades de Xnova – Octubre 2026: Casino, Batalla de Naves, Apuestas Deportivas y Más',
+    title: 'Novedades de Imperium – Octubre 2026: Casino, Batalla de Naves, Apuestas Deportivas y Más',
     description:
-      'Todas las novedades de Xnova en octubre 2026: Casino Galáctico, Batalla de Naves PvP, apuestas de fútbol, Fortalezas, Planeta del Tesoro, asistente IA NOVA y alertas en Telegram.',
+      'Todas las novedades de Imperium en octubre 2026: Casino Galáctico, Batalla de Naves PvP, apuestas de fútbol, Fortalezas, Planeta del Tesoro, asistente IA NOVA y alertas en Telegram.',
     date: '2026-10-08',
     author: 'Carlos Mendoza',
     category: 'Novedades',
     readTime: '7 min',
     image: '/logo-512.png',
     keywords:
-      'novedades Xnova, actualización Xnova, Xnova octubre 2026, casino crypto, batalla de naves online, apuestas deportivas crypto, juego tipo OGame novedades',
-    content: `Octubre llega cargado de contenido nuevo en Xnova. Además de la estrategia espacial tipo OGame de siempre (minas, flotas, alianzas y mercado P2P), el universo suma una zona de juegos completa, nuevas formas de competir entre jugadores y herramientas que te avisan de lo que pasa en tu imperio aunque no estés conectado.
+      'novedades Imperium, actualización Imperium, Imperium octubre 2026, casino crypto, batalla de naves online, apuestas deportivas crypto, juego tipo OGame novedades',
+    content: `Octubre llega cargado de contenido nuevo en Imperium. Además de la estrategia espacial tipo OGame de siempre (minas, flotas, alianzas y mercado P2P), el universo suma una zona de juegos completa, nuevas formas de competir entre jugadores y herramientas que te avisan de lo que pasa en tu imperio aunque no estés conectado.
 
 ## La Nueva Zona de Juegos en el Sistema 3:250
 
@@ -47,7 +47,7 @@ Los números aleatorios se generan en el servidor y cada juego tiene su propio r
 
 ## Batalla de Naves: Hundir la Flota PvP
 
-El clásico hundir la flota llega a Xnova en formato jugador contra jugador. Creas una sala pública o privada, colocas tus 6 naves en un tablero de 10x10 y disparas por turnos hasta hundir la flota rival. El ganador cobra 1,8 veces su apuesta y cada día a las 00:00 UTC se reparte un pool diario entre los 5 mejores del ranking. Si quieres aprender sin arriesgar nada, el modo práctica contra la IA es totalmente gratis.
+El clásico hundir la flota llega a Imperium en formato jugador contra jugador. Creas una sala pública o privada, colocas tus 6 naves en un tablero de 10x10 y disparas por turnos hasta hundir la flota rival. El ganador cobra 1,8 veces su apuesta y cada día a las 00:00 UTC se reparte un pool diario entre los 5 mejores del ranking. Si quieres aprender sin arriesgar nada, el modo práctica contra la IA es totalmente gratis.
 
 ## Apuestas Deportivas de Fútbol
 
@@ -72,17 +72,17 @@ Regístrate gratis en falcoxnova.com, entra en la vista de Galaxia y visita el s
   },
 
   'fortalezas-alianza-planeta-tesoro-xnova': {
-    title: 'Fortalezas de Alianza y Planeta del Tesoro en Xnova: Guía Completa',
+    title: 'Fortalezas de Alianza y Planeta del Tesoro en Imperium: Guía Completa',
     description:
-      'Cómo atacar, capturar y defender las Fortalezas (250:8) y el Planeta del Tesoro (250:9) en Xnova. Requisitos, refuerzos, avisos de ataque y pools de premios mensuales.',
+      'Cómo atacar, capturar y defender las Fortalezas (250:8) y el Planeta del Tesoro (250:9) en Imperium. Requisitos, refuerzos, avisos de ataque y pools de premios mensuales.',
     date: '2026-10-08',
     author: 'Carlos Mendoza',
     category: 'Estrategia',
     readTime: '7 min',
     image: '/logo-512.png',
     keywords:
-      'fortaleza alianza Xnova, planeta del tesoro Xnova, conquistar fortaleza OGame, contenido de alianza, pool de alianza, estrategia alianzas juego espacial',
-    content: `Las Fortalezas de Alianza y el Planeta del Tesoro son el contenido más competitivo de Xnova. Son puntos fijos del mapa que las alianzas se disputan para controlar y que dan acceso a pools de premios que se reparten cada mes.
+      'fortaleza alianza Imperium, planeta del tesoro Imperium, conquistar fortaleza OGame, contenido de alianza, pool de alianza, estrategia alianzas juego espacial',
+    content: `Las Fortalezas de Alianza y el Planeta del Tesoro son el contenido más competitivo de Imperium. Son puntos fijos del mapa que las alianzas se disputan para controlar y que dan acceso a pools de premios que se reparten cada mes.
 
 ## Dónde Están
 
@@ -122,17 +122,17 @@ Existe un Pool de Fortaleza y un Pool del Planeta del Tesoro. Se reparten mensua
   },
 
   'batalla-de-naves-online-xnova': {
-    title: 'Batalla de Naves en Xnova: Juega a Hundir la Flota Online y Gana TUNG',
+    title: 'Batalla de Naves en Imperium: Juega a Hundir la Flota Online y Gana TUNG',
     description:
-      'Guía de la Batalla de Naves de Xnova: hundir la flota online PvP con apuestas en TUNG, pool diario Top 5, modo práctica gratis contra la IA y consejos para ganar.',
+      'Guía de la Batalla de Naves de Imperium: hundir la flota online PvP con apuestas en TUNG, pool diario Top 5, modo práctica gratis contra la IA y consejos para ganar.',
     date: '2026-10-08',
     author: 'Ana Torres',
     category: 'Guías',
     readTime: '6 min',
     image: '/logo-512.png',
     keywords:
-      'hundir la flota online, batalla naval online, batalla de naves crypto, battleship online apuestas, hundir la flota multijugador, juego batalla naval gana dinero, Xnova',
-    content: `La Batalla de Naves es la versión de Xnova del clásico hundir la flota: dos jugadores, dos tableros y una apuesta en TUNG. Se juega desde el planeta 3:250:6 de la Galaxia o desde el acceso directo de la cabecera de la vista de Galaxia.
+      'hundir la flota online, batalla naval online, batalla de naves crypto, battleship online apuestas, hundir la flota multijugador, juego batalla naval gana dinero, Imperium',
+    content: `La Batalla de Naves es la versión de Imperium del clásico hundir la flota: dos jugadores, dos tableros y una apuesta en TUNG. Se juega desde el planeta 3:250:6 de la Galaxia o desde el acceso directo de la cabecera de la vista de Galaxia.
 
 ## Cómo Funciona la Apuesta
 
@@ -183,17 +183,17 @@ Con el botón Entrenar contra la IA puedes jugar sin apostar nada. No suma ranki
   },
 
   'casino-galactico-xnova-ruleta-tragamonedas-dados': {
-    title: 'Casino Galáctico de Xnova: Ruleta, Tragamonedas, Dados, Lotería y Rifa con TUNG',
+    title: 'Casino Galáctico de Imperium: Ruleta, Tragamonedas, Dados, Lotería y Rifa con TUNG',
     description:
-      'Cómo funciona el Casino Galáctico de Xnova: ruleta europea, tragamonedas, dados Sic Bo, lotería semanal y rifa. Premios, multiplicadores, límites y consejos.',
+      'Cómo funciona el Casino Galáctico de Imperium: ruleta europea, tragamonedas, dados Sic Bo, lotería semanal y rifa. Premios, multiplicadores, límites y consejos.',
     date: '2026-10-08',
     author: 'María García',
     category: 'Guías',
     readTime: '8 min',
     image: '/logo-512.png',
     keywords:
-      'casino crypto, ruleta crypto, tragamonedas crypto, dados sic bo online, lotería crypto, rifa online, casino con tokens, Xnova casino',
-    content: `El Casino Galáctico está en el planeta 3:250:10 y es el centro de juegos de Xnova. Desde ahí se entra a la Ruleta, las Tragamonedas, los Dados, la Lotería y la Rifa. Está abierto a todos los jugadores y usa el saldo TUNG que ya tienes en el juego.
+      'casino crypto, ruleta crypto, tragamonedas crypto, dados sic bo online, lotería crypto, rifa online, casino con tokens, Imperium casino',
+    content: `El Casino Galáctico está en el planeta 3:250:10 y es el centro de juegos de Imperium. Desde ahí se entra a la Ruleta, las Tragamonedas, los Dados, la Lotería y la Rifa. Está abierto a todos los jugadores y usa el saldo TUNG que ya tienes en el juego.
 
 ## Reglas Comunes
 
@@ -253,22 +253,22 @@ Cada rifa tiene premios como naves, planos de naves, cajas, oficiales, VIP o TUN
 
 ## Juega con Cabeza
 
-La casa retiene un 20% en cada apuesta, así que a largo plazo el casino es entretenimiento, no una forma de ingresos. Apuesta solo el TUNG que estés dispuesto a perder. Para generar ingresos de forma constante, la vía principal de Xnova sigue siendo producir recursos y venderlos en el mercado P2P.`,
+La casa retiene un 20% en cada apuesta, así que a largo plazo el casino es entretenimiento, no una forma de ingresos. Apuesta solo el TUNG que estés dispuesto a perder. Para generar ingresos de forma constante, la vía principal de Imperium sigue siendo producir recursos y venderlos en el mercado P2P.`,
     relatedPosts: ['novedades-xnova-octubre-2026', 'batalla-de-naves-online-xnova', 'apuestas-deportivas-futbol-xnova'],
   },
 
   'apuestas-deportivas-futbol-xnova': {
-    title: 'Apuestas Deportivas de Fútbol en Xnova: Sistema Parimutuel con TUNG',
+    title: 'Apuestas Deportivas de Fútbol en Imperium: Sistema Parimutuel con TUNG',
     description:
-      'Apuesta a la Premier League, LaLiga, Serie A, Bundesliga, Ligue 1 y Champions en Xnova. Cómo funciona el sistema parimutuel 1X2, ejemplos de pago y devoluciones.',
+      'Apuesta a la Premier League, LaLiga, Serie A, Bundesliga, Ligue 1 y Champions en Imperium. Cómo funciona el sistema parimutuel 1X2, ejemplos de pago y devoluciones.',
     date: '2026-10-08',
     author: 'Carlos Mendoza',
     category: 'Guías',
     readTime: '6 min',
     image: '/logo-512.png',
     keywords:
-      'apuestas deportivas crypto, apuestas fútbol crypto, apuestas parimutuel, apostar LaLiga crypto, apostar Champions con criptomonedas, apuestas 1X2, Xnova estadio',
-    content: `El Estadio de Xnova (planeta 3:250:4) te permite apostar TUNG a partidos de fútbol reales de la Premier League, LaLiga, Serie A, Bundesliga, Ligue 1 y Champions League.
+      'apuestas deportivas crypto, apuestas fútbol crypto, apuestas parimutuel, apostar LaLiga crypto, apostar Champions con criptomonedas, apuestas 1X2, Imperium estadio',
+    content: `El Estadio de Imperium (planeta 3:250:4) te permite apostar TUNG a partidos de fútbol reales de la Premier League, LaLiga, Serie A, Bundesliga, Ligue 1 y Champions League.
 
 ## El Mercado 1X2
 
@@ -280,7 +280,7 @@ Cuenta el resultado a los 90 minutos, sin prórroga ni penaltis.
 
 ## Qué Es el Sistema Parimutuel
 
-En Xnova no hay cuotas fijas de la casa. Todo lo apostado a un partido forma un bote. Cuando termina, quienes acertaron se reparten el dinero de quienes fallaron, en proporción a lo que apostó cada uno. La comisión es el 20% del bote total, pero nunca más que el dinero de los perdedores, así que si aciertas nunca pierdes tu apuesta. La cuota que ves es estimada y cambia hasta el cierre según lo que apueste la gente.
+En Imperium no hay cuotas fijas de la casa. Todo lo apostado a un partido forma un bote. Cuando termina, quienes acertaron se reparten el dinero de quienes fallaron, en proporción a lo que apostó cada uno. La comisión es el 20% del bote total, pero nunca más que el dinero de los perdedores, así que si aciertas nunca pierdes tu apuesta. La cuota que ves es estimada y cambia hasta el cierre según lo que apueste la gente.
 
 ## Ejemplo de Pago
 
@@ -329,11 +329,11 @@ Como el sistema es parimutuel, apostar al favorito suele pagar poco porque mucha
 
 El modelo Play-to-Earn (P2E) ha revolucionado la industria del gaming. A diferencia de los juegos tradicionales donde gastas dinero sin retorno, en los juegos P2E tú eres dueño de tus activos digitales y ganas tokens con valor real.
 
-Xnova lleva esto al siguiente nivel: combina la profundidad estratégica de juegos clásicos como OGame con recompensas en criptomonedas reales. Construyes tu imperio, produces recursos gratis y los vendes en el mercado a cambio de tokens TUNG.
+Imperium lleva esto al siguiente nivel: combina la profundidad estratégica de juegos clásicos como OGame con recompensas en criptomonedas reales. Construyes tu imperio, produces recursos gratis y los vendes en el mercado a cambio de tokens TUNG.
 
 ## Métodos para Ganar Criptomonedas Jugando
 
-### 1. Juegos de Estrategia con Recompensas (Como Xnova)
+### 1. Juegos de Estrategia con Recompensas (Como Imperium)
 
 Los juegos de estrategia ofrecen las mejores oportunidades de ganancia porque:
 
@@ -344,11 +344,11 @@ Los juegos de estrategia ofrecen las mejores oportunidades de ganancia porque:
 
 ### 2. Completa Misiones y Desafíos Diarios
 
-En Xnova, cada día trae nuevas misiones. Completarlas te da tokens extra. Las misiones premium ofrecen recompensas aún mayores sin costo alguno.
+En Imperium, cada día trae nuevas misiones. Completarlas te da tokens extra. Las misiones premium ofrecen recompensas aún mayores sin costo alguno.
 
 ### 3. Sistema de Referidos
 
-Invitar amigos es una de las formas más rentables de ganar. En Xnova ganas un porcentaje de lo que generan tus referidos, creando un ingreso pasivo que crece con tu red.
+Invitar amigos es una de las formas más rentables de ganar. En Imperium ganas un porcentaje de lo que generan tus referidos, creando un ingreso pasivo que crece con tu red.
 
 ### 4. Vender recursos en el mercado P2P (la forma más rentable)
 
@@ -356,15 +356,15 @@ Esta es la principal vía para generar ingresos gratis: tus minas producen metal
 
 ## ¿Cuánto Puedes Ganar Realmente?
 
-Los jugadores activos de Xnova generan ingresos de forma constante gracias a la venta de recursos. Cuanto mayor sea el nivel de tus minas y más constante tu comercio, mayores serán tus ganancias en tokens TUNG.
+Los jugadores activos de Imperium generan ingresos de forma constante gracias a la venta de recursos. Cuanto mayor sea el nivel de tus minas y más constante tu comercio, mayores serán tus ganancias en tokens TUNG.
 
 ## ¿Es Seguro? ¿Es Legal?
 
-Sí. Xnova opera con transparencia total: los movimientos del token TUNG son verificables en la blockchain de BSC. Puedes comprobarlo tú mismo en el explorador de bloques.
+Sí. Imperium opera con transparencia total: los movimientos del token TUNG son verificables en la blockchain de BSC. Puedes comprobarlo tú mismo en el explorador de bloques.
 
 ## Cómo Empezar Hoy
 
-1. Regístrate gratis en Xnova (30 segundos)
+1. Regístrate gratis en Imperium (30 segundos)
 2. Completa el tutorial inicial
 3. Empieza a construir tu imperio
 4. Acumula tokens TUNG automáticamente
@@ -375,17 +375,17 @@ No necesitas wallet para empezar. No necesitas depositar. Solo jugar y ganar.`,
   },
 
   'falco-x-vs-ogame-comparativa': {
-    title: 'Xnova vs OGame: ¿Cuál es el Mejor Juego de Estrategia Espacial?',
+    title: 'Imperium vs OGame: ¿Cuál es el Mejor Juego de Estrategia Espacial?',
     description:
-      'Comparativa completa entre Xnova y OGame: mecánicas, gráficos, comunidad y la gran diferencia, que en Xnova vendes tus recursos en el mercado y ganas criptomonedas reales.',
+      'Comparativa completa entre Imperium y OGame: mecánicas, gráficos, comunidad y la gran diferencia, que en Imperium vendes tus recursos en el mercado y ganas criptomonedas reales.',
     date: '2026-05-18',
     author: 'María García',
     category: 'Comparativas',
     readTime: '6 min',
     image: '/logo-512.png',
     keywords:
-      'Xnova vs OGame, xnova ogame, alternativa a OGame, OGame con crypto, mejor juego estrategia espacial, OGame ganar dinero, Xnova',
-    content: `OGame es un clásico. Durante más de 20 años ha sido el referente de los juegos de estrategia espacial por navegador. Xnova recoge ese testigo y le añade algo que OGame nunca tuvo: una economía real.
+      'Imperium vs OGame, xnova ogame, alternativa a OGame, OGame con crypto, mejor juego estrategia espacial, OGame ganar dinero, Imperium',
+    content: `OGame es un clásico. Durante más de 20 años ha sido el referente de los juegos de estrategia espacial por navegador. Imperium recoge ese testigo y le añade algo que OGame nunca tuvo: una economía real.
 
 ## Similitudes: Lo Mejor de Ambos Mundos
 
@@ -404,13 +404,13 @@ Ambos juegos comparten las mecánicas que hicieron grande a OGame:
 La diferencia fundamental es simple pero revolucionaria:
 
 - **OGame**: Juegas por diversión. Tus logros se quedan en el juego.
-- **Xnova**: Juegas por diversión Y generas ingresos gratis vendiendo tus recursos en el mercado. Los tokens TUNG que recibes puedes retirarlos a tu wallet.
+- **Imperium**: Juegas por diversión Y generas ingresos gratis vendiendo tus recursos en el mercado. Los tokens TUNG que recibes puedes retirarlos a tu wallet.
 
-En otras palabras, Xnova toma todo lo bueno de OGame y le añade una capa de recompensas financieras reales.
+En otras palabras, Imperium toma todo lo bueno de OGame y le añade una capa de recompensas financieras reales.
 
 ## Comparativa Rápida
 
-| Característica | OGame | Xnova |
+| Característica | OGame | Imperium |
 |---------------|-------|------------------|
 | Precio | Gratis | Gratis |
 | Gana dinero real | ❌ No | ✅ Sí (tokens TUNG) |
@@ -422,7 +422,7 @@ En otras palabras, Xnova toma todo lo bueno de OGame y le añade una capa de rec
 
 ## Veredicto Final
 
-Si buscas un juego de estrategia espacial donde tu tiempo y tu habilidad se traduzcan en valor real, Xnova es la respuesta. OGame seguirá siendo un clásico, pero el futuro pasa por poder vender lo que produces.`,
+Si buscas un juego de estrategia espacial donde tu tiempo y tu habilidad se traduzcan en valor real, Imperium es la respuesta. OGame seguirá siendo un clásico, pero el futuro pasa por poder vender lo que produces.`,
     relatedPosts: ['como-ganar-criptomonedas-jugando-gratis', 'guia-principiantes-falco-x', 'blockchain-gaming-que-es-como-funciona'],
   },
 
@@ -439,7 +439,7 @@ Si buscas un juego de estrategia espacial donde tu tiempo y tu habilidad se trad
       'mejores juegos play to earn, top P2E 2026, juegos para ganar crypto gratis, ranking juegos blockchain, mejores juegos NFT gratis, play to earn sin inversión',
     content: `El mercado de juegos play-to-earn ha madurado mucho en 2026. Ya no necesitas invertir cientos de dólares para empezar. Aquí están los 10 mejores juegos P2E completamente gratuitos.
 
-## #1 - Xnova ⭐
+## #1 - Imperium ⭐
 
 **Género**: Estrategia espacial MMO tipo OGame
 **Cómo se gana**: vendiendo en el mercado los recursos que producen tus minas
@@ -447,7 +447,7 @@ Si buscas un juego de estrategia espacial donde tu tiempo y tu habilidad se trad
 
 ## #2 a #10 - Próximamente
 
-Estamos preparando el ranking completo. Mientras tanto, te contamos por qué Xnova lidera la lista:
+Estamos preparando el ranking completo. Mientras tanto, te contamos por qué Imperium lidera la lista:
 
 - **Sin barrera de entrada**: No necesitas comprar NFTs ni tokens para empezar
 - **Ganancias pasivas**: Tus edificios generan recompensas incluso cuando no estás jugando
@@ -464,21 +464,21 @@ Al elegir un juego play-to-earn, considera:
 3. **¿Es divertido?** Si el juego no es bueno, no durarás aunque pague
 4. **¿Comunidad activa?** Una comunidad muerta = un token sin valor
 
-Xnova cumple con creces en todos estos aspectos.`,
+Imperium cumple con creces en todos estos aspectos.`,
     relatedPosts: ['como-ganar-criptomonedas-jugando-gratis', 'falco-x-vs-ogame-comparativa', 'ganar-dinero-jugando-desde-casa'],
   },
 
   'guia-principiantes-falco-x': {
-    title: 'Guía para Principiantes en Xnova: Tutorial Completo',
+    title: 'Guía para Principiantes en Imperium: Tutorial Completo',
     description:
-      'Todo lo que necesitas para empezar en Xnova: crear tu cuenta, construir minas, vender recursos en el mercado y hacer tu primer retiro de criptomonedas.',
+      'Todo lo que necesitas para empezar en Imperium: crear tu cuenta, construir minas, vender recursos en el mercado y hacer tu primer retiro de criptomonedas.',
     date: '2026-05-12',
     author: 'Ana Torres',
     category: 'Tutoriales',
     readTime: '12 min',
     image: '/logo-512.png',
     keywords:
-      'guia Xnova, tutorial Xnova principiantes, como jugar Xnova, empezar en Xnova, generar ingresos gratis, vender recursos y ganar dinero',
+      'guia Imperium, tutorial Imperium principiantes, como jugar Imperium, empezar en Imperium, generar ingresos gratis, vender recursos y ganar dinero',
     howToSteps: [
       { name: 'Crear tu cuenta', text: 'Regístrate gratis en falcoxnova.com con tu email. No necesitas wallet de criptomonedas para empezar.' },
       { name: 'Construir tus primeras minas', text: 'Al entrar al juego, prioriza construir mina de metal, mina de cristal y planta de energía solar para generar recursos.' },
@@ -486,7 +486,7 @@ Xnova cumple con creces en todos estos aspectos.`,
       { name: 'Acumular tokens TUNG', text: 'Juega activamente: completa edificios, gana batallas y comercia en el mercado para acumular tokens TUNG automáticamente.' },
       { name: 'Retirar tus ganancias', text: 'Cuando tengas suficientes tokens, ve a la sección Wallet, conecta MetaMask y retira tus TUNG a tu billetera.' },
     ],
-    content: `¿Acabas de unirte a Xnova? ¡Bienvenido, comandante! Esta guía te llevará de principiante a estratega galáctico en tiempo récord.
+    content: `¿Acabas de unirte a Imperium? ¡Bienvenido, comandante! Esta guía te llevará de principiante a estratega galáctico en tiempo récord.
 
 ## Paso 1: Registro (30 segundos)
 
@@ -549,14 +549,14 @@ Los tokens TUNG pueden intercambiarse por USDT en PancakeSwap.
   },
 
   'como-retirar-ganancias-crypto-falco-x': {
-    title: 'Cómo Retirar Tus Ganancias en Criptomonedas de Xnova a Tu Wallet',
+    title: 'Cómo Retirar Tus Ganancias en Criptomonedas de Imperium a Tu Wallet',
     description: 'Guía paso a paso para conectar MetaMask, retirar tokens TUNG y convertirlos a USDT, BNB o la criptomoneda que prefieras. Tutorial completo con instrucciones detalladas.',
     date: '2026-05-10',
     author: 'Ana Torres',
     category: 'Tutoriales',
     readTime: '5 min',
     image: '/logo-512.png',
-    keywords: 'retirar TUNG, retirar ganancias Xnova, conectar MetaMask, retirar tokens, como cobrar en Xnova, retirar criptomonedas juego',
+    keywords: 'retirar TUNG, retirar ganancias Imperium, conectar MetaMask, retirar tokens, como cobrar en Imperium, retirar criptomonedas juego',
     howToSteps: [
       { name: 'Conectar MetaMask', text: 'Instala MetaMask en tu navegador y crea una wallet en la red de Binance Smart Chain (BSC).' },
       { name: 'Ir a la sección Wallet', text: 'Dentro del juego, navega a la sección Wallet donde verás tu balance de tokens TUNG.' },
@@ -577,7 +577,7 @@ Necesitas MetaMask instalado en tu navegador. Si no lo tienes:
 
 ## Paso 2: Conecta tu Wallet al Juego
 
-Dentro de Xnova, ve a la sección Wallet y haz clic en "Conectar Wallet". MetaMask te pedirá permiso para conectarse - acepta la solicitud.
+Dentro de Imperium, ve a la sección Wallet y haz clic en "Conectar Wallet". MetaMask te pedirá permiso para conectarse - acepta la solicitud.
 
 ## Paso 3: Solicita tu Retiro
 
@@ -601,15 +601,15 @@ Para convertir TUNG a USDT u otras criptomonedas:
   },
 
   'estrategia-avanzada-alianzas-falco-x': {
-    title: 'Estrategia Avanzada: Cómo Dominar con Alianzas en Xnova',
-    description: 'Aprende tácticas de alianza, coordinación de ataques masivos, comercio estratégico y diplomacia para dominar el universo de Xnova.',
+    title: 'Estrategia Avanzada: Cómo Dominar con Alianzas en Imperium',
+    description: 'Aprende tácticas de alianza, coordinación de ataques masivos, comercio estratégico y diplomacia para dominar el universo de Imperium.',
     date: '2026-05-08',
     author: 'Carlos Mendoza',
     category: 'Estrategia',
     readTime: '7 min',
     image: '/logo-512.png',
-    keywords: 'alianzas Xnova, estrategia Xnova, guerra de alianzas, ataque coordinado, diplomacia juego, dominar universo, estrategia espacial',
-    content: `Las alianzas son el corazón de Xnova. Un jugador solo puede llegar hasta cierto punto, pero una alianza bien organizada puede dominar el universo.
+    keywords: 'alianzas Imperium, estrategia Imperium, guerra de alianzas, ataque coordinado, diplomacia juego, dominar universo, estrategia espacial',
+    content: `Las alianzas son el corazón de Imperium. Un jugador solo puede llegar hasta cierto punto, pero una alianza bien organizada puede dominar el universo.
 
 ## Por Qué Unirte a una Alianza
 
@@ -685,9 +685,9 @@ Es la integración de tecnología blockchain en los videojuegos para que los act
 | Valor real | No | Sí (tokens) |
 | Transparencia | Caja negra | Todo en blockchain |
 
-## Cómo Funciona Xnova en Blockchain
+## Cómo Funciona Imperium en Blockchain
 
-Xnova usa la red de Binance Smart Chain (BSC) para:
+Imperium usa la red de Binance Smart Chain (BSC) para:
 
 1. **Token TUNG**: Cada acción en el juego genera tokens que se registran en la blockchain
 2. **Smart Contracts**: Código transparente que gobierna las recompensas
@@ -707,7 +707,7 @@ Cada transacción es visible y verificable. No hay manipulación oculta.
 
 ## El Futuro
 
-El blockchain gaming no es una moda. Grandes empresas están invirtiendo. Xnova representa el modelo del futuro: juegos gratuitos, divertidos Y que pagan.`,
+El blockchain gaming no es una moda. Grandes empresas están invirtiendo. Imperium representa el modelo del futuro: juegos gratuitos, divertidos Y que pagan.`,
     relatedPosts: ['como-ganar-criptomonedas-jugando-gratis', 'falco-x-vs-ogame-comparativa', 'ganar-dinero-jugando-desde-casa'],
   },
 
@@ -730,7 +730,7 @@ Sí. El modelo play-to-earn ha demostrado que se puede generar ingresos reales j
 
 ### 1. Juegos Play-to-Earn (La Más Rentable)
 
-Xnova es el mejor ejemplo: juegas, te diviertes y ganas tokens TUNG convertibles a dinero real. Las ganancias dependen de tu dedicación:
+Imperium es el mejor ejemplo: juegas, te diviertes y ganas tokens TUNG convertibles a dinero real. Las ganancias dependen de tu dedicación:
 
 - **Jugador casual** (1-2h/día): $50-100/mes
 - **Jugador activo** (3-5h/día): $200-500/mes
@@ -742,7 +742,7 @@ Comparte tu enlace de referido. Ganas un porcentaje de lo que generan tus invita
 
 ### 3. Trading en el Mercado P2P
 
-Compra barato, vende caro. El mercado de recursos de Xnova permite especular y generar ganancias adicionales.
+Compra barato, vende caro. El mercado de recursos de Imperium permite especular y generar ganancias adicionales.
 
 ## Estrategias para Maximizar Ganancias
 
@@ -760,7 +760,7 @@ Mejora tus minas y laboratorios primero - la producción pasiva es tu mejor alia
 
 ## Consejos para Empezar
 
-1. Regístrate gratis en Xnova
+1. Regístrate gratis en Imperium
 2. Sigue la guía para principiantes
 3. Sé constante los primeros 7 días
 4. Únete a la comunidad (Discord/Telegram)
@@ -781,9 +781,9 @@ Ganar dinero jugando desde casa es posible. Empieza hoy y descubre por qué mile
     keywords: 'juegos blockchain español, juegos crypto español, mejores juegos blockchain 2026, gaming blockchain latinoamerica, play to earn español',
     content: `El mundo del blockchain gaming está dominado por el inglés, pero cada vez hay más opciones en español. Aquí tienes los mejores.
 
-## #1 Xnova - La Mejor Opción en Español
+## #1 Imperium - La Mejor Opción en Español
 
-Xnova es actualmente el mejor juego blockchain completamente en español. Ofrece:
+Imperium es actualmente el mejor juego blockchain completamente en español. Ofrece:
 
 - **Interfaz 100% en español**
 - **Soporte en español 24/7**
@@ -849,9 +849,9 @@ Los estafadores crean sitios falsos que se ven idénticos a falcoxnova.com. Siem
 
 No acumules grandes cantidades en el juego. Retira tus ganancias regularmente a tu wallet personal.
 
-## En Xnova, Tu Seguridad es Primero
+## En Imperium, Tu Seguridad es Primero
 
-En Xnova implementamos:
+En Imperium implementamos:
 - Autenticación segura con Supabase
 - Conexiones cifradas (HTTPS)
 - Verificación de contratos en BscScan
@@ -884,17 +884,17 @@ export function BlogArticlePage() {
   const articleSchema = schemas.article({
     title: article.title,
     description: article.description,
-    url: `https://falcoxnova.com/blog/${slug}`,
-    image: `https://falcoxnova.com${article.image}`,
+    url: `https://imperium.xnova.games/blog/${slug}`,
+    image: `https://imperium.xnova.games${article.image}`,
     datePublished: article.date,
     dateModified: article.date,
     authorName: article.author,
   });
 
   const breadcrumbSchema = schemas.breadcrumbList([
-    { name: 'Inicio', url: 'https://falcoxnova.com/' },
-    { name: 'Blog', url: 'https://falcoxnova.com/blog' },
-    { name: article.title, url: `https://falcoxnova.com/blog/${slug}` },
+    { name: 'Inicio', url: 'https://imperium.xnova.games/' },
+    { name: 'Blog', url: 'https://imperium.xnova.games/blog' },
+    { name: article.title, url: `https://imperium.xnova.games/blog/${slug}` },
   ]);
 
   // Generate HowTo schema for tutorial articles
@@ -913,11 +913,11 @@ export function BlogArticlePage() {
 
   const faqSchema = schemas.faqPage([
     {
-      question: '¿Es Xnova realmente gratis?',
-      answer: 'Sí, Xnova es 100% gratuito. No necesitas depositar ni comprar nada para empezar a jugar y ganar criptomonedas.',
+      question: '¿Es Imperium realmente gratis?',
+      answer: 'Sí, Imperium es 100% gratuito. No necesitas depositar ni comprar nada para empezar a jugar y ganar criptomonedas.',
     },
     {
-      question: '¿Cómo se generan ingresos gratis en Xnova?',
+      question: '¿Cómo se generan ingresos gratis en Imperium?',
       answer: 'Tus minas producen metal, cristal y deuterio sin coste. Vendes ese excedente en el mercado P2P y recibes tokens TUNG que puedes retirar a tu wallet.',
     },
   ]);
@@ -963,12 +963,12 @@ export function BlogArticlePage() {
         title={article.title}
         description={article.description}
         keywords={article.keywords}
-        canonicalUrl={`https://falcoxnova.com/blog/${slug}`}
+        canonicalUrl={`https://imperium.xnova.games/blog/${slug}`}
         ogType="article"
         ogImageAlt={article.title}
         articlePublishedTime={article.date}
         articleAuthor={article.author}
-        articleTags={[article.category, 'play-to-earn', 'crypto gaming', 'Xnova']}
+        articleTags={[article.category, 'play-to-earn', 'crypto gaming', 'Imperium']}
         schema={{ ...articleSchema, ...breadcrumbSchema, ...(howToSchema || {}) }}
       />
 
@@ -984,12 +984,12 @@ export function BlogArticlePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/navbar-logo.png" alt="Xnova" className="h-10 w-10 object-contain" />
+                <img src="/navbar-logo.png" alt="Imperium" className="h-10 w-10 object-contain" />
                 <span
                   className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"
                   style={{ fontFamily: 'Orbitron, sans-serif' }}
                 >
-                  XNOVA
+                  IMPERIUM
                 </span>
               </Link>
               <Link to="/blog" className="text-sm text-slate-300 hover:text-cyan-400 transition-colors">

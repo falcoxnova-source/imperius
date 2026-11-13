@@ -131,7 +131,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const verificationUrl = `${redirect_url || 'https://falco-x.com'}/verify-email?token=${token}`;
+    const verificationUrl = `${redirect_url || 'https://imperium.xnova.games'}/verify-email?token=${token}`;
     const username = user.user_metadata?.username || 'Comandante';
 
     const client = new SMTPClient({
@@ -145,13 +145,13 @@ Deno.serve(async (req: Request) => {
     });
 
     const fromEmail = smtpConfig.smtp_from_email || smtpConfig.smtp_user;
-    const fromName = smtpConfig.smtp_from_name || "Falco-X Universo";
+    const fromName = smtpConfig.smtp_from_name || "Imperium";
 
     await client.sendAsync({
       from: `${fromName} <${fromEmail}>`,
       to: email,
-      subject: "Confirma tu cuenta - Falco-X Universo",
-      text: `Hola ${username},\n\nGracias por registrarte en Falco-X Universo.\n\nPara activar tu cuenta, haz clic en el siguiente enlace:\n${verificationUrl}\n\nEste enlace expira en 24 horas.\n\nSi no creaste esta cuenta, puedes ignorar este mensaje.\n\n-- Falco-X Universo`,
+      subject: "Confirma tu cuenta - Imperium",
+      text: `Hola ${username},\n\nGracias por registrarte en Imperium.\n\nPara activar tu cuenta, haz clic en el siguiente enlace:\n${verificationUrl}\n\nEste enlace expira en 24 horas.\n\nSi no creaste esta cuenta, puedes ignorar este mensaje.\n\n-- Imperium`,
       attachment: [
         {
           data: `<!DOCTYPE html>
@@ -159,10 +159,10 @@ Deno.serve(async (req: Request) => {
 <head><meta charset="utf-8"></head>
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
   <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 30px; border-radius: 12px; text-align: center;">
-    <h1 style="color: #22d3ee; margin: 0 0 20px 0; font-size: 28px;">Falco-X Universo</h1>
+    <h1 style="color: #22d3ee; margin: 0 0 20px 0; font-size: 28px;">Imperium</h1>
     <div style="background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 8px; padding: 20px; margin: 20px 0;">
       <h2 style="color: #f8fafc; margin: 0 0 10px 0;">Bienvenido, ${username}!</h2>
-      <p style="color: #94a3b8; margin: 0 0 20px 0; font-size: 16px;">Gracias por unirte a Falco-X Universo. Para comenzar tu conquista del universo, confirma tu cuenta.</p>
+      <p style="color: #94a3b8; margin: 0 0 20px 0; font-size: 16px;">Gracias por unirte a Imperium. Para comenzar tu conquista del universo, confirma tu cuenta.</p>
       <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%); color: #0f172a; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: bold; font-size: 16px;">Confirmar Cuenta</a>
     </div>
     <p style="color: #64748b; font-size: 14px; margin-top: 20px;">Este enlace expira en 24 horas.</p>

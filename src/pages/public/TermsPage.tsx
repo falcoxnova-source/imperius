@@ -5,8 +5,8 @@ export function TermsPage() {
   return (
     <>
       <SEO
-        title="Términos y Condiciones | Xnova"
-        description="Términos y condiciones de uso de Xnova, el juego de estrategia espacial play-to-earn. Lee nuestras políticas antes de jugar."
+        title="Términos y Condiciones | Imperium"
+        description="Términos y condiciones de uso de Imperium, el juego de estrategia espacial play-to-earn. Lee nuestras políticas antes de jugar."
         noIndex
       />
 
@@ -15,8 +15,8 @@ export function TermsPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/navbar-logo.png" alt="Xnova" className="h-10 w-10 object-contain" />
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Orbitron, sans-serif' }}>XNOVA</span>
+                <img src="/navbar-logo.png" alt="Imperium" className="h-10 w-10 object-contain" />
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Orbitron, sans-serif' }}>IMPERIUM</span>
               </Link>
               <Link to="/register" className="px-5 py-2 text-sm font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all">Regístrate</Link>
             </div>
@@ -32,17 +32,17 @@ export function TermsPage() {
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">1. Aceptación de los Términos</h2>
-              <p>Al acceder y utilizar Xnova (falcoxnova.com), aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no utilices el servicio.</p>
+              <p>Al acceder y utilizar Imperium (falcoxnova.com), aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no utilices el servicio.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">2. Descripción del Servicio</h2>
-              <p>Xnova es un juego de estrategia espacial multijugador masivo en línea (MMORTS) con mecánicas play-to-earn. Los jugadores construyen imperios, forman alianzas y compiten por recursos mientras ganan tokens TUNG como recompensa por su actividad en el juego.</p>
+              <p>Imperium es un juego de estrategia espacial multijugador masivo en línea (MMORTS) con mecánicas play-to-earn. Los jugadores construyen imperios, forman alianzas y compiten por recursos mientras ganan tokens TUNG como recompensa por su actividad en el juego.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">3. Elegibilidad</h2>
-              <p>Debes tener al menos 13 años para usar Xnova. Si eres menor de edad, necesitas consentimiento parental. No está permitido el uso por parte de personas en jurisdicciones donde las criptomonedas estén prohibidas.</p>
+              <p>Debes tener al menos 13 años para usar Imperium. Si eres menor de edad, necesitas consentimiento parental. No está permitido el uso por parte de personas en jurisdicciones donde las criptomonedas estén prohibidas.</p>
             </section>
 
             <section>
@@ -52,17 +52,17 @@ export function TermsPage() {
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">5. Tokens TUNG y Criptomonedas</h2>
-              <p>Los tokens TUNG se ganan mediante la actividad en el juego. El valor de los tokens puede fluctuar. Xnova no garantiza un valor mínimo ni la convertibilidad a dinero fiduciario. Los retiros están sujetos a límites y verificación de seguridad.</p>
+              <p>Los tokens TUNG se ganan mediante la actividad en el juego. El valor de los tokens puede fluctuar. Imperium no garantiza un valor mínimo ni la convertibilidad a dinero fiduciario. Los retiros están sujetos a límites y verificación de seguridad.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">6. Propiedad Intelectual</h2>
-              <p>Todo el contenido de Xnova, incluyendo código, gráficos, diseños y marcas, es propiedad de Xnova Studios. No está permitida la reproducción, distribución o modificación sin autorización expresa.</p>
+              <p>Todo el contenido de Imperium, incluyendo código, gráficos, diseños y marcas, es propiedad de Imperium Studios. No está permitida la reproducción, distribución o modificación sin autorización expresa.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">7. Limitación de Responsabilidad</h2>
-              <p>Xnova se proporciona "tal cual". No garantizamos disponibilidad continua, ausencia de errores ni la precisión de las recompensas. No somos responsables por pérdidas derivadas del uso del servicio, incluyendo pérdidas de criptomonedas.</p>
+              <p>Imperium se proporciona "tal cual". No garantizamos disponibilidad continua, ausencia de errores ni la precisión de las recompensas. No somos responsables por pérdidas derivadas del uso del servicio, incluyendo pérdidas de criptomonedas.</p>
             </section>
 
             <section>
@@ -88,7 +88,7 @@ export function TermsPage() {
               <span>·</span>
               <Link to="/blog" className="hover:text-cyan-400">Blog</Link>
             </div>
-            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Xnova. Todos los derechos reservados.</p>
+            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Imperium. Todos los derechos reservados.</p>
           </div>
         </footer>
       </div>

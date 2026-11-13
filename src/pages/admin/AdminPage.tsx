@@ -4248,7 +4248,7 @@ export function AdminPage() {
 
               <div className="mt-3 p-3 bg-slate-700/30 border border-slate-600/40 rounded-lg">
                 <p className="text-xs text-slate-400">
-                  <strong className="text-slate-300">XNova clasico:</strong> Flotas 30%, Defensas 0% (las defensas se reconstruyen al 70%).
+                  <strong className="text-slate-300">Clásico:</strong> Flotas 30%, Defensas 0% (las defensas se reconstruyen al 70%).
                   <br />
                   <strong className="text-slate-300">OGame moderno:</strong> Flotas 30-70%, Defensas 0%.
                 </p>
@@ -4355,7 +4355,7 @@ export function AdminPage() {
         </div>
 
         <p className="text-slate-400 text-sm mb-6">
-          Configura el sistema de proteccion que impide ataques entre jugadores con gran diferencia de puntos. Estilo XNova/OGame clasico.
+          Configura el sistema de proteccion que impide ataques entre jugadores con gran diferencia de puntos. Estilo OGame clásico.
         </p>
 
         {isLoadingProtection ? (
@@ -4401,7 +4401,7 @@ export function AdminPage() {
                 ))}
               </div>
               <div className="mt-2 text-xs text-slate-500">
-                <strong className="text-slate-400">XNova clasico:</strong> 5:1 | <strong className="text-slate-400">OGame:</strong> 5:1
+                <strong className="text-slate-400">Clásico:</strong> 5:1 | <strong className="text-slate-400">OGame:</strong> 5:1
               </div>
             </div>
 

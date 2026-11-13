@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom';
 import { SEO, schemas } from '../../components/ui/SEO';
 
 const KEYWORDS =
-  'Xnova, xnova juego, xnova ogame, juego play to earn español, quienes somos, sobre nosotros, token TUNG, juego de estrategia espacial gratis, generar ingresos gratis';
+  'Imperium, xnova juego, xnova ogame, juego play to earn español, quienes somos, sobre nosotros, token TUNG, juego de estrategia espacial gratis, generar ingresos gratis';
 
 export function AboutPage() {
   return (
     <>
       <SEO
-        title="Sobre Xnova | Nuestra Historia y Visión"
-        description="Conoce la historia de Xnova, el juego de estrategia espacial tipo OGame donde generas ingresos gratis vendiendo tus recursos en el mercado y ganas criptomonedas reales."
+        title="Sobre Imperium | Nuestra Historia y Visión"
+        description="Conoce la historia de Imperium, el juego de estrategia espacial tipo OGame donde generas ingresos gratis vendiendo tus recursos en el mercado y ganas criptomonedas reales."
         keywords={KEYWORDS}
         schema={schemas.organization}
       />
@@ -22,14 +22,14 @@ export function AboutPage() {
               <Link to="/" className="flex items-center gap-3">
                 <img
                   src="/navbar-logo.png"
-                  alt="Xnova Logo"
+                  alt="Imperium Logo"
                   className="h-10 w-10 object-contain"
                 />
                 <span
                   className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"
                   style={{ fontFamily: 'Orbitron, sans-serif' }}
                 >
-                  XNOVA
+                  IMPERIUM
                 </span>
               </Link>
               <div className="flex items-center gap-4">
@@ -69,13 +69,13 @@ export function AboutPage() {
             >
               Sobre{' '}
               <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Xnova
+                Imperium
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed">
               La plataforma que fusiona la estrategia espacial clásica de{' '}
               <span className="text-cyan-400 font-semibold">OGame</span> y{' '}
-              <span className="text-cyan-400 font-semibold">Xnova</span> con la economía
+              <span className="text-cyan-400 font-semibold">Imperium</span> con la economía
               blockchain moderna. Creada por y para la comunidad hispanohablante.
             </p>
           </div>
@@ -93,13 +93,13 @@ export function AboutPage() {
               </h2>
               <div className="text-slate-300 leading-relaxed space-y-4">
                 <p>
-                  Xnova nació de una idea simple: <strong>¿por qué los juegos de estrategia espacial no pueden pagarte por jugar?</strong> Miles de jugadores pasan horas construyendo imperios en OGame, pero nunca reciben nada a cambio.
+                  Imperium nació de una idea simple: <strong>¿por qué los juegos de estrategia espacial no pueden pagarte por jugar?</strong> Miles de jugadores pasan horas construyendo imperios en OGame, pero nunca reciben nada a cambio.
                 </p>
                 <p>
                   En 2025, un equipo de desarrolladores y gamers apasionados decidió cambiar eso. Combinamos la experiencia de juego clásica con la tecnología blockchain para crear la primera experiencia <strong>play-to-earn</strong> realmente gratuita en español, donde cada hora de juego genera valor real.
                 </p>
                 <p>
-                  Hoy, nuestra comunidad sigue creciendo como la mejor alternativa a OGame y Xnova con recompensas en criptomonedas.
+                  Hoy, nuestra comunidad sigue creciendo como la mejor alternativa a OGame y Imperium con recompensas en criptomonedas.
                 </p>
               </div>
             </div>
@@ -182,7 +182,7 @@ export function AboutPage() {
               </h2>
               <div className="text-slate-300 leading-relaxed space-y-4">
                 <p>
-                  TUNG es el token nativo de Xnova, desplegado en la blockchain de <strong>Binance Smart Chain (BSC)</strong>. Es el corazón económico del juego.
+                  TUNG es el token nativo de Imperium, desplegado en la blockchain de <strong>Binance Smart Chain (BSC)</strong>. Es el corazón económico del juego.
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-slate-400">
                   <li><strong className="text-white">Gana TUNG</strong> jugando: construye, lucha, comercia y participa en misiones.</li>
@@ -202,12 +202,12 @@ export function AboutPage() {
               className="text-2xl sm:text-3xl font-bold text-center mb-10"
               style={{ fontFamily: 'Orbitron, sans-serif' }}
             >
-              ¿Por qué elegir Xnova?
+              ¿Por qué elegir Imperium?
             </h2>
             <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
               <div className="text-slate-300 leading-relaxed space-y-4">
                 <p>
-                  Si buscas <strong className="text-cyan-400">juegos para ganar dinero real</strong>, probablemente te hayas topado con estafas, esquemas Ponzi o juegos que requieren inversión inicial. Xnova es diferente:
+                  Si buscas <strong className="text-cyan-400">juegos para ganar dinero real</strong>, probablemente te hayas topado con estafas, esquemas Ponzi o juegos que requieren inversión inicial. Imperium es diferente:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-slate-400">
                   <li>✅ <strong>Sin inversión</strong> — 100% free-to-play.</li>
@@ -217,7 +217,7 @@ export function AboutPage() {
                   <li>✅ <strong>Hecho para hispanohablantes</strong> — Interfaz, soporte y contenido en español.</li>
                 </ul>
                 <p className="mt-4">
-                  Somos la <strong className="text-cyan-400">mejor alternativa a OGame con criptomonedas</strong> y la evolución natural de Xnova hacia el play-to-earn.
+                  Somos la <strong className="text-cyan-400">mejor alternativa a OGame con criptomonedas</strong> y la evolución natural de Imperium hacia el play-to-earn.
                 </p>
               </div>
             </div>
@@ -268,7 +268,7 @@ export function AboutPage() {
               <Link to="/juegos-play-to-earn-gratis" className="hover:text-cyan-400 transition-colors">Juegos P2E</Link>
             </div>
             <p className="text-xs text-slate-600">
-              © {new Date().getFullYear()} Xnova. Todos los derechos reservados.
+              © {new Date().getFullYear()} Imperium. Todos los derechos reservados.
             </p>
           </div>
         </footer>

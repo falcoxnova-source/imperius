@@ -143,8 +143,8 @@ export function LoginPage() {
   return (
     <>
       <SEO
-        title="Iniciar Sesión | Xnova"
-        description="Accede a tu cuenta de Xnova, el juego de estrategia espacial play-to-earn. Inicia sesión y continúa construyendo tu imperio galáctico."
+        title="Iniciar Sesión | Imperium"
+        description="Accede a tu cuenta de Imperium, el juego de estrategia espacial play-to-earn. Inicia sesión y continúa construyendo tu imperio galáctico."
         noIndex
       />
       <div className="relative min-h-screen bg-auth bg-cover bg-center bg-no-repeat overflow-y-auto">
@@ -477,7 +477,7 @@ export function LoginPage() {
 
         <div className="sr-only">
           <p>
-              Xnova: juego de estrategia espacial tipo OGame donde generas ingresos gratis vendiendo tus recursos.
+              Imperium: juego de estrategia espacial tipo OGame donde generas ingresos gratis vendiendo tus recursos.
             Gana criptomonedas gratis jugando. Play-to-earn gratuito sin inversion.
             Ganar bitcoin, ethereum y USDT jugando. Mejor juego blockchain 2026.
           </p>

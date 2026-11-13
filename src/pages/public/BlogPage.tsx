@@ -18,9 +18,9 @@ interface BlogPost {
 const blogPosts: BlogPost[] = [
   {
     slug: 'novedades-xnova-octubre-2026',
-    title: 'Novedades de Xnova – Octubre 2026: Casino, Batalla de Naves, Apuestas Deportivas y Más',
+    title: 'Novedades de Imperium – Octubre 2026: Casino, Batalla de Naves, Apuestas Deportivas y Más',
     excerpt:
-      'Todo lo nuevo en Xnova: Casino Galáctico, Batalla de Naves PvP, apuestas de fútbol, Fortalezas, Planeta del Tesoro, asistente IA NOVA y alertas en Telegram.',
+      'Todo lo nuevo en Imperium: Casino Galáctico, Batalla de Naves PvP, apuestas de fútbol, Fortalezas, Planeta del Tesoro, asistente IA NOVA y alertas en Telegram.',
     date: '2026-10-08',
     author: 'Carlos Mendoza',
     category: 'Novedades',
@@ -30,7 +30,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'batalla-de-naves-online-xnova',
-    title: 'Batalla de Naves en Xnova: Juega a Hundir la Flota Online y Gana TUNG',
+    title: 'Batalla de Naves en Imperium: Juega a Hundir la Flota Online y Gana TUNG',
     excerpt:
       'Hundir la flota online PvP con apuestas en TUNG, pool diario Top 5, modo práctica gratis contra la IA y consejos para ganar.',
     date: '2026-10-08',
@@ -42,7 +42,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'casino-galactico-xnova-ruleta-tragamonedas-dados',
-    title: 'Casino Galáctico de Xnova: Ruleta, Tragamonedas, Dados, Lotería y Rifa con TUNG',
+    title: 'Casino Galáctico de Imperium: Ruleta, Tragamonedas, Dados, Lotería y Rifa con TUNG',
     excerpt:
       'Ruleta europea, tragamonedas, dados Sic Bo, lotería semanal y rifa: premios, multiplicadores, límites y consejos para jugar con cabeza.',
     date: '2026-10-08',
@@ -54,7 +54,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'apuestas-deportivas-futbol-xnova',
-    title: 'Apuestas Deportivas de Fútbol en Xnova: Sistema Parimutuel con TUNG',
+    title: 'Apuestas Deportivas de Fútbol en Imperium: Sistema Parimutuel con TUNG',
     excerpt:
       'Apuesta a Premier League, LaLiga, Serie A, Bundesliga, Ligue 1 y Champions. Cómo funciona el sistema parimutuel 1X2 con ejemplos de pago.',
     date: '2026-10-08',
@@ -66,7 +66,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'fortalezas-alianza-planeta-tesoro-xnova',
-    title: 'Fortalezas de Alianza y Planeta del Tesoro en Xnova: Guía Completa',
+    title: 'Fortalezas de Alianza y Planeta del Tesoro en Imperium: Guía Completa',
     excerpt:
       'Cómo atacar, capturar y defender las Fortalezas y el Planeta del Tesoro: requisitos, refuerzos, avisos de ataque y pools de premios mensuales.',
     date: '2026-10-08',
@@ -114,9 +114,9 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'falco-x-vs-ogame-comparativa',
-    title: 'Xnova vs OGame: ¿Cuál es el Mejor Juego de Estrategia Espacial?',
+    title: 'Imperium vs OGame: ¿Cuál es el Mejor Juego de Estrategia Espacial?',
     excerpt:
-      'Comparamos Xnova con OGame: mecánicas, gráficos, comunidad y lo más importante, que en Xnova puedes vender tus recursos en el mercado y ganar criptomonedas reales.',
+      'Comparamos Imperium con OGame: mecánicas, gráficos, comunidad y lo más importante, que en Imperium puedes vender tus recursos en el mercado y ganar criptomonedas reales.',
     date: '2026-05-18',
     author: 'María García',
     category: 'Comparativas',
@@ -128,7 +128,7 @@ const blogPosts: BlogPost[] = [
     slug: 'mejores-juegos-play-to-earn-gratis-2026',
     title: 'Top 10 Mejores Juegos Play-to-Earn Gratis Sin Inversión en 2026',
     excerpt:
-      'Los mejores juegos P2E que no requieren depósito inicial. Descubre cuáles pagan más, cómo empezar y qué los hace diferentes. Xnova entre los top.',
+      'Los mejores juegos P2E que no requieren depósito inicial. Descubre cuáles pagan más, cómo empezar y qué los hace diferentes. Imperium entre los top.',
     date: '2026-05-15',
     author: 'Carlos Mendoza',
     category: 'Rankings',
@@ -138,9 +138,9 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'guia-principiantes-falco-x',
-    title: 'Guía Definitiva para Principiantes en Xnova',
+    title: 'Guía Definitiva para Principiantes en Imperium',
     excerpt:
-      'Todo lo que necesitas saber para empezar en Xnova. Desde el registro hasta tu primer retiro de criptomonedas. Tutorial paso a paso con consejos de veteranos.',
+      'Todo lo que necesitas saber para empezar en Imperium. Desde el registro hasta tu primer retiro de criptomonedas. Tutorial paso a paso con consejos de veteranos.',
     date: '2026-05-12',
     author: 'Ana Torres',
     category: 'Tutoriales',
@@ -149,7 +149,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'como-retirar-ganancias-crypto-falco-x',
-    title: 'Cómo Retirar Tus Ganancias en Criptomonedas de Xnova a Tu Wallet',
+    title: 'Cómo Retirar Tus Ganancias en Criptomonedas de Imperium a Tu Wallet',
     excerpt:
       'Guía paso a paso para conectar MetaMask, retirar tokens TUNG y convertirlos a USDT, BNB o la criptomoneda que prefieras.',
     date: '2026-05-10',
@@ -160,9 +160,9 @@ const blogPosts: BlogPost[] = [
   },
   {
     slug: 'estrategia-avanzada-alianzas-falco-x',
-    title: 'Estrategia Avanzada: Cómo Dominar con Alianzas en Xnova',
+    title: 'Estrategia Avanzada: Cómo Dominar con Alianzas en Imperium',
     excerpt:
-      'Aprende tácticas de alianza, coordinación de ataques masivos, comercio estratégico y diplomacia para dominar el universo de Xnova.',
+      'Aprende tácticas de alianza, coordinación de ataques masivos, comercio estratégico y diplomacia para dominar el universo de Imperium.',
     date: '2026-05-08',
     author: 'Carlos Mendoza',
     category: 'Estrategia',
@@ -204,25 +204,25 @@ export function BlogPage() {
   const blogSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Blog de Xnova - Guías para Generar Ingresos Gratis Jugando',
+    name: 'Blog de Imperium - Guías para Generar Ingresos Gratis Jugando',
     description: 'Blog oficial con guías, tutoriales, estrategias y noticias sobre blockchain gaming y juegos play-to-earn.',
-    url: 'https://falcoxnova.com/blog',
+    url: 'https://imperium.xnova.games/blog',
     mainEntity: blogPosts.map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
       description: post.excerpt,
       datePublished: post.date,
       author: { '@type': 'Person', name: post.author },
-      url: `https://falcoxnova.com/blog/${post.slug}`,
+      url: `https://imperium.xnova.games/blog/${post.slug}`,
     })),
   };
 
   return (
     <>
       <SEO
-        title="Blog de Xnova | Guías para Ganar Criptomonedas Gratis"
-        description="Blog oficial de Xnova: guías para generar ingresos gratis vendiendo recursos en el mercado, ganar criptomonedas jugando y estrategias tipo OGame."
-        keywords="blog Xnova, xnova guias, como generar ingresos gratis, como ganar crypto de manera gratis, vender recursos y ganar dinero, estrategia OGame, juegos play to earn gratis"
+        title="Blog de Imperium | Guías para Ganar Criptomonedas Gratis"
+        description="Blog oficial de Imperium: guías para generar ingresos gratis vendiendo recursos en el mercado, ganar criptomonedas jugando y estrategias tipo OGame."
+        keywords="blog Imperium, xnova guias, como generar ingresos gratis, como ganar crypto de manera gratis, vender recursos y ganar dinero, estrategia OGame, juegos play to earn gratis"
         schema={{ ...schemas.organization, ...blogSchema }}
       />
 
@@ -232,12 +232,12 @@ export function BlogPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/navbar-logo.png" alt="Xnova" className="h-10 w-10 object-contain" />
+                <img src="/navbar-logo.png" alt="Imperium" className="h-10 w-10 object-contain" />
                 <span
                   className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"
                   style={{ fontFamily: 'Orbitron, sans-serif' }}
                 >
-                  XNOVA
+                  IMPERIUM
                 </span>
               </Link>
               <div className="flex items-center gap-4">
@@ -272,11 +272,11 @@ export function BlogPage() {
             >
               Blog de{' '}
               <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                Xnova
+                Imperium
               </span>
             </h1>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              Guías y estrategias para generar ingresos gratis en Xnova: cómo vender tus
+              Guías y estrategias para generar ingresos gratis en Imperium: cómo vender tus
               recursos en el mercado, cómo ganar criptomonedas sin invertir y cómo dominar
               este juego de estrategia espacial tipo OGame.
             </p>

@@ -86,7 +86,7 @@ export function WhatsAppFloatingButton() {
           rel="noopener noreferrer"
           onMouseEnter={() => setExpanded(true)}
           onMouseLeave={() => setExpanded(false)}
-          aria-label="Únete a la comunidad de WhatsApp de Xnova"
+          aria-label="Únete a la comunidad de WhatsApp de Imperium"
           title="Únete a la comunidad de WhatsApp"
           className="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg shadow-green-600/40 hover:scale-110 active:scale-95 transition-transform duration-200"
         >

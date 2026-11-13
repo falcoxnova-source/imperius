@@ -143,7 +143,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const resetUrl = `${redirect_url || 'https://falco-x.com'}/reset-password?token=${token}`;
+    const resetUrl = `${redirect_url || 'https://imperium.xnova.games'}/reset-password?token=${token}`;
 
     const client = new SMTPClient({
       user: smtpConfig.smtp_user,
@@ -156,13 +156,13 @@ Deno.serve(async (req: Request) => {
     });
 
     const fromEmail = smtpConfig.smtp_from_email || smtpConfig.smtp_user;
-    const fromName = smtpConfig.smtp_from_name || "Falco-X Universo";
+    const fromName = smtpConfig.smtp_from_name || "Imperium";
 
     await client.sendAsync({
       from: `${fromName} <${fromEmail}>`,
       to: email,
-      subject: "Recupera tu contrasena - Falco-X Universo",
-      text: `Hola ${username},\n\nRecibimos una solicitud para restablecer la contrasena de tu cuenta.\n\nPara crear una nueva contrasena, haz clic en el siguiente enlace:\n${resetUrl}\n\nEste enlace expira en 1 hora.\n\nSi no solicitaste este cambio, puedes ignorar este mensaje. Tu contrasena no sera modificada.\n\n-- Falco-X Universo`,
+      subject: "Recupera tu contrasena - Imperium",
+      text: `Hola ${username},\n\nRecibimos una solicitud para restablecer la contrasena de tu cuenta.\n\nPara crear una nueva contrasena, haz clic en el siguiente enlace:\n${resetUrl}\n\nEste enlace expira en 1 hora.\n\nSi no solicitaste este cambio, puedes ignorar este mensaje. Tu contrasena no sera modificada.\n\n-- Imperium`,
       attachment: [
         {
           data: `<!DOCTYPE html>
@@ -170,7 +170,7 @@ Deno.serve(async (req: Request) => {
 <head><meta charset="utf-8"></head>
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
   <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 30px; border-radius: 12px; text-align: center;">
-    <h1 style="color: #22d3ee; margin: 0 0 20px 0; font-size: 28px;">Falco-X Universo</h1>
+    <h1 style="color: #22d3ee; margin: 0 0 20px 0; font-size: 28px;">Imperium</h1>
     <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 20px; margin: 20px 0;">
       <h2 style="color: #fbbf24; margin: 0 0 10px 0;">Recuperar Contrasena</h2>
       <p style="color: #94a3b8; margin: 0 0 20px 0; font-size: 16px;">Hola ${username}, recibimos una solicitud para restablecer tu contrasena.</p>

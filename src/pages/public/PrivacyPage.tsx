@@ -5,8 +5,8 @@ export function PrivacyPage() {
   return (
     <>
       <SEO
-        title="Política de Privacidad | Xnova"
-        description="Política de privacidad de Xnova. Cómo recopilamos, usamos y protegemos tus datos personales en nuestro juego de estrategia espacial play-to-earn."
+        title="Política de Privacidad | Imperium"
+        description="Política de privacidad de Imperium. Cómo recopilamos, usamos y protegemos tus datos personales en nuestro juego de estrategia espacial play-to-earn."
         noIndex
       />
 
@@ -15,8 +15,8 @@ export function PrivacyPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/navbar-logo.png" alt="Xnova" className="h-10 w-10 object-contain" />
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Orbitron, sans-serif' }}>XNOVA</span>
+                <img src="/navbar-logo.png" alt="Imperium" className="h-10 w-10 object-contain" />
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Orbitron, sans-serif' }}>IMPERIUM</span>
               </Link>
               <Link to="/register" className="px-5 py-2 text-sm font-bold bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all">Regístrate</Link>
             </div>
@@ -32,7 +32,7 @@ export function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-bold text-white mb-3">1. Información que Recopilamos</h2>
-              <p>Recopilamos la siguiente información cuando usas Xnova:</p>
+              <p>Recopilamos la siguiente información cuando usas Imperium:</p>
               <ul className="list-disc list-inside space-y-1 mt-2 text-slate-400">
                 <li><strong className="text-white">Datos de registro:</strong> correo electrónico, nombre de usuario, contraseña (cifrada).</li>
                 <li><strong className="text-white">Datos del juego:</strong> actividad, progreso, transacciones, alianzas, comunicaciones en el chat.</li>
@@ -106,7 +106,7 @@ export function PrivacyPage() {
               <span>·</span>
               <Link to="/blog" className="hover:text-cyan-400">Blog</Link>
             </div>
-            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Xnova. Todos los derechos reservados.</p>
+            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Imperium. Todos los derechos reservados.</p>
           </div>
         </footer>
       </div>

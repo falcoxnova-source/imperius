@@ -275,8 +275,8 @@ export function RegisterPage() {
   return (
     <>
       <SEO
-        title="Registrarse | Xnova"
-        description="Crea tu cuenta gratis en Xnova, el juego de estrategia espacial play-to-earn. Empieza a ganar criptomonedas jugando sin inversión. Registro rápido en 30 segundos."
+        title="Registrarse | Imperium"
+        description="Crea tu cuenta gratis en Imperium, el juego de estrategia espacial play-to-earn. Empieza a ganar criptomonedas jugando sin inversión. Registro rápido en 30 segundos."
       />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat overflow-hidden">
       <div className="absolute inset-0 bg-black/40" />
@@ -433,7 +433,7 @@ export function RegisterPage() {
         <div className="mt-8 pt-6 border-t border-space-700/50 space-y-2">
           <p className="text-center text-gray-500 text-xs leading-relaxed">
             Registrate gratis y empieza a ganar criptomonedas jugando.
-              Xnova es un juego de estrategia espacial tipo OGame
+              Imperium es un juego de estrategia espacial tipo OGame
             con recompensas blockchain play-to-earn. Gana cryptos sin inversion.
             Ganar bitcoin gratis, ganar ethereum, ganar USDT jugando videojuegos.
           </p>

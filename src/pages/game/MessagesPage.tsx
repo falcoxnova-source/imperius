@@ -2144,7 +2144,7 @@ function BroadcastView({ body }: { body: string }) {
         </div>
         <div>
           <p className={`font-orbitron text-lg ${TONE.purple.text}`}>Comunicado Oficial</p>
-          <p className="text-xs text-gray-400">Equipo de Xnova</p>
+          <p className="text-xs text-gray-400">Equipo de Imperium</p>
         </div>
       </div>
 

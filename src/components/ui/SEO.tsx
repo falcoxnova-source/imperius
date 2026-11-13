@@ -16,10 +16,10 @@ interface SEOProps {
   articleTags?: string[];
 }
 
-const BASE_URL = 'https://falcoxnova.com';
-const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
+const BASE_URL = 'https://imperium.xnova.games';
+const DEFAULT_IMAGE = `${BASE_URL}/og-imperium.jpg`;
 const FALLBACK_IMAGE = `${BASE_URL}/logo-512.png`;
-const SITE_NAME = 'Xnova';
+const SITE_NAME = 'Imperium';
 const TWITTER_HANDLE = '@FalcoXUniverso';
 
 /**
@@ -63,7 +63,7 @@ export function SEO({
   articleAuthor,
   articleTags,
 }: SEOProps) {
-  const fullTitle = title.includes('Xnova')
+  const fullTitle = title.includes('Imperium')
     ? title
     : `${title} | ${SITE_NAME}`;
   const url = resolveCanonical(canonicalUrl);
@@ -107,8 +107,8 @@ export function SEO({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
-      <meta property="og:image:width" content="512" />
-      <meta property="og:image:height" content="512" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
       {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
@@ -142,8 +142,8 @@ export const schemas = {
   organization: {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Xnova',
-    alternateName: ['Xnova Game', 'Xnova Online', 'Xnova OGame', 'Falco-X Universo'],
+    name: 'Imperium',
+    alternateName: ['Imperium Game', 'Imperium Online', 'Imperium OGame', 'Falco-X Universo'],
     url: BASE_URL,
     logo: `${BASE_URL}/logo-512.png`,
     sameAs: [
@@ -158,15 +158,15 @@ export const schemas = {
       availableLanguage: ['Spanish', 'English'],
     },
     description:
-      'Xnova: juego de estrategia espacial gratuito tipo OGame donde generas ingresos gratis vendiendo tus recursos en el mercado y ganas criptomonedas reales.',
+      'Imperium: juego de estrategia espacial gratuito tipo OGame donde generas ingresos gratis vendiendo tus recursos en el mercado y ganas criptomonedas reales.',
     foundingDate: '2025',
   },
 
   webApplication: {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Xnova',
-    alternateName: ['Xnova Game', 'Xnova Online', 'Xnova OGame'],
+    name: 'Imperium',
+    alternateName: ['Imperium Game', 'Imperium Online', 'Imperium OGame'],
     url: BASE_URL,
     applicationCategory: 'GameApplication',
     browserRequirements: 'Requires JavaScript. Requires HTML5.',
@@ -214,7 +214,7 @@ export const schemas = {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Xnova',
+      name: 'Imperium',
       logo: {
         '@type': 'ImageObject',
         url: `${BASE_URL}/logo-512.png`,

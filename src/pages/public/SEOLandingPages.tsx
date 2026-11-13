@@ -46,12 +46,12 @@ export function SEOLandingPage({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
-                <img src="/navbar-logo.png" alt="Xnova" className="h-10 w-10 object-contain" />
+                <img src="/navbar-logo.png" alt="Imperium" className="h-10 w-10 object-contain" />
                 <span
                   className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"
                   style={{ fontFamily: 'Orbitron, sans-serif' }}
                 >
-                  XNOVA
+                  IMPERIUM
                 </span>
               </Link>
               <Link
@@ -190,7 +190,7 @@ export function SEOLandingPage({
               </nav>
             )}
             <p className="text-xs text-slate-600">
-              © {new Date().getFullYear()} Xnova. Todos los derechos reservados.
+              © {new Date().getFullYear()} Imperium. Todos los derechos reservados.
             </p>
           </div>
         </footer>
@@ -204,27 +204,27 @@ export function SEOLandingPage({
 export function GanarCriptomonedasPage() {
   return (
     <SEOLandingPage
-      title="Ganar Criptomonedas Jugando Gratis | Xnova"
-      description="Gana criptomonedas jugando gratis en Xnova: produce recursos con tus minas, véndelos en el mercado P2P y retira tus tokens TUNG sin invertir nada."
-      keywords="ganar criptomonedas jugando, como ganar crypto de manera gratis, ganar crypto gratis, generar ingresos gratis, vender recursos y ganar dinero, Xnova, juego tipo OGame"
-      h1="Gana Criptomonedas Jugando Gratis con Xnova"
+      title="Ganar Criptomonedas Jugando Gratis | Imperium"
+      description="Gana criptomonedas jugando gratis en Imperium: produce recursos con tus minas, véndelos en el mercado P2P y retira tus tokens TUNG sin invertir nada."
+      keywords="ganar criptomonedas jugando, como ganar crypto de manera gratis, ganar crypto gratis, generar ingresos gratis, vender recursos y ganar dinero, Imperium, juego tipo OGame"
+      h1="Gana Criptomonedas Jugando Gratis con Imperium"
       subheading="Tus minas producen recursos sin coste, el mercado los convierte en tokens y tu wallet los convierte en dinero. Sin inversión y sin descargas."
       sections={[
         {
           icon: 'mina',
-          title: '¿Cómo se gana crypto de manera gratis en Xnova?',
+          title: '¿Cómo se gana crypto de manera gratis en Imperium?',
           content:
-            'En Xnova las criptomonedas no aparecen de la nada: las ganas convirtiendo producción en ventas. Tus minas de metal, cristal y deuterio producen las 24 horas, incluso desconectado, y ese material tiene demanda real entre los demás jugadores.\n\nCuando publicas una oferta en el mercado P2P y otro jugador la compra, recibes tokens TUNG al instante. Desde la wallet integrada puedes retirarlos y convertirlos en criptomonedas reales.',
+            'En Imperium las criptomonedas no aparecen de la nada: las ganas convirtiendo producción en ventas. Tus minas de metal, cristal y deuterio producen las 24 horas, incluso desconectado, y ese material tiene demanda real entre los demás jugadores.\n\nCuando publicas una oferta en el mercado P2P y otro jugador la compra, recibes tokens TUNG al instante. Desde la wallet integrada puedes retirarlos y convertirlos en criptomonedas reales.',
         },
         {
           icon: 'mercado',
           title: 'Vender recursos en el mercado: tu principal fuente de ingresos gratis',
           content:
-            'Muchos jugadores nuevos se centran en construir flota y olvidan lo importante: el excedente que no usas es dinero parado. Vender ese excedente de forma constante es lo que convierte a Xnova en una forma de generar ingresos gratis y no solo en un juego.\n\nCompra barato cuando un recurso sobra, vende cuando escasea y tu margen crecerá sin poner nada de tu bolsillo.',
+            'Muchos jugadores nuevos se centran en construir flota y olvidan lo importante: el excedente que no usas es dinero parado. Vender ese excedente de forma constante es lo que convierte a Imperium en una forma de generar ingresos gratis y no solo en un juego.\n\nCompra barato cuando un recurso sobra, vende cuando escasea y tu margen crecerá sin poner nada de tu bolsillo.',
         },
         {
           icon: 'formas',
-          title: 'Todas las formas de ganar dinero gratis en Xnova',
+          title: 'Todas las formas de ganar dinero gratis en Imperium',
           content:
             'Venta de recursos en el mercado P2P, misiones diarias y premium, expediciones con hallazgos aleatorios, botín de las batallas que ganas, comisiones recurrentes por referidos y participación en el jackpot y los pools de premios.\n\nDiversificar entre varias de estas fuentes es la forma más estable de aumentar tus ganancias mensuales.',
         },
@@ -232,21 +232,21 @@ export function GanarCriptomonedasPage() {
           icon: 'seguridad',
           title: '¿Es seguro? ¿Realmente puedo retirar el dinero?',
           content:
-            'Xnova opera sobre la red BSC y los movimientos del token TUNG son verificables públicamente en el explorador de bloques.\n\nPara retirar solo necesitas una wallet compatible (MetaMask, Trust Wallet u otra Web3), indicar el importe y confirmar. Los fondos llegan tras la confirmación en cadena.',
+            'Imperium opera sobre la red BSC y los movimientos del token TUNG son verificables públicamente en el explorador de bloques.\n\nPara retirar solo necesitas una wallet compatible (MetaMask, Trust Wallet u otra Web3), indicar el importe y confirmar. Los fondos llegan tras la confirmación en cadena.',
         },
       ]}
       faqs={[
         {
           q: '¿Necesito invertir dinero para empezar a ganar criptomonedas?',
-          a: 'No. Xnova es 100% gratuito. No necesitas comprar tokens ni NFTs ni hacer ningún depósito: te registras, construyes tus minas y empiezas a vender.',
+          a: 'No. Imperium es 100% gratuito. No necesitas comprar tokens ni NFTs ni hacer ningún depósito: te registras, construyes tus minas y empiezas a vender.',
         },
         {
           q: '¿Cuánto tiempo toma ganar mis primeras criptomonedas?',
           a: 'Puedes cerrar tu primera venta en el mercado el mismo día que empiezas, en cuanto tengas excedente de metal o cristal.',
         },
         {
-          q: '¿Puedo jugar a Xnova desde el celular?',
-          a: 'Sí. Xnova funciona en cualquier navegador: PC, móvil Android, iPhone o tablet. Sin descargas.',
+          q: '¿Puedo jugar a Imperium desde el celular?',
+          a: 'Sí. Imperium funciona en cualquier navegador: PC, móvil Android, iPhone o tablet. Sin descargas.',
         },
         {
           q: '¿De dónde sale el valor de lo que gano?',
@@ -261,11 +261,11 @@ export function GanarCriptomonedasPage() {
 export function JuegosPlayToEarnPage() {
   return (
     <SEOLandingPage
-      title="Juegos Play to Earn Gratis Sin Inversión | Xnova"
-      description="Xnova es un juego play to earn gratis sin inversión: produce recursos, véndelos en el mercado y gana criptomonedas reales sin depositar dinero."
-      keywords="juegos play to earn, P2E gratis, juegos para ganar crypto, play to earn sin inversión, generar ingresos gratis, Xnova, juego tipo OGame"
+      title="Juegos Play to Earn Gratis Sin Inversión | Imperium"
+      description="Imperium es un juego play to earn gratis sin inversión: produce recursos, véndelos en el mercado y gana criptomonedas reales sin depositar dinero."
+      keywords="juegos play to earn, P2E gratis, juegos para ganar crypto, play to earn sin inversión, generar ingresos gratis, Imperium, juego tipo OGame"
       h1="Juegos Play to Earn Gratis Sin Inversión"
-      subheading="Los P2E que exigen comprar un NFT antes de ganar nada no son gratis. Xnova sí: te registras, produces y vendes."
+      subheading="Los P2E que exigen comprar un NFT antes de ganar nada no son gratis. Imperium sí: te registras, produces y vendes."
       sections={[
         {
           icon: 'p2e',
@@ -275,15 +275,15 @@ export function JuegosPlayToEarnPage() {
         },
         {
           icon: 'gratis',
-          title: 'Xnova es gratis de verdad, sin letra pequeña',
+          title: 'Imperium es gratis de verdad, sin letra pequeña',
           content:
-            'En Xnova no hay que comprar un NFT, ni bloquear tokens, ni hacer un depósito mínimo para poder ganar. El depósito existe solo para quien quiera acelerar su progreso, nunca como requisito.\n\nEsto significa que puedes evaluar el juego durante semanas sin arriesgar absolutamente nada y generar ingresos gratis desde el primer día vendiendo tus recursos.',
+            'En Imperium no hay que comprar un NFT, ni bloquear tokens, ni hacer un depósito mínimo para poder ganar. El depósito existe solo para quien quiera acelerar su progreso, nunca como requisito.\n\nEsto significa que puedes evaluar el juego durante semanas sin arriesgar absolutamente nada y generar ingresos gratis desde el primer día vendiendo tus recursos.',
         },
         {
           icon: 'estrategia',
           title: 'No es un clicker: es estrategia espacial tipo OGame',
           content:
-            'Xnova es un juego de estrategia espacial tipo OGame: gestión de recursos, investigación tecnológica, astillero, flotas, defensas, combate y alianzas.\n\nLa recompensa económica llega como consecuencia de jugar bien, no de pulsar un botón repetidamente. Eso hace que la economía sea mucho más sostenible.',
+            'Imperium es un juego de estrategia espacial tipo OGame: gestión de recursos, investigación tecnológica, astillero, flotas, defensas, combate y alianzas.\n\nLa recompensa económica llega como consecuencia de jugar bien, no de pulsar un botón repetidamente. Eso hace que la economía sea mucho más sostenible.',
         },
         {
           icon: 'evaluar',
@@ -295,18 +295,18 @@ export function JuegosPlayToEarnPage() {
       faqs={[
         {
           q: '¿Son realmente gratis los juegos play to earn?',
-          a: 'Algunos sí. Xnova lo es: no exige compra inicial de ningún tipo. Muchos otros títulos del sector requieren adquirir activos antes de poder ganar.',
+          a: 'Algunos sí. Imperium lo es: no exige compra inicial de ningún tipo. Muchos otros títulos del sector requieren adquirir activos antes de poder ganar.',
         },
         {
           q: '¿Qué juego P2E paga más?',
-          a: 'Depende de tu dedicación y de la economía del juego. En Xnova la fuente principal es el mercado: cuanto más excedente vendes, más ganas.',
+          a: 'Depende de tu dedicación y de la economía del juego. En Imperium la fuente principal es el mercado: cuanto más excedente vendes, más ganas.',
         },
         {
           q: '¿Necesito saber de criptomonedas para jugar?',
           a: 'No. Puedes jugar y acumular tokens sin conocimientos previos. Solo necesitarás una wallet cuando decidas retirar.',
         },
       ]}
-      ctaText="Jugar gratis a Xnova"
+      ctaText="Jugar gratis a Imperium"
     />
   );
 }
@@ -314,23 +314,23 @@ export function JuegosPlayToEarnPage() {
 export function AlternativaOGamePage() {
   return (
     <SEOLandingPage
-      title="Alternativa a OGame con Criptomonedas | Xnova"
-      description="Xnova es la alternativa a OGame con criptomonedas: misma estrategia espacial, pero vendes tus recursos en el mercado y ganas dinero real gratis."
-      keywords="alternativa OGame, OGame con crypto, juego como OGame, xnova ogame, OGame ganar dinero, juego estrategia espacial P2E, Xnova"
-      h1="Xnova: La Alternativa a OGame que te Paga por Jugar"
+      title="Alternativa a OGame con Criptomonedas | Imperium"
+      description="Imperium es la alternativa a OGame con criptomonedas: misma estrategia espacial, pero vendes tus recursos en el mercado y ganas dinero real gratis."
+      keywords="alternativa OGame, OGame con crypto, juego como OGame, xnova ogame, OGame ganar dinero, juego estrategia espacial P2E, Imperium"
+      h1="Imperium: La Alternativa a OGame que te Paga por Jugar"
       subheading="Toda la estrategia y profundidad de OGame, pero con recompensas en criptomonedas reales gracias al mercado de recursos."
       sections={[
         {
           icon: 'motivo',
           title: '¿Por qué buscar una alternativa a OGame?',
           content:
-            'OGame es un clásico que lleva más de 20 años en activo. Sin embargo, tiene limitaciones: no ofrece recompensas reales, su interfaz se ha quedado anticuada y la comunidad ha disminuido.\n\nXnova toma todo lo bueno de OGame y lo lleva al siguiente nivel con gráficos modernos, nuevas mecánicas y recompensas en criptomonedas.',
+            'OGame es un clásico que lleva más de 20 años en activo. Sin embargo, tiene limitaciones: no ofrece recompensas reales, su interfaz se ha quedado anticuada y la comunidad ha disminuido.\n\nImperium toma todo lo bueno de OGame y lo lleva al siguiente nivel con gráficos modernos, nuevas mecánicas y recompensas en criptomonedas.',
         },
         {
           icon: 'mecanicas',
           title: 'Mismas mecánicas, mejores recompensas',
           content:
-            'Si vienes de OGame, te sentirás como en casa: gestión de metal, cristal y deuterio, construcción de minas y edificios, investigación tecnológica, astillero de naves, flotas espaciales, sistema de alianzas y combate táctico.\n\nLa diferencia: en Xnova ese metal y ese cristal se venden en un mercado P2P real y te generan tokens TUNG. Tu tiempo y tu estrategia se traducen en dinero.',
+            'Si vienes de OGame, te sentirás como en casa: gestión de metal, cristal y deuterio, construcción de minas y edificios, investigación tecnológica, astillero de naves, flotas espaciales, sistema de alianzas y combate táctico.\n\nLa diferencia: en Imperium ese metal y ese cristal se venden en un mercado P2P real y te generan tokens TUNG. Tu tiempo y tu estrategia se traducen en dinero.',
         },
         {
           icon: 'blockchain',
@@ -341,15 +341,15 @@ export function AlternativaOGamePage() {
       ]}
       faqs={[
         {
-          q: '¿Xnova es un clon de OGame?',
-          a: 'No. Xnova está inspirado en OGame, pero tiene identidad propia: mercado P2P, misiones, token TUNG, wallet integrada y una interfaz completamente renovada.',
+          q: '¿Imperium es un clon de OGame?',
+          a: 'No. Imperium está inspirado en OGame, pero tiene identidad propia: mercado P2P, misiones, token TUNG, wallet integrada y una interfaz completamente renovada.',
         },
         {
-          q: '¿Puedo transferir mi cuenta de OGame a Xnova?',
-          a: 'No, son juegos independientes. Pero si eres veterano de OGame, dominarás Xnova en minutos: las mecánicas son familiares.',
+          q: '¿Puedo transferir mi cuenta de OGame a Imperium?',
+          a: 'No, son juegos independientes. Pero si eres veterano de OGame, dominarás Imperium en minutos: las mecánicas son familiares.',
         },
         {
-          q: '¿Qué ventajas tiene Xnova sobre OGame?',
+          q: '¿Qué ventajas tiene Imperium sobre OGame?',
           a: 'Puedes generar ingresos gratis vendiendo recursos, la interfaz es moderna, hay eventos regulares y soporte en español e inglés.',
         },
       ]}
@@ -361,35 +361,35 @@ export function AlternativaOGamePage() {
 export function GanarDineroJugandoPage() {
   return (
     <SEOLandingPage
-      title="Ganar Dinero Jugando Desde Casa Sin Invertir | Xnova"
-      description="Gana dinero jugando desde casa sin invertir: en Xnova produces recursos gratis, los vendes en el mercado y conviertes tus tokens TUNG en dinero real."
-      keywords="ganar dinero jugando, generar ingresos gratis, como generar ingresos gratis, juegos que pagan dinero real, ingresos extra jugando, vender recursos y ganar dinero, Xnova"
+      title="Ganar Dinero Jugando Desde Casa Sin Invertir | Imperium"
+      description="Gana dinero jugando desde casa sin invertir: en Imperium produces recursos gratis, los vendes en el mercado y conviertes tus tokens TUNG en dinero real."
+      keywords="ganar dinero jugando, generar ingresos gratis, como generar ingresos gratis, juegos que pagan dinero real, ingresos extra jugando, vender recursos y ganar dinero, Imperium"
       h1="Gana Dinero Jugando Desde Casa Sin Invertir"
-      subheading="Convierte tu tiempo de juego en ingresos reales. En Xnova el excedente de tus minas se vende en el mercado y se paga en tokens."
+      subheading="Convierte tu tiempo de juego en ingresos reales. En Imperium el excedente de tus minas se vende en el mercado y se paga en tokens."
       sections={[
         {
           icon: 'casa',
           title: 'Generar ingresos gratis desde casa es posible',
           content:
-            'Ganar dinero desde casa jugando ya no exige ser profesional ni hacer streaming. Los juegos play-to-earn como Xnova permiten generar ingresos simplemente jugando bien.\n\nConstruyes tu imperio, produces recursos sin coste y los conviertes en tokens vendiéndolos a otros jugadores.',
+            'Ganar dinero desde casa jugando ya no exige ser profesional ni hacer streaming. Los juegos play-to-earn como Imperium permiten generar ingresos simplemente jugando bien.\n\nConstruyes tu imperio, produces recursos sin coste y los conviertes en tokens vendiéndolos a otros jugadores.',
         },
         {
           icon: 'fuentes',
-          title: 'Múltiples formas de ganar en Xnova',
+          title: 'Múltiples formas de ganar en Imperium',
           content:
-            'En Xnova tienes varias fuentes de ingresos: la venta de recursos en el mercado P2P (la principal), la producción pasiva de tus edificios, el botín de las batallas, las misiones diarias y el sistema de referidos con comisiones recurrentes.\n\nDiversificar entre varias fuentes es la clave para que tus ingresos sean estables mes a mes.',
+            'En Imperium tienes varias fuentes de ingresos: la venta de recursos en el mercado P2P (la principal), la producción pasiva de tus edificios, el botín de las batallas, las misiones diarias y el sistema de referidos con comisiones recurrentes.\n\nDiversificar entre varias fuentes es la clave para que tus ingresos sean estables mes a mes.',
         },
         {
           icon: 'mercado',
           title: 'El mercado convierte recursos en dinero',
           content:
-            'La forma más directa de ganar dinero gratis en Xnova es publicar ofertas de metal, cristal o deuterio en el mercado. Otro jugador paga por ellas y tú recibes tokens TUNG al instante.\n\nNo es un esquema de enriquecimiento rápido: requiere constancia y algo de estrategia de precios. Pero la barrera de entrada es cero.',
+            'La forma más directa de ganar dinero gratis en Imperium es publicar ofertas de metal, cristal o deuterio en el mercado. Otro jugador paga por ellas y tú recibes tokens TUNG al instante.\n\nNo es un esquema de enriquecimiento rápido: requiere constancia y algo de estrategia de precios. Pero la barrera de entrada es cero.',
         },
       ]}
       faqs={[
         {
           q: '¿Realmente se puede ganar dinero jugando?',
-          a: 'Sí. En Xnova el dinero sale de la demanda real de recursos entre jugadores, por eso las ventas del mercado se pagan de verdad.',
+          a: 'Sí. En Imperium el dinero sale de la demanda real de recursos entre jugadores, por eso las ventas del mercado se pagan de verdad.',
         },
         {
           q: '¿Cuánto dinero puedo ganar al mes?',
@@ -408,17 +408,17 @@ export function GanarDineroJugandoPage() {
 export function CincoPasosPage() {
   return (
     <SEOLandingPage
-      title="5 Pasos para Ganar Criptomonedas Gratis | Xnova"
-      description="Guía de 5 pasos para ganar criptomonedas gratis en Xnova: regístrate, construye minas, vende tus recursos en el mercado y retira tus tokens TUNG."
-      keywords="5 pasos para ganar criptomonedas, como ganar crypto de manera gratis, guia ganar criptomonedas, empezar play to earn, generar ingresos gratis, Xnova"
-      h1="5 Pasos para Ganar Criptomonedas Gratis en Xnova"
+      title="5 Pasos para Ganar Criptomonedas Gratis | Imperium"
+      description="Guía de 5 pasos para ganar criptomonedas gratis en Imperium: regístrate, construye minas, vende tus recursos en el mercado y retira tus tokens TUNG."
+      keywords="5 pasos para ganar criptomonedas, como ganar crypto de manera gratis, guia ganar criptomonedas, empezar play to earn, generar ingresos gratis, Imperium"
+      h1="5 Pasos para Ganar Criptomonedas Gratis en Imperium"
       subheading="Una guía rápida y sencilla para empezar a ganar hoy mismo. Sin inversión, sin experiencia previa y sin complicaciones."
       sections={[
         {
           icon: 'paso1',
-          title: 'Paso 1: regístrate gratis en Xnova',
+          title: 'Paso 1: regístrate gratis en Imperium',
           content:
-            'Crear tu cuenta toma menos de un minuto. Solo necesitas un email y una contraseña. No te pedimos wallet, no necesitas depositar nada y no hay letra pequeña.\n\nXnova es 100% gratuito: sin costes ocultos, sin suscripciones y sin compras obligatorias.',
+            'Crear tu cuenta toma menos de un minuto. Solo necesitas un email y una contraseña. No te pedimos wallet, no necesitas depositar nada y no hay letra pequeña.\n\nImperium es 100% gratuito: sin costes ocultos, sin suscripciones y sin compras obligatorias.',
         },
         {
           icon: 'paso2',
@@ -430,7 +430,7 @@ export function CincoPasosPage() {
           icon: 'paso3',
           title: 'Paso 3: vende tus recursos en el mercado y gana dinero gratis',
           content:
-            'Este es el paso que convierte el juego en ingresos. Entra al mercado, publica una oferta de metal o cristal al precio que quieras y espera comprador.\n\nCuando otro jugador la acepta recibes tokens TUNG al instante. Repetirlo a diario es la base de todo ingreso estable en Xnova.',
+            'Este es el paso que convierte el juego en ingresos. Entra al mercado, publica una oferta de metal o cristal al precio que quieras y espera comprador.\n\nCuando otro jugador la acepta recibes tokens TUNG al instante. Repetirlo a diario es la base de todo ingreso estable en Imperium.',
         },
         {
           icon: 'paso4',
@@ -452,7 +452,7 @@ export function CincoPasosPage() {
         },
         {
           q: '¿Necesito experiencia previa en criptomonedas?',
-          a: 'No. Xnova está pensado para principiantes: puedes jugar y acumular tokens sin saber nada de crypto. Solo necesitas una wallet al retirar.',
+          a: 'No. Imperium está pensado para principiantes: puedes jugar y acumular tokens sin saber nada de crypto. Solo necesitas una wallet al retirar.',
         },
         {
           q: '¿Cómo se generan ingresos gratis sin invertir?',
@@ -460,7 +460,7 @@ export function CincoPasosPage() {
         },
         {
           q: '¿Puedo seguir estos 5 pasos desde el celular?',
-          a: 'Sí. Xnova funciona 100% en navegadores móviles: Android, iPhone o tablet. Sin descargar apps.',
+          a: 'Sí. Imperium funciona 100% en navegadores móviles: Android, iPhone o tablet. Sin descargar apps.',
         },
       ]}
       ctaText="Seguir los 5 pasos y ganar crypto"
@@ -471,11 +471,11 @@ export function CincoPasosPage() {
 export function GenerarIngresosGratisPage() {
   return (
     <SEOLandingPage
-      title="Como Generar Ingresos Gratis Desde Internet | Xnova"
-      description="Aprende cómo generar ingresos gratis sin invertir: en Xnova produces recursos con tus minas, los vendes en el mercado y cobras en criptomonedas."
-      keywords="como generar ingresos gratis, generar ingresos gratis, ganar dinero sin invertir, ingresos pasivos gratis, ganar crypto gratis, Xnova"
+      title="Como Generar Ingresos Gratis Desde Internet | Imperium"
+      description="Aprende cómo generar ingresos gratis sin invertir: en Imperium produces recursos con tus minas, los vendes en el mercado y cobras en criptomonedas."
+      keywords="como generar ingresos gratis, generar ingresos gratis, ganar dinero sin invertir, ingresos pasivos gratis, ganar crypto gratis, Imperium"
       h1="Cómo Generar Ingresos Gratis Sin Invertir Nada"
-      subheading="La mayoría de métodos para generar ingresos exigen capital inicial. En Xnova la materia prima te sale gratis: la producen tus minas."
+      subheading="La mayoría de métodos para generar ingresos exigen capital inicial. En Imperium la materia prima te sale gratis: la producen tus minas."
       sections={[
         {
           icon: 'problema',
@@ -485,9 +485,9 @@ export function GenerarIngresosGratisPage() {
         },
         {
           icon: 'solucion',
-          title: 'Cómo generar ingresos gratis en Xnova',
+          title: 'Cómo generar ingresos gratis en Imperium',
           content:
-            'En Xnova construyes minas de metal, cristal y deuterio. Producen las 24 horas del día, incluso desconectado, y no te cuestan nada.\n\nEse material tiene demanda real: otros jugadores lo necesitan para construir y avanzar. Cuando lo vendes en el mercado P2P recibes tokens TUNG, que puedes retirar a tu wallet.',
+            'En Imperium construyes minas de metal, cristal y deuterio. Producen las 24 horas del día, incluso desconectado, y no te cuestan nada.\n\nEse material tiene demanda real: otros jugadores lo necesitan para construir y avanzar. Cuando lo vendes en el mercado P2P recibes tokens TUNG, que puedes retirar a tu wallet.',
         },
         {
           icon: 'pasos',
@@ -505,7 +505,7 @@ export function GenerarIngresosGratisPage() {
       faqs={[
         {
           q: '¿De verdad se pueden generar ingresos gratis sin invertir?',
-          a: 'Sí, cuando produces algo que otros necesitan. En Xnova produces recursos sin coste y los vendes a otros jugadores en el mercado.',
+          a: 'Sí, cuando produces algo que otros necesitan. En Imperium produces recursos sin coste y los vendes a otros jugadores en el mercado.',
         },
         {
           q: '¿Cuál es la forma más rápida de empezar a generar ingresos?',
@@ -528,15 +528,15 @@ export function GenerarIngresosGratisPage() {
 export function VenderRecursosPage() {
   return (
     <SEOLandingPage
-      title="Vender Recursos y Ganar Dinero Gratis | Mercado de Xnova"
-      description="En el mercado de Xnova vendes metal, cristal y deuterio a otros jugadores y ganas dinero gratis en tokens TUNG. Tus minas producen la materia prima sin coste."
-      keywords="vender recursos y ganar dinero, mercado P2P de recursos, ganar dinero gratis, comerciar recursos juego, generar ingresos gratis, Xnova"
+      title="Vender Recursos y Ganar Dinero Gratis | Mercado de Imperium"
+      description="En el mercado de Imperium vendes metal, cristal y deuterio a otros jugadores y ganas dinero gratis en tokens TUNG. Tus minas producen la materia prima sin coste."
+      keywords="vender recursos y ganar dinero, mercado P2P de recursos, ganar dinero gratis, comerciar recursos juego, generar ingresos gratis, Imperium"
       h1="Vende tus Recursos en el Mercado y Gana Dinero Gratis"
-      subheading="El excedente que no usas es dinero parado. El mercado de Xnova lo convierte en tokens que puedes retirar."
+      subheading="El excedente que no usas es dinero parado. El mercado de Imperium lo convierte en tokens que puedes retirar."
       sections={[
         {
           icon: 'mercado',
-          title: 'Qué es el mercado de Xnova',
+          title: 'Qué es el mercado de Imperium',
           content:
             'El mercado es un tablón de ofertas entre jugadores. Publicas una cantidad de metal, cristal o deuterio al precio que decidas y cualquier jugador puede comprarla.\n\nEn cuanto alguien acepta tu oferta, los tokens TUNG entran en tu balance. No hay intermediarios ni esperas largas.',
         },
@@ -561,7 +561,7 @@ export function VenderRecursosPage() {
       ]}
       faqs={[
         {
-          q: '¿Cómo vendo mis recursos en Xnova?',
+          q: '¿Cómo vendo mis recursos en Imperium?',
           a: 'Entra a la sección Mercado, crea una oferta indicando el recurso, la cantidad y el precio, y publícala. Cobras cuando otro jugador la compra.',
         },
         {

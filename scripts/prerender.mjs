@@ -222,19 +222,20 @@ function buildMetaTags(route) {
   // Open Graph
   tags.push(`<meta property="og:type" content="${ogType}">`);
   tags.push(`<meta property="og:url" content="${url}">`);
-  tags.push(`<meta property="og:title" content="${escapeHtml(fullTitle)}">`);
-  tags.push(`<meta property="og:description" content="${escapeHtml(description)}">`);
+  tags.push(`<meta property="og:title" content="${escapeHtml(route.ogTitle || fullTitle)}">`);
+  tags.push(`<meta property="og:description" content="${escapeHtml(route.ogDescription || description)}">`);
   tags.push(`<meta property="og:image" content="${ogImage}">`);
-  tags.push(`<meta property="og:image:width" content="512">`);
-  tags.push(`<meta property="og:image:height" content="512">`);
+  tags.push(`<meta property="og:image:type" content="image/jpeg">`);
+  tags.push(`<meta property="og:image:width" content="1200">`);
+  tags.push(`<meta property="og:image:height" content="630">`);
   tags.push(`<meta property="og:site_name" content="${SITE_NAME}">`);
   tags.push(`<meta property="og:locale" content="${lang === 'es' ? 'es_ES' : 'en_US'}">`);
 
   // Twitter
   tags.push(`<meta name="twitter:card" content="summary_large_image">`);
   tags.push(`<meta name="twitter:url" content="${url}">`);
-  tags.push(`<meta name="twitter:title" content="${escapeHtml(fullTitle)}">`);
-  tags.push(`<meta name="twitter:description" content="${escapeHtml(description)}">`);
+  tags.push(`<meta name="twitter:title" content="${escapeHtml(route.ogTitle || fullTitle)}">`);
+  tags.push(`<meta name="twitter:description" content="${escapeHtml(route.ogDescription || description)}">`);
   tags.push(`<meta name="twitter:image" content="${ogImage}">`);
   tags.push(`<meta name="twitter:creator" content="@FalcoXUniverso">`);
 
@@ -298,13 +299,13 @@ for (const route of routes) {
   // Replace Open Graph title
   html = html.replace(
     /<meta property="og:title" content="[^"]*"/,
-    `<meta property="og:title" content="${escapeHtml(route.title)}"`
+    `<meta property="og:title" content="${escapeHtml(route.ogTitle || route.title)}"`
   );
 
   // Replace Open Graph description
   html = html.replace(
     /<meta property="og:description" content="[^"]*"/,
-    `<meta property="og:description" content="${escapeHtml(route.description)}"`
+    `<meta property="og:description" content="${escapeHtml(route.ogDescription || route.description)}"`
   );
 
   // Replace Open Graph URL
@@ -316,13 +317,13 @@ for (const route of routes) {
   // Replace Twitter title
   html = html.replace(
     /<meta name="twitter:title" content="[^"]*"/,
-    `<meta name="twitter:title" content="${escapeHtml(route.title)}"`
+    `<meta name="twitter:title" content="${escapeHtml(route.ogTitle || route.title)}"`
   );
 
   // Replace Twitter description
   html = html.replace(
     /<meta name="twitter:description" content="[^"]*"/,
-    `<meta name="twitter:description" content="${escapeHtml(route.description)}"`
+    `<meta name="twitter:description" content="${escapeHtml(route.ogDescription || route.description)}"`
   );
 
   // Replace hreflang alternates so they point at the current route.

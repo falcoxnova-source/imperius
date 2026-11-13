@@ -25,7 +25,7 @@ export function ForgotPasswordPage() {
   if (success) {
     return (
       <>
-      <SEO title="Correo Enviado | Xnova" description="Revisa tu bandeja de entrada para restablecer tu contraseña de Xnova." noIndex />
+      <SEO title="Correo Enviado | Imperium" description="Revisa tu bandeja de entrada para restablecer tu contraseña de Imperium." noIndex />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat">
         <div className="absolute inset-0 bg-black/40" />
 
@@ -61,8 +61,8 @@ export function ForgotPasswordPage() {
   return (
     <>
       <SEO
-        title="Recuperar Contraseña | Xnova"
-        description="¿Olvidaste tu contraseña de Xnova? Ingresa tu email y te enviaremos un enlace para restablecerla."
+        title="Recuperar Contraseña | Imperium"
+        description="¿Olvidaste tu contraseña de Imperium? Ingresa tu email y te enviaremos un enlace para restablecerla."
         noIndex
       />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat">

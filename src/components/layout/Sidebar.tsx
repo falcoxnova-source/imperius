@@ -381,7 +381,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
 
       <nav className="flex-1 px-2.5 py-2 overflow-y-auto space-y-0.5">
-        {menuItems.filter((item) => item.key !== 'heroShip' || heroAccess === true).map((item) => (
+        {menuItems
+          .filter((item) => item.key !== 'heroShip' || heroAccess === true)
+          .filter((item) => !['hallOfFame', 'topBattles', 'dailyMissions', 'combatSimulator', 'cosmetics'].includes(item.key))
+          .map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

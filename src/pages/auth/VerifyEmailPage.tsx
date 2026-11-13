@@ -44,8 +44,8 @@ export function VerifyEmailPage() {
   return (
     <>
       <SEO
-        title="Verificar Email | Xnova"
-        description="Verifica tu dirección de correo electrónico para activar tu cuenta de Xnova y empezar a jugar."
+        title="Verificar Email | Imperium"
+        description="Verifica tu dirección de correo electrónico para activar tu cuenta de Imperium y empezar a jugar."
         noIndex
       />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat">

@@ -78,8 +78,8 @@ function researchBonus(ship: HeroShip, key: (typeof attrs)[number]['key']): { le
 const slotConfig: Record<string, { label: string; icon: typeof Shield; color: string; border: string; pos: string }> = {
   weapon: { label: 'Gladius', icon: Crosshair, color: 'text-red-400', border: 'border-red-500/30', pos: 'left' },
   shield: { label: 'Scutum', icon: Shield, color: 'text-blue-400', border: 'border-blue-500/30', pos: 'right' },
-  module: { label: 'Insignia', icon: Zap, color: 'text-yellow-400', border: 'border-yellow-500/30', pos: 'top' },
-  reactor: { label: 'Fervor', icon: Gem, color: 'text-green-400', border: 'border-green-500/30', pos: 'bottom' },
+  module: { label: 'Galea', icon: Zap, color: 'text-yellow-400', border: 'border-yellow-500/30', pos: 'top' },
+  reactor: { label: 'Lorica', icon: Gem, color: 'text-green-400', border: 'border-green-500/30', pos: 'bottom' },
 };
 
 const rarityCfg: Record<string, { text: string; border: string; bg: string; badge: string; label: string }> = {
@@ -369,16 +369,16 @@ function HeroShipPageInner() {
       {/* Header */}
       <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border shadow-lg ${skinBorder}`}>
         <div className="absolute inset-0">
-          <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1779504504032-03ace2bf17c9589c4c14bf79813ec90f.jpg"
-            alt="" className="w-full h-full object-cover opacity-30" />
+          <img src="/Imagenes/Heroe%20imerial/heroe%20imperial.webp"
+            alt="" className="w-full h-full object-cover object-top opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-800/50 to-slate-900/80" />
         </div>
         <div className="relative p-5">
           <div className="flex items-center gap-4">
             <div className="relative shrink-0">
-              <div className={`w-20 h-20 rounded-2xl overflow-hidden border-2 shadow-lg ${skinBorder}`}>
-                <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1779504504032-03ace2bf17c9589c4c14bf79813ec90f.jpg"
-                  alt="Héroe Imperial" className="w-full h-full object-cover" />
+              <div className={`w-28 h-40 sm:w-36 sm:h-52 rounded-2xl overflow-hidden border-2 shadow-lg bg-white ${skinBorder}`}>
+                <img src="/Imagenes/Heroe%20imerial/heroe%20imperial.webp"
+                  alt="Héroe Imperial" className="w-full h-full object-cover object-top" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 shadow-lg shadow-green-500/50" />
             </div>
@@ -658,35 +658,29 @@ function HeroShipPageInner() {
           <div className="relative">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 text-center">Equipamiento del Héroe</h3>
 
-            {/* Grid layout: top center = module, middle left = weapon, middle right = shield, bottom center = reactor */}
-            <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
-              {/* TOP: Module */}
-              <div className="col-start-2">
+            {/* Grid layout: izquierda = galea + gladius, centro = heroe, derecha = scutum + lorica */}
+            <div className="grid grid-cols-[1fr_auto_1fr] gap-3 max-w-lg mx-auto items-stretch">
+              {/* LEFT: Module + Weapon */}
+              <div className="col-start-1 row-start-1 flex flex-col justify-center">
                 <VisualSlot slotKey="module" slotData={ship.module_slot} onUnequip={unequipSlot} expeditionActive={active !== null} />
               </div>
-              {/* MIDDLE LEFT: Weapon */}
-              <div className="col-start-1 row-start-2">
+              <div className="col-start-1 row-start-2 flex flex-col justify-center">
                 <VisualSlot slotKey="weapon" slotData={ship.weapon_slot} onUnequip={unequipSlot} expeditionActive={active !== null} />
               </div>
-              {/* CENTER: Ship level */}
-              <div className="col-start-2 row-start-2 flex items-center justify-center">
-                <div className="relative w-16 h-16">
-                  <div className="absolute inset-4 rounded-full border border-amber-500/30 shadow-lg shadow-amber-500/10" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative">
-                      <div className="w-14 h-14 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-xl shadow-amber-500/30 border-2 border-amber-300/50">
-                        <span className="text-xl font-bold text-stone-900 font-serif">{ship.level}</span>
-                      </div>
-                    </div>
+              {/* CENTER: Hero card */}
+              <div className="col-start-2 row-start-1 row-span-2 flex items-center justify-center">
+                <div className="relative w-32 h-48 sm:w-44 sm:h-64 rounded-2xl overflow-hidden border-2 border-amber-500/50 shadow-xl shadow-amber-500/20 bg-white">
+                  <img src="/Imagenes/Heroe%20imerial/heroe%20imperial.webp" alt="Héroe Imperial" className="w-full h-full object-cover object-top" />
+                  <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-10 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-xl shadow-amber-500/30 border-2 border-amber-300/50">
+                    <span className="text-base font-bold text-stone-900 font-serif">{ship.level}</span>
                   </div>
                 </div>
               </div>
-              {/* MIDDLE RIGHT: Shield */}
-              <div className="col-start-3 row-start-2">
+              {/* RIGHT: Shield + Reactor */}
+              <div className="col-start-3 row-start-1 flex flex-col justify-center">
                 <VisualSlot slotKey="shield" slotData={ship.shield_slot} onUnequip={unequipSlot} expeditionActive={active !== null} />
               </div>
-              {/* BOTTOM: Reactor */}
-              <div className="col-start-2 row-start-3">
+              <div className="col-start-3 row-start-2 flex flex-col justify-center">
                 <VisualSlot slotKey="reactor" slotData={ship.reactor_slot} onUnequip={unequipSlot} expeditionActive={active !== null} />
               </div>
             </div>

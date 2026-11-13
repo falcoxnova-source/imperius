@@ -1,5 +1,5 @@
-# Robots.txt for Xnova
-# https://falcoxnova.com/
+# Robots.txt for Imperium
+# https://imperium.xnova.games/
 # Juego de estrategia espacial tipo OGame - Genera ingresos gratis vendiendo recursos
 
 User-agent: *
@@ -28,7 +28,7 @@ Disallow: /verify-email
 Disallow: /forgot-password
 
 # Sitemap location
-Sitemap: https://falcoxnova.com/sitemap.xml
+Sitemap: https://imperium.xnova.games/sitemap.xml
 
 # Specific rules for major search engines
 User-agent: Googlebot

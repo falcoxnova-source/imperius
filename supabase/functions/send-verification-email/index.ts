@@ -115,7 +115,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const verificationUrl = `${redirect_url || 'https://falco-x.com'}/verify-email?token=${token}`;
+    const verificationUrl = `${redirect_url || 'https://imperium.xnova.games'}/verify-email?token=${token}`;
 
     const client = new SMTPClient({
       user: smtpConfig.smtp_user,
@@ -128,13 +128,13 @@ Deno.serve(async (req: Request) => {
     });
 
     const fromEmail = smtpConfig.smtp_from_email || smtpConfig.smtp_user;
-    const fromName = smtpConfig.smtp_from_name || "Falco-X Universo";
+    const fromName = smtpConfig.smtp_from_name || "Imperium";
 
     await client.sendAsync({
       from: `${fromName} <${fromEmail}>`,
       to: email,
-      subject: "Confirma tu cuenta - Falco-X Universo",
-      text: `Hola ${username || 'Comandante'},\n\nGracias por registrarte en Falco-X Universo.\n\nPara activar tu cuenta, haz clic en el siguiente enlace:\n${verificationUrl}\n\nEste enlace expira en 24 horas.\n\nVisita nuestras plataformas:\n- Web oficial: https://falcox.net/\n- Exchange: https://falcoxswap.com/?inputCurrency=BNB&outputCurrency=0x09514EcF8270C12101D077B5e8B034B164F71C5f\n\nSi no creaste esta cuenta, puedes ignorar este mensaje.\n\n-- Falco-X Universo`,
+      subject: "Confirma tu cuenta - Imperium",
+      text: `Hola ${username || 'Comandante'},\n\nGracias por registrarte en Imperium.\n\nPara activar tu cuenta, haz clic en el siguiente enlace:\n${verificationUrl}\n\nEste enlace expira en 24 horas.\n\nVisita nuestras plataformas:\n- Web oficial: https://falcox.net/\n- Exchange: https://falcoxswap.com/?inputCurrency=BNB&outputCurrency=0x09514EcF8270C12101D077B5e8B034B164F71C5f\n\nSi no creaste esta cuenta, puedes ignorar este mensaje.\n\n-- Imperium`,
       attachment: [
         {
           data: `<!DOCTYPE html>
@@ -151,7 +151,7 @@ Deno.serve(async (req: Request) => {
           <!-- Header with Logo/Banner -->
           <tr>
             <td style="text-align: center; padding-bottom: 20px;">
-              <img src="https://photos.pinksale.finance/file/pinksale-logo-upload/1768087759296-101b69e5b11592c274998ca8b9b37290.jpg" alt="Falco-X" style="max-width: 100%; height: auto; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 200, 255, 0.3);">
+              <img src="https://imperium.xnova.games/logo-512.png" alt="Imperium" style="max-width: 100%; height: auto; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 200, 255, 0.3);">
             </td>
           </tr>
           
@@ -162,7 +162,7 @@ Deno.serve(async (req: Request) => {
                 <!-- Welcome Section -->
                 <tr>
                   <td style="padding: 40px 40px 20px 40px; text-align: center;">
-                    <h1 style="color: #22d3ee; margin: 0 0 8px 0; font-size: 32px; font-weight: 700; text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);">Falco-X Universo</h1>
+                    <h1 style="color: #22d3ee; margin: 0 0 8px 0; font-size: 32px; font-weight: 700; text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);">Imperium</h1>
                     <p style="color: #94a3b8; margin: 0; font-size: 16px;">Tu aventura espacial comienza aqui</p>
                   </td>
                 </tr>
@@ -174,7 +174,7 @@ Deno.serve(async (req: Request) => {
                       <tr>
                         <td style="padding: 30px; text-align: center;">
                           <h2 style="color: #f8fafc; margin: 0 0 12px 0; font-size: 24px;">Bienvenido, ${username || 'Comandante'}!</h2>
-                          <p style="color: #cbd5e1; margin: 0 0 24px 0; font-size: 16px; line-height: 1.6;">Gracias por unirte a Falco-X Universo. Para comenzar tu conquista del cosmos, confirma tu cuenta haciendo clic en el boton.</p>
+                          <p style="color: #cbd5e1; margin: 0 0 24px 0; font-size: 16px; line-height: 1.6;">Gracias por unirte a Imperium. Para comenzar tu conquista del cosmos, confirma tu cuenta haciendo clic en el boton.</p>
                           <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%); color: #0f172a; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 16px rgba(34, 211, 238, 0.4); transition: all 0.3s;">Confirmar mi Cuenta</a>
                         </td>
                       </tr>
@@ -238,7 +238,7 @@ Deno.serve(async (req: Request) => {
           <tr>
             <td style="padding: 30px 20px; text-align: center;">
               <p style="color: #475569; font-size: 12px; margin: 0 0 8px 0;">Si no creaste esta cuenta, puedes ignorar este mensaje de forma segura.</p>
-              <p style="color: #334155; font-size: 11px; margin: 0;">© 2026 Falco-X Universo. Todos los derechos reservados.</p>
+              <p style="color: #334155; font-size: 11px; margin: 0;">© 2026 Imperium. Todos los derechos reservados.</p>
             </td>
           </tr>
         </table>

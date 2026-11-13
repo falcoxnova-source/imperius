@@ -8,7 +8,7 @@ const TUNG_SWAP_URL =
   'https://falcoxswap.com/?inputCurrency=BNB&outputCurrency=0x09514EcF8270C12101D077B5e8B034B164F71C5f';
 
 const KEYWORDS =
-  'Xnova, xnova juego, xnova online, xnova ogame, juego tipo OGame, alternativa a OGame, como generar ingresos gratis, generar ingresos gratis, como ganar crypto de manera gratis, ganar crypto gratis, ganar criptomonedas jugando, vender recursos y ganar dinero, mercado P2P de recursos, juegos play to earn gratis sin inversion, ganar dinero gratis por internet, token TUNG';
+  'Imperium, xnova juego, xnova online, xnova ogame, juego tipo OGame, alternativa a OGame, como generar ingresos gratis, generar ingresos gratis, como ganar crypto de manera gratis, ganar crypto gratis, ganar criptomonedas jugando, vender recursos y ganar dinero, mercado P2P de recursos, juegos play to earn gratis sin inversion, ganar dinero gratis por internet, token TUNG';
 
 const faqData = [
   {
@@ -73,7 +73,7 @@ export function LandingPage() {
   ];
 
   const breadcrumbSchema = schemas.breadcrumbList([
-    { name: 'Inicio', url: 'https://falcoxnova.com/' },
+    { name: 'Inicio', url: 'https://imperium.xnova.games/' },
   ]);
 
   const faqSchema = schemas.faqPage(faqData);
@@ -286,7 +286,7 @@ export function LandingPage() {
                   {/* Glow effect behind image */}
                   <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-orange-500/20 rounded-3xl blur-3xl" />
                   <img
-                    src="https://photos.pinksale.finance/file/pinksale-logo-upload/1780084974042-31e656c333398b759f995c601c1e102e.png"
+                    src="/Imagenes/Visuales/overview_city.webp"
                     alt="Imperium - Juego de estrategia de imperios"
                     loading="lazy"
                     className="relative w-full max-w-md lg:max-w-lg rounded-2xl shadow-2xl shadow-amber-500/10 border border-white/5"

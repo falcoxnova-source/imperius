@@ -5,8 +5,8 @@ export function NotFoundPage() {
   return (
     <>
       <SEO
-        title="Página No Encontrada | Xnova"
-        description="La página que buscas no existe. Vuelve al inicio y descubre el mejor juego de estrategia espacial play-to-earn estilo OGame y Xnova."
+        title="Página No Encontrada | Imperium"
+        description="La página que buscas no existe. Vuelve al inicio y descubre el mejor juego de estrategia espacial play-to-earn estilo OGame y Imperium."
         noIndex
       />
 

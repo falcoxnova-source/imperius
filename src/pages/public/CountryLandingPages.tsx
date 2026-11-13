@@ -33,32 +33,32 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-argentina',
     country: 'Argentina',
-    title: 'Ganar Criptomonedas Jugando en Argentina Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Argentina Gratis | Imperium',
     description:
       'Gana criptomonedas jugando desde Argentina sin invertir: produce recursos, vendelos en el mercado P2P y cobra en USDT o en pesos por transferencia.',
     keywords:
       'ganar criptomonedas jugando argentina, ganar dolares jugando argentina, ganar usdt gratis argentina, ganar dinero por internet argentina sin invertir, juegos play to earn argentina, ganar plata jugando, xnova argentina',
     h1: 'Ganar Criptomonedas Jugando en Argentina, Gratis y sin Invertir',
     subheading:
-      'Xnova es un juego de estrategia espacial tipo OGame donde tus minas producen recursos solas. Los vendes en el mercado entre jugadores y cobras en USDT o en pesos argentinos por transferencia.',
+      'Imperium es un juego de estrategia espacial tipo OGame donde tus minas producen recursos solas. Los vendes en el mercado entre jugadores y cobras en USDT o en pesos argentinos por transferencia.',
     sections: [
       {
         icon: '',
         title: 'Por que funciona especialmente bien en Argentina',
         content:
-          'En Argentina el problema no es ganar pesos, es que los pesos pierden valor mientras estan en tu cuenta. Xnova te paga en tokens que puedes convertir a USDT, una stablecoin anclada al dolar, asi que lo que ganas conserva su valor aunque pasen meses.\n\nNo necesitas comprar nada para empezar. El juego es gratuito: te registras, subes tus minas de metal, cristal y deuterio, y esas minas producen las 24 horas aunque cierres el navegador. Lo que produces es tuyo y lo vendes cuando quieras.',
+          'En Argentina el problema no es ganar pesos, es que los pesos pierden valor mientras estan en tu cuenta. Imperium te paga en tokens que puedes convertir a USDT, una stablecoin anclada al dolar, asi que lo que ganas conserva su valor aunque pasen meses.\n\nNo necesitas comprar nada para empezar. El juego es gratuito: te registras, subes tus minas de metal, cristal y deuterio, y esas minas producen las 24 horas aunque cierres el navegador. Lo que produces es tuyo y lo vendes cuando quieras.',
       },
       {
         icon: '',
         title: 'Como cobrar desde Argentina',
         content:
-          'El mercado P2P de Xnova conecta directamente a los jugadores. Publicas una oferta indicando cuanto vendes y a que precio, eliges el metodo de pago y esperas a que otro jugador la tome.\n\nDesde Argentina tienes dos caminos. El primero es vender contra USDT dentro del propio juego y retirar la stablecoin a tu wallet. El segundo es usar el metodo "Pago / Transferencia (ARS)": otro jugador te transfiere pesos a tu cuenta bancaria o billetera virtual y tu liberas los tokens. Los fondos quedan retenidos en garantia hasta que confirmas que recibiste el pago.',
+          'El mercado P2P de Imperium conecta directamente a los jugadores. Publicas una oferta indicando cuanto vendes y a que precio, eliges el metodo de pago y esperas a que otro jugador la tome.\n\nDesde Argentina tienes dos caminos. El primero es vender contra USDT dentro del propio juego y retirar la stablecoin a tu wallet. El segundo es usar el metodo "Pago / Transferencia (ARS)": otro jugador te transfiere pesos a tu cuenta bancaria o billetera virtual y tu liberas los tokens. Los fondos quedan retenidos en garantia hasta que confirmas que recibiste el pago.',
       },
       {
         icon: '',
         title: 'Cuanto tiempo hay que dedicarle',
         content:
-          'Xnova no es un clicker: no hay que estar pegado a la pantalla. La produccion es pasiva y corre sola. Lo importante son las decisiones: que mina subir primero, cuando investigar, a que precio publicar en el mercado.\n\nCon quince o veinte minutos al dia para revisar la produccion, ajustar precios y lanzar alguna expedicion es suficiente para que el imperio crezca. Los jugadores que mas ganan no son los que mas horas juegan, son los que mejor administran su economia.',
+          'Imperium no es un clicker: no hay que estar pegado a la pantalla. La produccion es pasiva y corre sola. Lo importante son las decisiones: que mina subir primero, cuando investigar, a que precio publicar en el mercado.\n\nCon quince o veinte minutos al dia para revisar la produccion, ajustar precios y lanzar alguna expedicion es suficiente para que el imperio crezca. Los jugadores que mas ganan no son los que mas horas juegan, son los que mejor administran su economia.',
       },
       {
         icon: '',
@@ -69,8 +69,8 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
     ],
     faqs: [
       {
-        q: 'Se puede jugar a Xnova desde Argentina sin restricciones?',
-        a: 'Si. Xnova funciona desde el navegador en cualquier pais y no hay bloqueo geografico para Argentina. Solo necesitas conexion a internet.',
+        q: 'Se puede jugar a Imperium desde Argentina sin restricciones?',
+        a: 'Si. Imperium funciona desde el navegador en cualquier pais y no hay bloqueo geografico para Argentina. Solo necesitas conexion a internet.',
       },
       {
         q: 'En que moneda cobro si juego desde Argentina?',
@@ -96,7 +96,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-mexico',
     country: 'Mexico',
-    title: 'Ganar Criptomonedas Jugando en Mexico Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Mexico Gratis | Imperium',
     description:
       'Gana criptomonedas jugando desde Mexico sin invertir: tus minas producen recursos, los vendes en el mercado P2P y cobras en USDT o en pesos mexicanos.',
     keywords:
@@ -109,7 +109,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Un ingreso extra que no depende de tu tiempo',
         content:
-          'La mayoria de formas de ganar dinero por internet en Mexico te pagan por hora trabajada: encuestas, microtareas, freelance. Xnova funciona distinto. Tus minas de metal, cristal y deuterio producen las 24 horas del dia, estes o no conectado.\n\nTu trabajo es decidir en que invertir la produccion y a que precio venderla. Es un ingreso que crece con tu imperio, no con las horas que le dediques.',
+          'La mayoria de formas de ganar dinero por internet en Mexico te pagan por hora trabajada: encuestas, microtareas, freelance. Imperium funciona distinto. Tus minas de metal, cristal y deuterio producen las 24 horas del dia, estes o no conectado.\n\nTu trabajo es decidir en que invertir la produccion y a que precio venderla. Es un ingreso que crece con tu imperio, no con las horas que le dediques.',
       },
       {
         icon: '',
@@ -127,7 +127,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Funciona desde el celular',
         content:
-          'Xnova se juega en el navegador, sin descargar nada. Corre igual en un telefono de gama media que en una computadora, y consume muy pocos datos porque no es un juego 3D.\n\nPuedes revisar tu produccion, publicar ofertas y cobrar desde donde estes.',
+          'Imperium se juega en el navegador, sin descargar nada. Corre igual en un telefono de gama media que en una computadora, y consume muy pocos datos porque no es un juego 3D.\n\nPuedes revisar tu produccion, publicar ofertas y cobrar desde donde estes.',
       },
     ],
     faqs: [
@@ -159,7 +159,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-venezuela',
     country: 'Venezuela',
-    title: 'Ganar Criptomonedas Jugando en Venezuela Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Venezuela Gratis | Imperium',
     description:
       'Gana USDT jugando desde Venezuela sin invertir: produce recursos con tus minas, vendelos en el mercado P2P y cobra en criptomonedas o en bolivares.',
     keywords:
@@ -172,7 +172,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Ganar en dolares sin salir de casa',
         content:
-          'En Venezuela el USDT ya es parte del dia a dia y el problema real es conseguirlo sin una fuente de ingresos en divisas. Xnova ofrece justamente eso: una produccion que no te cuesta nada y que se vende en un mercado donde el precio se fija en dolares.\n\nNo hace falta invertir, ni tener cuenta en el exterior, ni comprar nada. El juego te da un planeta con minas y esas minas producen metal, cristal y deuterio las 24 horas.',
+          'En Venezuela el USDT ya es parte del dia a dia y el problema real es conseguirlo sin una fuente de ingresos en divisas. Imperium ofrece justamente eso: una produccion que no te cuesta nada y que se vende en un mercado donde el precio se fija en dolares.\n\nNo hace falta invertir, ni tener cuenta en el exterior, ni comprar nada. El juego te da un planeta con minas y esas minas producen metal, cristal y deuterio las 24 horas.',
       },
       {
         icon: '',
@@ -184,7 +184,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Pensado para conexiones lentas',
         content:
-          'Xnova es un juego de navegador basado en texto e interfaz, no en graficos pesados. Eso significa que carga rapido y consume pocos datos, algo importante cuando la conexion no siempre acompana.\n\nAdemas la produccion no se detiene si te desconectas: puedes entrar dos veces al dia, revisar, publicar tus ofertas y salir.',
+          'Imperium es un juego de navegador basado en texto e interfaz, no en graficos pesados. Eso significa que carga rapido y consume pocos datos, algo importante cuando la conexion no siempre acompana.\n\nAdemas la produccion no se detiene si te desconectas: puedes entrar dos veces al dia, revisar, publicar tus ofertas y salir.',
       },
       {
         icon: '',
@@ -208,7 +208,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
       },
       {
         q: 'Necesito una wallet para empezar?',
-        a: 'No para jugar. La necesitas solo cuando quieras retirar tus tokens fuera del juego. Dentro de Xnova ya tienes una wallet integrada.',
+        a: 'No para jugar. La necesitas solo cuando quieras retirar tus tokens fuera del juego. Dentro de Imperium ya tienes una wallet integrada.',
       },
       {
         q: 'Cuanto tiempo hay que jugar al dia?',
@@ -222,26 +222,26 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-cuba',
     country: 'Cuba',
-    title: 'Ganar Criptomonedas Jugando en Cuba Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Cuba Gratis | Imperium',
     description:
       'Gana criptomonedas jugando desde Cuba sin invertir: vende los recursos de tus minas en el mercado P2P y cobra en USDT, transferencia CUP, MLC o saldo movil.',
     keywords:
       'ganar criptomonedas jugando cuba, ganar dinero por internet cuba, ganar usdt en cuba, como ganar dinero en cuba sin invertir, juegos que pagan en cuba, saldo movil gratis cuba, xnova cuba',
     h1: 'Ganar Criptomonedas Jugando en Cuba, Gratis y sin Invertir',
     subheading:
-      'Xnova es un juego de estrategia espacial ligero donde tus minas producen recursos solas. Los vendes en el mercado entre jugadores y cobras en USDT, CUP, MLC o saldo movil.',
+      'Imperium es un juego de estrategia espacial ligero donde tus minas producen recursos solas. Los vendes en el mercado entre jugadores y cobras en USDT, CUP, MLC o saldo movil.',
     sections: [
       {
         icon: '',
         title: 'Los metodos de pago que mas se usan en Cuba',
         content:
-          'Xnova es uno de los pocos juegos con mercado P2P donde los metodos de pago cubanos estan integrados de verdad. Ademas de USDT, el mercado incluye Transferencia CUP, Transferencia MLC y Saldo Movil.\n\nEso significa que puedes vender tus tokens a otro jugador y recibir directamente una transferencia en pesos cubanos, en MLC o incluso una recarga de saldo movil, sin depender de nadie fuera de la plataforma.',
+          'Imperium es uno de los pocos juegos con mercado P2P donde los metodos de pago cubanos estan integrados de verdad. Ademas de USDT, el mercado incluye Transferencia CUP, Transferencia MLC y Saldo Movil.\n\nEso significa que puedes vender tus tokens a otro jugador y recibir directamente una transferencia en pesos cubanos, en MLC o incluso una recarga de saldo movil, sin depender de nadie fuera de la plataforma.',
       },
       {
         icon: '',
         title: 'Un juego que no se come los datos',
         content:
-          'La conexion en Cuba es cara y limitada, asi que un juego de 2 GB no es una opcion. Xnova corre entero en el navegador, sin descargas, y su interfaz es ligera: pesa poco y consume muy pocos datos por sesion.\n\nAdemas la produccion es pasiva. Puedes conectarte, revisar minas, publicar una oferta en el mercado y desconectarte: el imperio sigue produciendo sin ti.',
+          'La conexion en Cuba es cara y limitada, asi que un juego de 2 GB no es una opcion. Imperium corre entero en el navegador, sin descargas, y su interfaz es ligera: pesa poco y consume muy pocos datos por sesion.\n\nAdemas la produccion es pasiva. Puedes conectarte, revisar minas, publicar una oferta en el mercado y desconectarte: el imperio sigue produciendo sin ti.',
       },
       {
         icon: '',
@@ -259,10 +259,10 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
     faqs: [
       {
         q: 'Puedo cobrar en pesos cubanos o en saldo movil?',
-        a: 'Si. El mercado P2P de Xnova incluye Transferencia CUP, Transferencia MLC y Saldo Movil como metodos de pago entre jugadores.',
+        a: 'Si. El mercado P2P de Imperium incluye Transferencia CUP, Transferencia MLC y Saldo Movil como metodos de pago entre jugadores.',
       },
       {
-        q: 'Xnova gasta muchos datos?',
+        q: 'Imperium gasta muchos datos?',
         a: 'No. Es un juego de navegador sin descargas ni graficos pesados, pensado para funcionar bien con conexiones limitadas.',
       },
       {
@@ -285,7 +285,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-colombia',
     country: 'Colombia',
-    title: 'Ganar Criptomonedas Jugando en Colombia Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Colombia Gratis | Imperium',
     description:
       'Gana criptomonedas jugando desde Colombia sin invertir: produce recursos con tus minas, vendelos en el mercado P2P y cobra en USDT o en pesos colombianos.',
     keywords:
@@ -298,7 +298,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Un ingreso que trabaja mientras duermes',
         content:
-          'Lo que diferencia a Xnova de las apps de encuestas o de ver anuncios es que aqui no cobras por tu tiempo, cobras por lo que produces. Tus minas de metal, cristal y deuterio generan recursos de forma continua, conectado o no.\n\nCuanto mas subes de nivel las minas, mas produces. Y todo lo que produces se puede vender en el mercado a otros jugadores.',
+          'Lo que diferencia a Imperium de las apps de encuestas o de ver anuncios es que aqui no cobras por tu tiempo, cobras por lo que produces. Tus minas de metal, cristal y deuterio generan recursos de forma continua, conectado o no.\n\nCuanto mas subes de nivel las minas, mas produces. Y todo lo que produces se puede vender en el mercado a otros jugadores.',
       },
       {
         icon: '',
@@ -310,13 +310,13 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Sin inversion, sin NFTs, sin trampas',
         content:
-          'Muchos juegos play to earn exigen comprar personajes o tierras antes de ganar nada. Xnova no. El registro es gratis, el planeta inicial es gratis y la produccion es gratis.\n\nNo hay deposito minimo para retirar ni suscripcion obligatoria. Lo unico que inviertes es criterio: que construir, que investigar y a que precio vender.',
+          'Muchos juegos play to earn exigen comprar personajes o tierras antes de ganar nada. Imperium no. El registro es gratis, el planeta inicial es gratis y la produccion es gratis.\n\nNo hay deposito minimo para retirar ni suscripcion obligatoria. Lo unico que inviertes es criterio: que construir, que investigar y a que precio vender.',
       },
       {
         icon: '',
         title: 'Estrategia de verdad, no un clicker',
         content:
-          'Xnova tiene minas, laboratorio de investigacion, astillero de naves, defensas, flotas, galaxia explorable, expediciones, alianzas y combate. Es un juego completo, no una pantalla con un boton.\n\nEso importa para ganar: los jugadores que entienden la economia y el momento correcto para expandirse ganan mucho mas que los que solo acumulan.',
+          'Imperium tiene minas, laboratorio de investigacion, astillero de naves, defensas, flotas, galaxia explorable, expediciones, alianzas y combate. Es un juego completo, no una pantalla con un boton.\n\nEso importa para ganar: los jugadores que entienden la economia y el momento correcto para expandirse ganan mucho mas que los que solo acumulan.',
       },
     ],
     faqs: [
@@ -326,7 +326,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
       },
       {
         q: 'Hace falta invertir para empezar?',
-        a: 'No. Xnova es gratuito y desde el registro ya tienes un planeta produciendo recursos vendibles.',
+        a: 'No. Imperium es gratuito y desde el registro ya tienes un planeta produciendo recursos vendibles.',
       },
       {
         q: 'Se puede jugar desde el celular?',
@@ -348,7 +348,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-peru',
     country: 'Peru',
-    title: 'Ganar Criptomonedas Jugando en Peru Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Peru Gratis | Imperium',
     description:
       'Gana criptomonedas jugando desde Peru sin invertir: tus minas producen recursos, los vendes en el mercado P2P y cobras en USDT o en soles por transferencia.',
     keywords:
@@ -361,7 +361,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Como se gana realmente',
         content:
-          'La logica de Xnova es la de un juego de estrategia clasico tipo OGame: metal, cristal y deuterio. Construyes minas, las subes de nivel y ellas producen sin parar.\n\nLa diferencia es que esos recursos no se quedan dentro del juego. Hay un mercado entre jugadores donde se compran y se venden, y las operaciones se liquidan en tokens que se pueden convertir a criptomonedas reales.',
+          'La logica de Imperium es la de un juego de estrategia clasico tipo OGame: metal, cristal y deuterio. Construyes minas, las subes de nivel y ellas producen sin parar.\n\nLa diferencia es que esos recursos no se quedan dentro del juego. Hay un mercado entre jugadores donde se compran y se venden, y las operaciones se liquidan en tokens que se pueden convertir a criptomonedas reales.',
       },
       {
         icon: '',
@@ -411,7 +411,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
   {
     slug: 'ganar-criptomonedas-jugando-espana',
     country: 'Espana',
-    title: 'Ganar Criptomonedas Jugando en Espana Gratis | Xnova',
+    title: 'Ganar Criptomonedas Jugando en Espana Gratis | Imperium',
     description:
       'Gana criptomonedas jugando desde Espana sin invertir: produce recursos con tus minas, vendelos en el mercado P2P y cobra en USDT o en euros.',
     keywords:
@@ -424,7 +424,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Para quien viene de OGame',
         content:
-          'Si jugaste a OGame vas a reconocer todo: metal, cristal y deuterio, mina de metal, planta de fusion, laboratorio de investigacion, astillero, defensas, flotas, galaxia con coordenadas, expediciones y alianzas.\n\nLa diferencia es el final del ciclo. En OGame la produccion solo sirve para seguir jugando. En Xnova hay un mercado P2P donde esa produccion se vende a otros jugadores y se cobra en tokens convertibles a criptomonedas.',
+          'Si jugaste a OGame vas a reconocer todo: metal, cristal y deuterio, mina de metal, planta de fusion, laboratorio de investigacion, astillero, defensas, flotas, galaxia con coordenadas, expediciones y alianzas.\n\nLa diferencia es el final del ciclo. En OGame la produccion solo sirve para seguir jugando. En Imperium hay un mercado P2P donde esa produccion se vende a otros jugadores y se cobra en tokens convertibles a criptomonedas.',
       },
       {
         icon: '',
@@ -442,13 +442,13 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
         icon: '',
         title: 'Fiscalidad y sentido comun',
         content:
-          'Las ganancias en criptomonedas son un ingreso como cualquier otro y en Espana corresponde declararlas. Xnova no retiene impuestos ni actua como intermediario fiscal: cada jugador es responsable de su propia declaracion.\n\nComo con cualquier actividad con criptoactivos, conviene llevar registro de lo que se ingresa y de las conversiones realizadas.',
+          'Las ganancias en criptomonedas son un ingreso como cualquier otro y en Espana corresponde declararlas. Imperium no retiene impuestos ni actua como intermediario fiscal: cada jugador es responsable de su propia declaracion.\n\nComo con cualquier actividad con criptoactivos, conviene llevar registro de lo que se ingresa y de las conversiones realizadas.',
       },
     ],
     faqs: [
       {
-        q: 'Xnova es como OGame?',
-        a: 'Comparte casi todas las mecanicas: recursos, edificios, investigacion, flotas, combate, galaxia y alianzas. La diferencia principal es que Xnova anade una economia real donde tu produccion se vende por criptomonedas.',
+        q: 'Imperium es como OGame?',
+        a: 'Comparte casi todas las mecanicas: recursos, edificios, investigacion, flotas, combate, galaxia y alianzas. La diferencia principal es que Imperium anade una economia real donde tu produccion se vende por criptomonedas.',
       },
       {
         q: 'Hay que invertir para ganar?',
@@ -460,7 +460,7 @@ export const COUNTRY_LANDINGS: CountryLanding[] = [
       },
       {
         q: 'Hay que declarar lo que se gana?',
-        a: 'Si. Las ganancias en criptomonedas tributan en Espana. Xnova no practica retenciones, asi que la declaracion corresponde a cada jugador.',
+        a: 'Si. Las ganancias en criptomonedas tributan en Espana. Imperium no practica retenciones, asi que la declaracion corresponde a cada jugador.',
       },
       {
         q: 'Se juega en el navegador o hay que instalar algo?',

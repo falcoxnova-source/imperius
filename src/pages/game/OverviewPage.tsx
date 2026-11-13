@@ -228,7 +228,7 @@ const OVERVIEW_CARD_IMG = {
   buildings: '/Imagenes/Edificios/Construcción del castillo bajo estandartes dorados.webp',
   research: '/Imagenes/Edificios/Biblioteca Imperial de Sabiduría Dorada.webp',
   shipyard: '/Imagenes/Edificios/Falcon Banner Barracks and Training Yard.webp',
-  defense: '/Imagenes/Defensas/Vallum_11zon.webp',
+  defense: '/Imagenes/Defensas/Centinela romano tras el muro dorado_11zon.webp',
 };
 
 const AUTOPILOT_ROLE_VALUES: PlanetAutopilotRole[] = ['balanced', 'miner', 'military', 'research', 'colonizer', 'custom'];

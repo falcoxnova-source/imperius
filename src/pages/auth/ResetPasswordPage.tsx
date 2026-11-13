@@ -45,7 +45,7 @@ export function ResetPasswordPage() {
   if (!token) {
     return (
       <>
-      <SEO title="Enlace Inválido | Xnova" description="El enlace para restablecer tu contraseña no es válido o ha expirado." noIndex />
+      <SEO title="Enlace Inválido | Imperium" description="El enlace para restablecer tu contraseña no es válido o ha expirado." noIndex />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat">
         <div className="absolute inset-0 bg-black/40" />
         <div className="card-glass w-full max-w-md p-8 text-center relative z-10">
@@ -66,7 +66,7 @@ export function ResetPasswordPage() {
   if (success) {
     return (
       <>
-      <SEO title="Contraseña Actualizada | Xnova" description="Tu contraseña ha sido actualizada correctamente. Ya puedes iniciar sesión." noIndex />
+      <SEO title="Contraseña Actualizada | Imperium" description="Tu contraseña ha sido actualizada correctamente. Ya puedes iniciar sesión." noIndex />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat">
         <div className="absolute inset-0 bg-black/40" />
 
@@ -98,8 +98,8 @@ export function ResetPasswordPage() {
   return (
     <>
       <SEO
-        title="Restablecer Contraseña | Xnova"
-        description="Elige una nueva contraseña para tu cuenta de Xnova. Asegúrate de que sea segura y fácil de recordar."
+        title="Restablecer Contraseña | Imperium"
+        description="Elige una nueva contraseña para tu cuenta de Imperium. Asegúrate de que sea segura y fácil de recordar."
         noIndex
       />
       <div className="min-h-screen flex items-center justify-center p-4 bg-auth bg-cover bg-center bg-no-repeat">
