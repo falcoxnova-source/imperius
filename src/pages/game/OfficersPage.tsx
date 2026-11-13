@@ -42,6 +42,16 @@ const officerColors: Record<string, { bg: string; border: string; text: string; 
   android: { bg: 'bg-purple-500/20', border: 'border-purple-500/50', text: 'text-purple-400', gradient: 'from-purple-500/30' },
 };
 
+// Imagenes de los dioses (public/Imagenes/Dioses), solo UI
+const godImages: Record<string, string> = {
+  commander: encodeURI('/Imagenes/Dioses/General romano bajo un cielo de tormenta_11zon.webp'),
+  admiral: encodeURI('/Imagenes/Dioses/Mythic Sea King and Golden Trident_11zon.webp'),
+  engineer: encodeURI('/Imagenes/Dioses/Hades and Cerberus in the Underworld_11zon.webp'),
+  geologist: encodeURI('/Imagenes/Dioses/Mythic Blacksmith of the Golden Forge_11zon.webp'),
+  technocrat: encodeURI('/Imagenes/Dioses/Diosa Minerva en la biblioteca dorada_11zon.webp'),
+  android: encodeURI('/Imagenes/Dioses/Zeus en su trono de tormenta_11zon.webp'),
+};
+
 export function OfficersPage() {
   const { t } = useI18n();
   const { profile, refreshProfile } = useAuthStore();
@@ -300,11 +310,11 @@ export function OfficersPage() {
               }`}
             >
               <div className="relative w-full aspect-square bg-gradient-to-br from-space-700 via-space-800 to-space-900 overflow-hidden group">
-                {officer.image_url ? (
+                {godImages[officer.code] || officer.image_url ? (
                   <MediaDisplay
-                    src={officer.image_url}
+                    src={godImages[officer.code] || officer.image_url}
                     alt={translateOfficerName(t, officer.code, officer.name)}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-full object-cover object-top origin-top transition-transform duration-300 group-hover:scale-110"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -470,7 +480,7 @@ export function OfficersPage() {
           kind="officer"
           code={giftTarget.officer.id}
           itemName={`${translateOfficerName(t, giftTarget.officer.code, giftTarget.officer.name)} · ${durationLabels[giftTarget.duration]}`}
-          imageUrl={giftTarget.officer.image_url}
+          imageUrl={godImages[giftTarget.officer.code] || giftTarget.officer.image_url}
           maxQty={1}
           duration={giftTarget.duration}
           estimateCost={() => {
