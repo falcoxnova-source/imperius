@@ -55,6 +55,7 @@ import { supabase } from '../../lib/supabase';
  * Barra de depósitos - muestra recursos restantes en colonias
  */
 function DepositBar({ planetId }: { planetId: string }) {
+  const { t } = useI18n();
   const [deposits, setDeposits] = useState<{
     metal_deposit: number | null;
     crystal_deposit: number | null;
@@ -103,7 +104,7 @@ function DepositBar({ planetId }: { planetId: string }) {
       {(['metal', 'crystal', 'deuterium'] as const).map(res => {
         const amt = deposits[`${res}_deposit` as keyof typeof deposits] as number | null;
         const pct = deposits[`${res}_pct` as keyof typeof deposits] as number | null;
-        const label = res === 'metal' ? '🪨 Metal' : res === 'crystal' ? '💎 Cristal' : '⚗️ Deuterio';
+        const label = res === 'metal' ? `🪨 ${t.resources.metal}` : res === 'crystal' ? `💎 ${t.resources.crystal}` : `⚗️ ${t.resources.deuterium}`;
         if (amt === null) return null;
         return (
           <div key={res} className="flex items-center gap-2">

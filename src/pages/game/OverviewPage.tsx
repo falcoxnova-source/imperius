@@ -24,6 +24,7 @@ const PLANET_EFFECT_GLOW: Record<string, { glow: string; ring: string; emoji: st
 };
 
 function DepositInfo({ planetId }: { planetId: string }) {
+  const { t } = useI18n();
   const { profile, refreshProfile } = useAuthStore();
   const { fetchResources } = useGameStore();
   const [deposits, setDeposits] = useState<Record<string, number> | null>(null);
@@ -88,9 +89,9 @@ function DepositInfo({ planetId }: { planetId: string }) {
   };
 
   const items = [
-    { label: '🪨 Metal', amt: deposits.metal, pct: deposits.metalPct },
-    { label: '💎 Cristal', amt: deposits.crystal, pct: deposits.crystalPct },
-    { label: '⚗️ Deuterio', amt: deposits.deuterium, pct: deposits.deuteriumPct },
+    { label: `🪨 ${t.resources.metal}`, amt: deposits.metal, pct: deposits.metalPct },
+    { label: `💎 ${t.resources.crystal}`, amt: deposits.crystal, pct: deposits.crystalPct },
+    { label: `⚗️ ${t.resources.deuterium}`, amt: deposits.deuterium, pct: deposits.deuteriumPct },
   ];
 
   const balance = Number(profile?.tung_balance ?? 0);

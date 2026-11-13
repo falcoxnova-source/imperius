@@ -972,8 +972,8 @@ export function WalletPage() {
                 <div className="space-y-5">
                   <div>
                     <label className="block text-sm text-gray-300 mb-2">{t.wallet.depositChooseToken}</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {(['TUNG', 'USDT'] as const).map((tk) => (
+                    <div className="grid grid-cols-1 gap-3">
+                      {(['TUNG'] as const).map((tk) => (
                         <button
                           key={tk}
                           type="button"
