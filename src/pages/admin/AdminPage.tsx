@@ -6896,7 +6896,8 @@ export function AdminPage() {
 
 
 function HeroShipAdminSection() {
-  const [respecCost, setRespecCost] = useState(10000);
+  // [TUNGAUTO] Costo reinicio en USD (cobrado en TUNG a precio de mercado)
+  const [respecUsd, setRespecUsd] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -6917,11 +6918,11 @@ function HeroShipAdminSection() {
     const load = async () => {
       setLoading(true);
       const [costRes, expsRes, settingsRes] = await Promise.all([
-        supabase.from('game_settings').select('value').eq('key', 'fxu_hero_respec_cost').maybeSingle(),
+        supabase.from('game_settings').select('value').eq('key', 'hero_respec_cost_usd').maybeSingle(),
         supabase.rpc('get_hero_expeditions'),
         supabase.from('game_settings').select('key, value').eq('key', 'hero_repair_cost_usd'),
       ]);
-      if (costRes.data) setRespecCost(parseInt(costRes.data.value) || 10000);
+      if (costRes.data) setRespecUsd(parseFloat(costRes.data.value) || 0);
       const exps = Array.isArray(expsRes.data) ? expsRes.data : [];
       setExpeditions(exps);
       const edits: Record<string, { c: string; r: string; e: string; l: string; d: string }> = {};
@@ -6943,11 +6944,10 @@ function HeroShipAdminSection() {
 
   const handleSaveRespec = async () => {
     setSaving(true); setMessage(null);
-    const v = Math.max(0, Math.floor(respecCost));
-    const { data, error } = await supabase.rpc('admin_update_hero_respec_cost', { p_cost: v });
+    const { data, error } = await supabase.rpc('admin_update_hero_respec_cost_usd', { p_usd: respecUsd });
     if (error) setMessage({ type: 'error', text: 'Error: ' + error.message });
     else if (!data?.success) setMessage({ type: 'error', text: 'Error: ' + (data?.error || 'desconocido') });
-    else setMessage({ type: 'success', text: `Costo reinicio: ${v.toLocaleString()} TUNG` });
+    else setMessage({ type: 'success', text: `Costo reinicio: $${respecUsd} USD en TUNG` });
     setSaving(false);
     setTimeout(() => setMessage(null), 3000);
   };
@@ -7018,13 +7018,14 @@ function HeroShipAdminSection() {
 
       {/* Respec cost */}
       <div className="bg-slate-700/30 rounded-lg p-4 space-y-3">
-        <label className="block text-sm text-slate-300">Costo de reinicio de puntos (TUNG)</label>
-        <p className="text-xs text-slate-400">Lo paga el jugador al reiniciar sus puntos de stats. Reparto: 50% pool / 50% empresa (referido 20% de empresa; accionistas sobre empresa).</p>
+        <label className="block text-sm text-slate-300">Costo de reinicio de puntos (USD en TUNG)</label>
+        <p className="text-xs text-slate-400">Precio fijo en USD; el jugador paga en TUNG segun el precio de mercado en ese momento (ej: $1 con TUNG a $0.0066 = 152 TUNG). Reparto: 50% pool / 50% empresa (referido 20% de empresa; accionistas sobre empresa).</p>
         <div className="flex items-center gap-3">
-          <input type="number" min={0} step={1000} value={respecCost}
-            onChange={e => setRespecCost(parseInt(e.target.value) || 0)}
+          <span className="text-xs text-slate-400">USD</span>
+          <input type="number" min={0.01} step={0.01} value={respecUsd}
+            onChange={e => setRespecUsd(parseFloat(e.target.value) || 0)}
             className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500" />
-          <button onClick={handleSaveRespec} disabled={saving}
+          <button onClick={handleSaveRespec} disabled={saving || respecUsd <= 0}
             className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-600 text-white rounded-lg transition-colors text-sm font-medium">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}Guardar
           </button>
