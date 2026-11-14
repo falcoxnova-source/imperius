@@ -431,34 +431,34 @@ export function TasksPage() {
     setVerifyMessage('');
 
     try {
-      // Buscar telegram_id del usuario
-      const { data: linkData } = await supabase
-        .from('telegram_links')
-        .select('telegram_id')
-        .eq('user_id', profile?.id)
-        .maybeSingle();
-
-      if (!linkData?.telegram_id) {
-        setError(t.tasks.notInGroup);
-        setVerifying(false);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setError(t.tasks.errorVerifying);
         return;
       }
 
-      // Llamar RPC directo (sin edge function)
-      const { data, error: rpcError } = await supabase.rpc('process_telegram_join', {
-        p_telegram_id: linkData.telegram_id,
+      // Verificacion real en el servidor (consulta a Telegram con el bot)
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-my-telegram`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
       });
+      const data = await response.json();
 
-      if (rpcError) {
-        setError(rpcError.message);
-      } else if (data?.success) {
-        if (data.reward_given && data.amount > 0) {
-          setVerifyMessage(`${t.tasks.verifiedSuccess} +${data.amount} TUNG!`);
+      if (!data?.telegram_linked) {
+        setError(t.tasks.notInGroup);
+      } else if (data.success && data.is_member) {
+        if (data.reward_given && data.reward_amount > 0) {
+          setVerifyMessage(`${t.tasks.verifiedSuccess} +${data.reward_amount} TUNG!`);
         } else {
           setVerifyMessage(data.message || t.tasks.verifiedAlready);
         }
         await loadTaskStatus();
         await refreshProfile();
+      } else if (data.success) {
+        setError(t.tasks.notInGroup);
       } else {
         setError(data?.error || t.tasks.errorVerifying);
       }
@@ -625,7 +625,7 @@ export function TasksPage() {
                   )}
 
                   <a
-                    href="https://t.me/TUNGuniverseBot"
+                    href="https://t.me/imperiumxtbot"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"

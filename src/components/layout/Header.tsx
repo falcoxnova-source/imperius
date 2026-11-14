@@ -153,7 +153,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className="backdrop-blur-md border-b border-amber-700/50 sticky top-0 z-40 shadow-[0_6px_24px_rgba(0,0,0,0.35)] bg-[linear-gradient(180deg,rgba(42,30,19,0.94),rgba(16,10,5,0.9))]">
+    <header className="sticky top-0 z-40 border-b border-[#8a6a32] shadow-[inset_0_-3px_0_#0a0705,inset_0_-4px_0_rgba(214,170,85,0.3),0_8px_24px_rgba(0,0,0,0.6)] bg-[linear-gradient(180deg,#120d08_0%,#070504_100%)]">
       <div className="flex items-center justify-between px-3 sm:px-6 py-3 lg:py-0 lg:h-[76px]">
         <div className="flex items-center gap-2 sm:gap-4">
           <button
@@ -172,12 +172,12 @@ export function Header({ onMenuClick }: HeaderProps) {
           <ResourceBar />
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <a
             href="https://t.me/TrungTungMeme"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 rounded-lg hover:bg-amber-500/10 transition-colors group"
+            className="p-2 rounded-lg hover:bg-amber-500/10 transition-colors group hidden min-[400px]:block"
             title="Telegram"
           >
             <svg className="w-5 h-5 text-amber-200/70 group-hover:text-[#26A5E4] transition-colors" viewBox="0 0 24 24" fill="currentColor">
@@ -188,7 +188,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             href="https://x.com/FalcoX_universe"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 rounded-lg hover:bg-amber-500/10 transition-colors group"
+            className="p-2 rounded-lg hover:bg-amber-500/10 transition-colors group hidden min-[400px]:block"
             title="X (Twitter)"
           >
             <svg className="w-5 h-5 text-amber-200/70 group-hover:text-amber-100 transition-colors" viewBox="0 0 24 24" fill="currentColor">
@@ -197,7 +197,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           </a>
 
           {/* Online players */}
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/30 border border-amber-700/40">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-sm bg-black/40 border border-[#d6aa55]/30">
             <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${onlineCount !== null && onlineCount > 0 ? 'bg-green-400' : 'bg-gray-600'}`} />
               <span className={`relative inline-flex rounded-full h-2 w-2 ${onlineCount !== null && onlineCount > 0 ? 'bg-green-400' : 'bg-gray-600'}`} />
@@ -206,15 +206,22 @@ export function Header({ onMenuClick }: HeaderProps) {
             <span className="text-[9px] text-amber-200/50 hidden sm:inline">Online</span>
           </div>
 
-          <div className="w-px h-6 bg-amber-700/40 hidden sm:block" />
+          <div className="w-px h-6 bg-[#d6aa55]/30 hidden sm:block" />
+          <Link
+            to="/game/messages"
+            className="p-2 rounded-sm hover:bg-[#d6aa55]/10 transition-colors hidden sm:block"
+            title={t.nav.messages}
+          >
+            <Mail className="w-5 h-5 text-[#d6aa55] hover:text-[#f3dfae]" strokeWidth={1.6} />
+          </Link>
           <div className="relative" ref={notificationsRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2 rounded-xl hover:bg-amber-500/10 transition-colors relative sm:border sm:border-amber-700/40 sm:bg-black/30"
+              className="p-2 rounded-sm hover:bg-[#d6aa55]/10 transition-colors relative"
             >
-              <Bell className={`w-5 h-5 ${unreadCount > 0 ? 'text-amber-300' : 'text-amber-200/70'}`} />
+              <Bell className={`w-5 h-5 ${unreadCount > 0 ? 'text-[#f3dfae]' : 'text-[#d6aa55]'}`} strokeWidth={1.6} />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-cyber-red text-white text-xs font-bold rounded-full px-1">
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-[#b91c1c] border border-[#f3dfae]/60 text-white text-[10px] font-bold rounded-full px-1">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -227,7 +234,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                   className="fixed inset-0 bg-black/60 z-40 sm:hidden"
                   onClick={() => setShowNotifications(false)}
                 />
-                <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 w-auto sm:w-80 bg-[#241a0e] border border-amber-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 w-auto sm:w-80 bg-[#0f0b07] border border-[#8a6a32] rounded-sm shadow-2xl shadow-black/70 overflow-hidden z-50">
                 <div className="p-3 border-b border-space-600 flex items-center justify-between">
                   <h3 className="font-orbitron text-sm text-white">{t.notifications.title}</h3>
                   {unreadCount > 0 && (
@@ -286,10 +293,26 @@ export function Header({ onMenuClick }: HeaderProps) {
             )}
           </div>
 
+          <Link
+            to="/game/settings"
+            className="p-2 rounded-sm hover:bg-[#d6aa55]/10 transition-colors hidden sm:block"
+            title={t.nav.settings}
+          >
+            <Settings className="w-5 h-5 text-[#d6aa55] hover:text-[#f3dfae]" strokeWidth={1.6} />
+          </Link>
+          <button
+            onClick={() => signOut()}
+            className="p-2 rounded-sm hover:bg-red-900/30 transition-colors hidden sm:block"
+            title={t.auth.logout}
+          >
+            <LogOut className="w-5 h-5 text-[#d6aa55] hover:text-red-300" strokeWidth={1.6} />
+          </button>
+          <div className="w-px h-6 bg-[#d6aa55]/30 hidden sm:block" />
+
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="flex items-center gap-2 p-1.5 sm:pr-2 rounded-xl hover:bg-space-600/60 transition-colors sm:border sm:border-cyan-400/20 sm:bg-space-800/40"
+              className="flex items-center gap-2 p-1 sm:pr-2 rounded-sm hover:bg-[#d6aa55]/10 transition-colors"
             >
               {resolveAvatarUrl(profile?.avatar_url) ? (
                 <img
@@ -320,7 +343,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                   className="fixed inset-0 bg-black/60 z-40 sm:hidden"
                   onClick={() => setShowDropdown(false)}
                 />
-                <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 w-auto sm:w-56 bg-space-800 border border-cyber-blue/30 rounded-xl p-2 shadow-2xl shadow-black/50 z-50">
+                <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 w-auto sm:w-56 bg-[#0f0b07] border border-[#8a6a32] rounded-sm p-2 shadow-2xl shadow-black/70 z-50">
                 <div className="px-3 py-2 border-b border-cyber-blue/20 mb-2">
                   <p className="font-orbitron text-sm text-white">{profile?.active_title ? <>{profile.active_title} <span className="text-gray-500">·</span> </> : ''}{profile?.username}</p>
                   <p className="text-xs text-gray-400">{profile?.email}</p>

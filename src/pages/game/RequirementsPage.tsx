@@ -23,6 +23,18 @@ interface RequirementItem {
 
 type TabType = 'buildings' | 'technologies' | 'ships' | 'defenses';
 
+const HIDDEN_SHIP_CODES = new Set(['falco_x_clasica', 'dark_matter_collector']);
+
+// Reintenta la consulta si falla (p.ej. 429 por limite de peticiones)
+async function withRetry<T extends { error: unknown }>(run: () => PromiseLike<T>, attempts = 4): Promise<T> {
+  let res = await run();
+  for (let i = 1; i < attempts && res.error; i++) {
+    await new Promise(r => setTimeout(r, 700 * i));
+    res = await run();
+  }
+  return res;
+}
+
 export function RequirementsPage() {
   const { t } = useI18n();
   const { currentPlanet, buildings, technologies } = useGameStore();
@@ -45,7 +57,7 @@ export function RequirementsPage() {
       // building_types tiene 2 FKs desde building_requirements (building_type_id y required_building_id)
       // technology_types tiene 2 FKs desde technology_requirements (technology_type_id y required_tech_id)
       const [buildingsRes, techRes, shipsRes, defensesRes] = await Promise.all([
-        supabase.from('building_types').select(`
+        withRetry(() => supabase.from('building_types').select(`
           id, code, name, category,
           building_requirements!building_requirements_building_type_id_fkey (
             required_building_id,
@@ -53,8 +65,8 @@ export function RequirementsPage() {
             required_tech_id,
             required_tech_level
           )
-        `).order('id'),
-        supabase.from('technology_types').select(`
+        `).order('id')),
+        withRetry(() => supabase.from('technology_types').select(`
           id, code, name, category,
           technology_requirements!technology_requirements_technology_type_id_fkey (
             required_building_id,
@@ -62,8 +74,8 @@ export function RequirementsPage() {
             required_tech_id,
             required_tech_level
           )
-        `).order('id'),
-        supabase.from('ship_types').select(`
+        `).order('id')),
+        withRetry(() => supabase.from('ship_types').select(`
           id, code, name, category,
           ship_requirements!ship_requirements_ship_type_id_fkey (
             required_building_id,
@@ -71,8 +83,8 @@ export function RequirementsPage() {
             required_tech_id,
             required_tech_level
           )
-        `).order('id'),
-        supabase.from('defense_types').select(`
+        `).order('id')),
+        withRetry(() => supabase.from('defense_types').select(`
           id, code, name,
           defense_requirements!defense_requirements_defense_type_id_fkey (
             required_building_id,
@@ -80,18 +92,15 @@ export function RequirementsPage() {
             required_tech_id,
             required_tech_level
           )
-        `).order('id'),
+        `).order('id')),
       ]);
 
-      const [buildingTypesRes, techTypesRes] = await Promise.all([
-        supabase.from('building_types').select('id, name, code'),
-        supabase.from('technology_types').select('id, name, code'),
-      ]);
-
-      const buildingNames = new Map(buildingTypesRes.data?.map(b => [b.id, b.name]) || []);
-      const techNames = new Map(techTypesRes.data?.map(t => [t.id, t.name]) || []);
-      const buildingCodes = new Map(buildingTypesRes.data?.map(b => [b.id, b.code]) || []);
-      const techCodes = new Map(techTypesRes.data?.map(t => [t.id, t.code]) || []);
+      const buildingTypes = (buildingsRes.data || []) as { id: number; name: string; code: string }[];
+      const techTypes = (techRes.data || []) as { id: number; name: string; code: string }[];
+      const buildingNames = new Map(buildingTypes.map(b => [b.id, b.name]));
+      const techNames = new Map(techTypes.map(t => [t.id, t.name]));
+      const buildingCodes = new Map(buildingTypes.map(b => [b.id, b.code]));
+      const techCodes = new Map(techTypes.map(t => [t.id, t.code]));
 
       const processItems = (data: any[], reqKey: string): RequirementItem[] => {
         return data.map(item => ({
@@ -114,7 +123,7 @@ export function RequirementsPage() {
 
       setBuildingItems(processItems(buildingsRes.data || [], 'building_requirements'));
       setTechItems(processItems(techRes.data || [], 'technology_requirements'));
-      setShipItems(processItems(shipsRes.data || [], 'ship_requirements'));
+      setShipItems(processItems((shipsRes.data || []).filter((s: any) => !HIDDEN_SHIP_CODES.has(s.code)), 'ship_requirements'));
       setDefenseItems(processItems(defensesRes.data || [], 'defense_requirements'));
     } catch (error) {
       console.error('Error loading requirements:', error);

@@ -38,6 +38,8 @@ import {
   Dices,
   Flag,
   Lock,
+  Home,
+  Landmark,
 } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { useOccupationStore, type OwnerOccupiedPlanet } from '../../store/occupationStore';
@@ -49,6 +51,7 @@ import { useI18n, translatePlanetName } from '../../lib/i18n';
 import { JackpotDisplay } from '../ui/JackpotDisplay';
 import { RankBadge } from '../ui/RankBadge';
 import { useHeroAccess } from '../../lib/casino';
+import { SpqrBanner } from '../ui/RomanOrnaments';
 
 type MenuKey = 'overview' | 'publicChat' | 'buildings' | 'resources' | 'research' | 'shipyard' | 'defense' | 'fleet' | 'galaxy' | 'requirements' | 'market' | 'p2p' | 'kyc' | 'alliance' | 'allianceWars' | 'ranking' | 'hallOfFame' | 'records' | 'topBattles' | 'messages' | 'officers' | 'referral' | 'wallet' | 'vip' | 'tasks' | 'dailyMissions' | 'premiumMissions' | 'combatSimulator' | 'lottery' | 'raffle' | 'heroShip' | 'casino' | 'forum' | 'cosmetics' | 'occupations';
 
@@ -87,6 +90,26 @@ const menuItems: { icon: typeof Globe; key: MenuKey; path: string }[] = [
   { icon: ShoppingBag, key: 'cosmetics', path: '/game/cosmetics' },
 ];
 
+const HIDDEN_KEYS: MenuKey[] = ['hallOfFame', 'topBattles', 'dailyMissions', 'combatSimulator', 'cosmetics'];
+
+// Secciones del menu: cada una es un cartel; las de varias opciones se despliegan
+const menuGroups: { id: string; icon: typeof Globe; es: string; en: string; keys: MenuKey[] }[] = [
+  { id: 'home', icon: Home, es: 'Inicio', en: 'Home', keys: ['overview'] },
+  { id: 'city', icon: Landmark, es: 'Ciudad', en: 'City', keys: ['buildings', 'resources', 'requirements', 'officers'] },
+  { id: 'army', icon: Swords, es: 'Ejército', en: 'Army', keys: ['shipyard', 'defense', 'fleet', 'occupations', 'heroShip', 'combatSimulator'] },
+  { id: 'alliance', icon: Users, es: 'Alianza', en: 'Alliance', keys: ['alliance', 'allianceWars', 'publicChat', 'messages', 'forum'] },
+  { id: 'map', icon: Map, es: 'Mapa', en: 'Map', keys: ['galaxy'] },
+  { id: 'research', icon: Microscope, es: 'Investigación', en: 'Research', keys: ['research'] },
+  { id: 'market', icon: Store, es: 'Mercado', en: 'Market', keys: ['market', 'p2p', 'wallet', 'vip', 'kyc', 'cosmetics'] },
+  { id: 'events', icon: Trophy, es: 'Eventos', en: 'Events', keys: ['casino', 'ranking', 'records', 'hallOfFame', 'topBattles'] },
+  { id: 'missions', icon: ClipboardList, es: 'Misiones', en: 'Missions', keys: ['tasks', 'dailyMissions', 'referral'] },
+];
+
+const isPathActive = (pathname: string, path: string) =>
+  path === '/game'
+    ? pathname === '/game' || pathname === '/game/'
+    : pathname === path || pathname.startsWith(`${path}/`);
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -106,6 +129,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const [isPlanetListOpen, setIsPlanetListOpen] = useState(false);
   const planetSelectorRef = useRef<HTMLDivElement>(null);
+
+  const groups = menuGroups
+    .map((g) => ({
+      ...g,
+      items: g.keys
+        .filter((k) => !HIDDEN_KEYS.includes(k) && (k !== 'heroShip' || heroAccess === true))
+        .map((k) => menuItems.find((m) => m.key === k)!)
+        .filter(Boolean),
+    }))
+    .filter((g) => g.items.length > 0);
+  const activeGroupId = groups.find((g) => g.items.some((i) => isPathActive(location.pathname, i.path)))?.id ?? null;
+  const [openGroup, setOpenGroup] = useState<string | null>(activeGroupId);
+
+  useEffect(() => {
+    if (activeGroupId) setOpenGroup(activeGroupId);
+  }, [activeGroupId]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -158,26 +197,23 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   return (
-    <aside className={`fixed lg:fixed top-0 left-0 h-full w-64 backdrop-blur-md border-r border-amber-700/50 shadow-[4px_0_24px_rgba(0,0,0,0.35)] bg-[linear-gradient(180deg,rgba(42,30,19,0.97),rgba(16,10,5,0.97))] flex flex-col z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+    <aside className={`fixed lg:fixed top-0 left-0 h-full w-64 border-r-2 border-[#6b5026] shadow-[inset_-5px_0_0_#0a0705,inset_-6px_0_0_rgba(214,170,85,0.35),6px_0_28px_rgba(0,0,0,0.6)] bg-[linear-gradient(180deg,#17110b_0%,#0d0906_45%,#080604_100%)] flex flex-col z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       <NavLink
         to="/game"
         onClick={onClose}
-        className="hidden lg:flex items-center gap-2.5 h-[76px] px-4 border-b border-amber-700/40 flex-shrink-0"
+        className="hidden lg:flex flex-col items-center justify-center pt-3 pb-2 flex-shrink-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(214,170,85,0.12),transparent_70%)]"
       >
-        <img src="/Imagenes/Visuales/main_city.webp" alt="Imperium" className="w-12 h-12 object-contain drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]" draggable={false} />
-        <span className="flex flex-col leading-none">
-          <span className="font-orbitron text-xl font-bold text-amber-100 tracking-wide drop-shadow-[0_0_8px_rgba(245,158,11,0.45)]">IMPERIUM</span>
-          <span className="text-[9px] tracking-[0.35em] text-amber-300/80 mt-1">IMPERIO ROMANO</span>
-        </span>
+        <SpqrBanner className="w-[124px] h-[156px]" />
       </NavLink>
-      <div className="p-3 border-b border-amber-700/40 relative" ref={planetSelectorRef}>
+      <div className="rm-divider mx-4 hidden lg:block" />
+      <div className="p-3 border-b border-[#d6aa55]/20 relative" ref={planetSelectorRef}>
         <div className="flex items-center justify-between lg:hidden mb-3">
           <span className="font-serif text-lg text-amber-100">Menu</span>
           <button onClick={onClose} className="p-1.5 hover:bg-space-600 rounded-lg">
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        <div className="flex items-center gap-2 p-2 rounded-xl border border-amber-700/50 bg-[linear-gradient(180deg,rgba(58,42,24,0.8),rgba(28,19,10,0.9))] shadow-[inset_0_1px_0_rgba(251,191,36,0.08)]">
+        <div className="flex items-center gap-2 p-2 rounded-sm border border-[#8a6a32] bg-[linear-gradient(180deg,#1e160d,#0c0806)] shadow-[inset_0_0_0_2px_rgba(0,0,0,0.6),inset_0_0_0_3px_rgba(201,158,78,0.22)]">
           <div
             data-tour="planet-selector"
             className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
@@ -375,39 +411,81 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Player Rank Badge */}
       {profile && (
-        <div className="px-3 py-2 border-b border-amber-700/40">
+        <div className="px-3 py-2 border-b border-[#d6aa55]/20">
           <RankBadge pointsTotal={profile.points_total} variant="compact" />
         </div>
       )}
 
-      <nav className="flex-1 px-2.5 py-2 overflow-y-auto space-y-0.5">
-        {menuItems
-          .filter((item) => item.key !== 'heroShip' || heroAccess === true)
-          .filter((item) => !['hallOfFame', 'topBattles', 'dailyMissions', 'combatSimulator', 'cosmetics'].includes(item.key))
-          .map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === '/game'}
-            onClick={onClose}
-            data-tour={`nav-${item.key}`}
-            className={({ isActive }) =>
-              `menu-item group py-2 ${isActive ? 'active' : ''} ${item.key === 'vip' ? 'xn-gold-box my-1.5' : ''}`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <item.icon className={`w-4 h-4 flex-shrink-0 ${item.key === 'vip' ? 'text-yellow-400' : isActive ? 'text-stone-900' : 'text-amber-400/80 group-hover:text-amber-300'}`} />
-                <span className={`text-[12px] ${item.key === 'vip' ? 'text-yellow-300 font-bold' : isActive ? 'text-stone-950 font-bold' : 'text-amber-100/90 group-hover:text-amber-50'}`}>{t.nav[item.key]}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
+      <nav className="flex-1 pl-2 pr-6 py-2 overflow-y-auto overflow-x-hidden">
+        {groups.map((g) => {
+          const label = es ? g.es : g.en;
+          const groupActive = g.id === activeGroupId;
+          const iconCls = `w-6 h-6 flex-shrink-0 ${groupActive ? 'text-[#f6e2a8] drop-shadow-[0_0_6px_rgba(246,226,168,0.5)]' : 'text-[#d6aa55]'}`;
+
+          if (g.items.length === 1) {
+            const item = g.items[0];
+            return (
+              <NavLink
+                key={g.id}
+                to={item.path}
+                end={item.path === '/game'}
+                onClick={onClose}
+                data-tour={`nav-${item.key}`}
+                title={t.nav[item.key]}
+                className={`rm-plaque ${groupActive ? 'active' : ''}`}
+              >
+                <g.icon strokeWidth={1.6} className={iconCls} />
+                <span className="rm-plaque-label">{label}</span>
+              </NavLink>
+            );
+          }
+
+          const isOpen = openGroup === g.id;
+          return (
+            <div key={g.id}>
+              <button
+                type="button"
+                onClick={() => setOpenGroup(isOpen ? null : g.id)}
+                aria-expanded={isOpen}
+                data-tour={isOpen ? `nav-group-${g.id}` : `nav-${g.items[0].key}`}
+                className={`rm-plaque ${groupActive ? 'active' : ''} ${isOpen ? 'open' : ''}`}
+              >
+                <g.icon strokeWidth={1.6} className={iconCls} />
+                <span className="rm-plaque-label">{label}</span>
+                <ChevronDown className={`w-4 h-4 flex-shrink-0 text-[#d6aa55] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isOpen && (
+                <div className="rm-subpanel">
+                  {g.items.map((item) => (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      end={item.path === '/game'}
+                      onClick={onClose}
+                      data-tour={`nav-${item.key}`}
+                      title={t.nav[item.key]}
+                      className={({ isActive }) =>
+                        `rm-sub group last:odd:col-span-2 ${isActive ? 'active' : ''} ${item.key === 'vip' ? 'vip' : ''}`
+                      }
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <item.icon strokeWidth={1.6} className={`w-5 h-5 flex-shrink-0 ${item.key === 'vip' ? 'text-yellow-400' : isActive ? 'text-[#f6e2a8]' : 'text-[#d6aa55] group-hover:text-[#f3dfae]'}`} />
+                          <span className={`rm-sub-label ${item.key === 'vip' ? '!text-yellow-300' : ''}`}>{t.nav[item.key]}</span>
+                        </>
+                      )}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </nav>
 
       <JackpotDisplay />
 
-      <div className="px-2.5 py-1.5 border-t border-amber-700/40">
+      <div className="pl-2 pr-5 py-1.5 border-t border-[#d6aa55]/20">
         {(isAdmin || isFinancialViewer) && (
           <NavLink
             to="/game/admin"
@@ -430,7 +508,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <Settings className="w-3.5 h-3.5 text-amber-200/60" />
           <span className="text-amber-200/70 text-xs">{t.nav.settings}</span>
         </NavLink>
-        <div className="mt-1.5 pt-1.5 border-t border-amber-700/40 text-center">
+        <div className="mt-1.5 pt-1.5 border-t border-[#d6aa55]/20 text-center">
           <span className="text-[9px] text-gray-600 font-mono">v1.0</span>
         </div>
       </div>

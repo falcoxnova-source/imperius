@@ -127,7 +127,7 @@ export function ResourceBar() {
     : 0;
 
   return (
-    <div className="grid grid-cols-3 md:grid-cols-5 xl:flex xl:flex-nowrap xl:justify-center gap-1.5 sm:gap-2">
+    <div className="grid grid-cols-3 md:grid-cols-5 xl:flex xl:flex-nowrap xl:justify-start gap-1.5 xl:gap-0">
       <ResourceItem
         icon={
           <img

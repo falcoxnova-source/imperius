@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, Thermometer, Grid3x3 as Grid3X3, Clock, Building2, Microscope, Rocket, Shield, ShieldAlert, MapPin, CreditCard as Edit2, Check, X, Trash2, AlertTriangle, Coins, Ticket, Trophy, RotateCcw, Swords, Scroll, Landmark, Ship, Activity, Castle, Gem, ChevronRight } from 'lucide-react';
+import { Globe, Thermometer, Clock, Building2, Microscope, Rocket, Shield, ShieldAlert, MapPin, CreditCard as Edit2, Check, X, Trash2, AlertTriangle, Coins, Ticket, Trophy, RotateCcw, Swords, Scroll, Landmark, Ship, Activity, Castle, Gem, ChevronRight } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
 import { formatCoordinates, formatTimeRemaining, getPlanetImage } from '../../lib/utils';
 import { useI18n, translateBuildingName, translateResearchName, translateShipName, translateDefenseName, translatePlanetName } from '../../lib/i18n';
-import { RankBadge } from '../../components/ui/RankBadge';
+import { FallbackImg } from '../../components/ui/RomanOrnaments';
+import { ImperiumBanner, RmPanelHead, LaurelBadge, BuildingsPanel, ArmyPanel, CitizenPanel, PromoCard, HomeSideLinks, HOME_IMG } from '../../components/game/ImperiumHome';
 import { DailyStreakBanner } from '../../components/game/DailyStreakBanner';
 import { PeaceShieldWidget } from '../../components/game/PeaceShieldWidget';
 import { ActiveBonusesPanel } from '../../components/game/ActiveBonusesPanel';
@@ -222,8 +223,6 @@ type PlanetAutopilotRole = NonNullable<Planet['autopilot_role']>;
 
 // Imagenes decorativas de la Vista General. Vacio ('') => fondo degradado.
 // Subirlas a public/Imagenes/Vista General/ y poner aqui la ruta.
-const OVERVIEW_BANNER_IMG = '/Imagenes/Defensas/Ciudadela romana sobre las nubes_11zon.webp';
-const OVERVIEW_PLANET_DECOR_IMG = '';
 const OVERVIEW_FLEET_IMG = '';
 const OVERVIEW_CARD_IMG = {
   buildings: '/Imagenes/Edificios/Construcción del castillo bajo estandartes dorados.webp',
@@ -825,35 +824,20 @@ export function OverviewPage() {
       </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Banner principal: racha diaria + bonos activos */}
-          <div className="card-glass overflow-hidden">
-            <div className="xn-hero-banner h-32 sm:h-40 flex items-center justify-center overflow-hidden">
-              {OVERVIEW_BANNER_IMG && (
-                <img src={OVERVIEW_BANNER_IMG} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1c1208] via-transparent to-transparent pointer-events-none" />
-              <div className="relative flex flex-col items-center">
-                <img src="/Imagenes/Visuales/main_city.webp" alt="Imperium" className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_14px_rgba(245,158,11,0.7)]" draggable={false} />
-                <div className="mt-1 px-5 sm:px-7 py-1 rounded-lg border border-amber-500/40 bg-[#1c1208]/75 shadow-[0_0_18px_rgba(245,158,11,0.25)] font-orbitron text-lg sm:text-2xl font-bold tracking-[0.15em] text-amber-100 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]">
-                  IMPERIUM
-                </div>
-              </div>
-            </div>
-            <div className="p-3 sm:p-4 space-y-3">
-              <PeaceShieldWidget />
-              <DailyStreakBanner />
-              <ActiveBonusesPanel variant="bar" />
-            </div>
-          </div>
+      <ImperiumBanner />
 
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2 space-y-6 min-w-0">
+          {/* Ciudad principal */}
           <div className="card-glass overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-cyan-400/15">
+            <RmPanelHead
+              icon={<Landmark className="w-5 h-5" strokeWidth={1.6} />}
+              title={currentPlanet.is_main_planet ? 'Ciudad Principal' : (currentPlanet.planet_type === 'moon' ? t.overview.moon : 'Colonia')}
+              action="Expandir"
+              onAction={() => navigate('/game/buildings')}
+            />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 pt-3">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <div className="xn-icon-badge w-9 h-9">
-                  <Globe className="w-5 h-5 text-cyan-300" />
-                </div>
                 {isEditing ? (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -896,28 +880,28 @@ export function OverviewPage() {
                   </div>
                 ) : (
                   <>
-                    <h1 className="font-serif text-lg sm:text-2xl text-amber-100 tracking-wide truncate">{translatePlanetName(currentPlanet.name)}</h1>
+                    <h1 className="font-cinzel text-lg sm:text-2xl font-bold text-[#f3dfae] tracking-wide truncate">{translatePlanetName(currentPlanet.name)}</h1>
                     <button
                       onClick={() => {
                         setNewName(currentPlanet.name);
                         setIsEditing(true);
                       }}
-                      className="p-2 hover:bg-space-600 rounded-lg transition-colors flex-shrink-0"
+                      className="p-2 hover:bg-[#d6aa55]/10 rounded-sm transition-colors flex-shrink-0"
                     >
-                      <Edit2 className="w-4 h-4 text-gray-400" />
+                      <Edit2 className="w-4 h-4 text-[#d6aa55]/70" />
                     </button>
                   </>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-amber-200 flex-shrink-0 self-start sm:self-auto px-3 py-1 rounded-lg border border-amber-600/40 bg-stone-900/60">
-                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="font-serif text-sm sm:text-base">
+              <div className="flex items-center gap-2 text-[#f3dfae] flex-shrink-0 self-start sm:self-auto px-3 py-1 rounded-sm border border-[#8a6a32] bg-black/50">
+                <MapPin className="w-4 h-4 text-[#d6aa55]" />
+                <span className="font-cinzel text-sm">
                   {formatCoordinates(currentPlanet.galaxy, currentPlanet.solar_system, currentPlanet.position)}
                 </span>
               </div>
             </div>
-            <div className="p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-              <div className="relative flex-shrink-0">
+            <div className="p-4 sm:p-5 flex flex-col md:flex-row gap-4 sm:gap-5">
+              <div className="relative flex-shrink-0 self-center md:self-start w-full max-w-[18rem]">
                 {planetGlow && (
                   <>
                     {/* Resplandor tipo sol detras del planeta */}
@@ -925,60 +909,89 @@ export function OverviewPage() {
                     <div className={`absolute -inset-2 rounded-full ${planetGlow.glow} blur-xl opacity-70 animate-pulse pointer-events-none`} style={{ animationDuration: '3.5s' }} />
                   </>
                 )}
-                <div className={`relative z-10 w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden border-2 ${
-                  planetGlow ? `ring-4 ${planetGlow.ring} shadow-2xl border-white/20` : 'border-amber-600/40'
-                }`}>
-                  <img
-                    src={currentPlanet.planet_type === 'moon' ? '/Imagenes/castra de diana/Campamento romano bajo la luna llena_11zon.webp' : '/Imagenes/Visuales/overview_city.webp'}
+                <div className={`rm-tile relative z-10 w-full aspect-[3/2] ${planetGlow ? `ring-4 ${planetGlow.ring} shadow-2xl` : ''}`}>
+                  <FallbackImg
+                    key={currentPlanet.planet_type}
+                    srcs={currentPlanet.planet_type === 'moon' ? ['/Imagenes/castra de diana/Campamento romano bajo la luna llena_11zon.webp'] : HOME_IMG.city}
                     alt={t.galaxy.planet}
                     className="w-full h-full object-cover"
-                    draggable={false}
                   />
                 </div>
                 {planetGlow && (
-                  <div className="absolute -top-2 -left-2 z-20 w-7 h-7 rounded-full bg-space-900/90 border border-white/25 flex items-center justify-center text-sm animate-pulse shadow-lg" style={{ animationDuration: '2s' }} title={`Efecto: ${planetGlow.label}`}>
+                  <div className="absolute -top-2 -left-2 z-20 w-7 h-7 rounded-full bg-black/90 border border-[#d6aa55]/50 flex items-center justify-center text-sm animate-pulse shadow-lg" style={{ animationDuration: '2s' }} title={`Efecto: ${planetGlow.label}`}>
                     {planetGlow.emoji}
                   </div>
                 )}
-                <div className="absolute -bottom-2 -right-2 z-20 px-3 py-1 bg-stone-900/90 border border-amber-600/40 rounded-full">
-                  <span className="text-xs text-amber-200 font-serif">
-                    {currentPlanet.planet_type === 'moon' ? t.overview.moon : t.galaxy.planet}
-                  </span>
+                <div className="absolute -bottom-3 -right-3 z-20 bg-black/70 rounded-full" title={t.overview.fields}>
+                  <LaurelBadge value={currentPlanet.fields_used} />
                 </div>
               </div>
 
-              <div className="flex-1 w-full grid grid-cols-2 gap-3 sm:gap-4">
-                <StatItem
-                  icon={<Globe className="w-5 h-5" />}
-                  label={t.overview.diameter}
-                  value={`${currentPlanet.diameter.toLocaleString()} km`}
-                />
-                <StatItem
-                  icon={<Grid3X3 className="w-5 h-5" />}
-                  label={t.overview.fields}
-                  value={`${currentPlanet.fields_used} / ${currentPlanet.fields_max}`}
-                  highlight={currentPlanet.fields_used >= currentPlanet.fields_max}
-                />
-                <StatItem
-                  icon={<Thermometer className="w-5 h-5" />}
-                  label={t.overview.temperature}
-                  value={`${currentPlanet.temp_min}°C - ${currentPlanet.temp_max}°C`}
-                />
-                <StatItem
-                  icon={<Clock className="w-5 h-5" />}
-                  label="Hora Imperial"
-                  value={new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                />
+              <div className="flex-1 min-w-0 space-y-3">
+                <div>
+                  <div className="flex items-center justify-between text-xs font-cinzel text-[#e9d6a6] mb-1">
+                    <span>{t.overview.fields}</span>
+                    <span className={currentPlanet.fields_used >= currentPlanet.fields_max ? 'text-red-400' : 'text-[#f6e2a8]'}>
+                      {currentPlanet.fields_used} / {currentPlanet.fields_max}
+                    </span>
+                  </div>
+                  <div className="rm-bar">
+                    <span
+                      className="bg-[linear-gradient(90deg,#8a6a32,#e2b865,#fff1cc)]"
+                      style={{ width: `${Math.min(100, (currentPlanet.fields_used / Math.max(1, currentPlanet.fields_max)) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-cinzel text-[11px] uppercase tracking-widest text-[#d6aa55] mb-1.5">Producción por hora</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-2 2xl:grid-cols-4 gap-2">
+                    {[
+                      { img: '/Imagenes/Recursos/Emblema%20de%20forja%20y%20miner%C3%ADa.webp', label: t.resources.metal, value: `+${Math.floor(resources.metal_per_hour).toLocaleString('es-ES')}` },
+                      { img: '/Imagenes/Recursos/Emblema%20de%20cristales%20y%20laurel_11zon.webp', label: t.resources.crystal, value: `+${Math.floor(resources.crystal_per_hour).toLocaleString('es-ES')}` },
+                      { img: '/Imagenes/Recursos/Golden%20Harvest%20Laurel%20Medallion_11zon.webp', label: t.resources.deuterium, value: `+${Math.floor(resources.deuterium_per_hour).toLocaleString('es-ES')}` },
+                      { img: '/Imagenes/Recursos/Golden%20Heartfire%20Brazier%20Emblem_11zon.webp', label: t.resources.energy, value: `${(resources.energy_max - resources.energy_used).toLocaleString('es-ES')}` },
+                    ].map((r) => (
+                      <div key={r.label} className="flex items-center gap-2 px-2 py-1.5 rounded-sm border border-[#8a6a32]/50 bg-black/40" title={r.label}>
+                        <img src={r.img} alt="" className="w-7 h-7 rounded-full border border-[#d6aa55]/60 object-cover flex-shrink-0" draggable={false} />
+                        <div className="min-w-0">
+                          <p className="text-[10px] text-[#e9d6a6]/70 truncate">{r.label}</p>
+                          <p className="font-cinzel text-xs font-bold text-[#f6e2a8] truncate">{r.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#e9d6a6]/80">
+                  <span className="flex items-center gap-1"><Globe className="w-3.5 h-3.5 text-[#d6aa55]" />{currentPlanet.diameter.toLocaleString()} km</span>
+                  <span className="flex items-center gap-1"><Thermometer className="w-3.5 h-3.5 text-[#d6aa55]" />{currentPlanet.temp_min}°C / {currentPlanet.temp_max}°C</span>
+                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-[#d6aa55]" />Hora Imperial {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button onClick={() => navigate('/game/buildings')} className="rm-icon-sq w-11 h-11" title={t.nav.buildings}>
+                    <Building2 className="w-5 h-5" strokeWidth={1.6} />
+                  </button>
+                  <button onClick={() => navigate('/game/resources')} className="rm-icon-sq w-11 h-11" title={t.nav.resources}>
+                    <Coins className="w-5 h-5" strokeWidth={1.6} />
+                  </button>
+                  <button onClick={() => navigate('/game/galaxy')} className="rm-icon-sq w-11 h-11" title={t.nav.galaxy}>
+                    <Globe className="w-5 h-5" strokeWidth={1.6} />
+                  </button>
+                </div>
               </div>
-              {OVERVIEW_PLANET_DECOR_IMG && (
-                <img
-                  src={OVERVIEW_PLANET_DECOR_IMG}
-                  alt=""
-                  className="hidden xl:block w-44 2xl:w-56 max-h-44 object-contain flex-shrink-0 drop-shadow-[0_0_18px_rgba(0,170,255,0.35)] pointer-events-none"
-                  draggable={false}
-                />
-              )}
             </div>
+          </div>
+
+          <BuildingsPanel />
+          <ArmyPanel />
+
+          {/* Escudo de paz, racha diaria y bonos activos */}
+          <div className="card-glass p-3 sm:p-4 space-y-3">
+            <PeaceShieldWidget />
+            <DailyStreakBanner />
+            <ActiveBonusesPanel variant="bar" />
           </div>
 
           {/* Deposit info for colonies */}
@@ -1521,16 +1534,21 @@ export function OverviewPage() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6 content-start [&>*]:min-w-0">
+          <CitizenPanel />
+          <PromoCard />
+          <div className="space-y-3">
+            <HomeSideLinks />
+          </div>
+
           <div className="card-glass p-4 sm:p-5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-cyber-blue/5 rounded-full blur-3xl pointer-events-none" />
             <h3 className="xn-panel-head text-base sm:text-lg mb-3 sm:mb-4 relative z-10">
-              <span className="xn-icon-badge w-8 h-8">
-                <Ship className="w-4 h-4 text-cyan-300" />
+              <span className="rm-icon-sq w-8 h-8">
+                <Ship className="w-4 h-4" />
               </span>
               {t.fleet.activeFleets}
               {activeFleets.length > 0 && (
-                <span className="ml-auto text-[11px] font-sans px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-400/25">{activeFleets.length}</span>
+                <span className="ml-auto text-[11px] font-sans px-2 py-0.5 rounded-sm bg-[#d6aa55]/15 text-[#f6e2a8] border border-[#d6aa55]/40">{activeFleets.length}</span>
               )}
             </h3>
             {activeFleets.length > 0 ? (
@@ -1666,41 +1684,6 @@ export function OverviewPage() {
             </div>
           )}
 
-          <div className="card-glass p-4 sm:p-6 relative overflow-hidden">
-            {/* Background decoration */}
-            <div 
-              className="absolute inset-0 opacity-10 pointer-events-none"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f59e0b' fill-opacity='0.3' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
-              }}
-            />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-            <h3 className="font-orbitron text-base sm:text-lg text-white mb-3 sm:mb-4 relative z-10">{t.ranking.playerCard}</h3>
-            <div className="space-y-2 sm:space-y-3 relative z-10">
-              {/* Rank Badge with progress */}
-              <div className="mb-3 pb-3 border-b border-cyber-blue/10">
-                <RankBadge pointsTotal={profile?.points_total || 0} variant="full" />
-              </div>
-              <div className="flex justify-between items-center gap-2">
-                <span className="text-gray-400 text-xs sm:text-sm">{t.common.rank}</span>
-                <span className="text-white font-bold text-sm sm:text-base">#{profile?.rank_position || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center gap-2">
-                <span className="text-gray-400 text-xs sm:text-sm">{t.common.points}</span>
-                <span className="text-cyber-blue font-bold text-sm sm:text-base">
-                  {profile?.points_total.toLocaleString() || 0}
-                </span>
-              </div>
-              <div className="flex justify-between items-center gap-2">
-                <span className="text-gray-400 text-xs sm:text-sm">{t.ranking.fleetRanking}</span>
-                <span className="text-white text-sm sm:text-base">{profile?.points_fleet.toLocaleString() || 0}</span>
-              </div>
-              <div className="flex justify-between items-center gap-2">
-                <span className="text-gray-400 text-xs sm:text-sm">{t.ranking.defenseRanking}</span>
-                <span className="text-white text-sm sm:text-base">{profile?.points_defense.toLocaleString() || 0}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1770,28 +1753,6 @@ export function OverviewPage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function StatItem({
-  icon,
-  label,
-  value,
-  highlight,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg min-w-0 border border-amber-700/40 bg-stone-900/50">
-      <div className="xn-icon-badge w-9 h-9 sm:w-10 sm:h-10 text-amber-300">{icon}</div>
-      <div className="min-w-0">
-        <p className="text-[10px] sm:text-xs text-amber-200/50">{label}</p>
-        <p className={`font-semibold text-xs sm:text-sm truncate ${highlight ? 'text-amber-400' : 'text-amber-50'}`}>{value}</p>
-      </div>
     </div>
   );
 }

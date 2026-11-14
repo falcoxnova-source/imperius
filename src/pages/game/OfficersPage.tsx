@@ -5,7 +5,6 @@ import {
   Wrench,
   Mountain,
   Brain,
-  Atom,
   Bot,
   Clock,
   Check,
@@ -265,11 +264,6 @@ export function OfficersPage() {
           {t.officers.title}
         </h1>
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-space-700/50 rounded-lg">
-            <Atom className="w-5 h-5 text-fuchsia-400" />
-            <span className="text-gray-400">{t.resources.darkMatter}:</span>
-            <span className="font-orbitron text-fuchsia-400">{formatNumber(profile?.dark_matter || 0)}</span>
-          </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-space-700/50 rounded-lg">
             <Coins className="w-5 h-5 text-cyber-orange" />
             <span className="text-gray-400">TUNG:</span>

@@ -693,7 +693,7 @@ export function MarketPage() {
     // [MKTANON1] Ofertas de compra anonimas
     const { data } = await supabase.rpc('get_market_buy_offers_public');
     const rows = (Array.isArray(data) ? data : []) as Array<Omit<BuyOffer, 'buyer_id'> & { is_mine: boolean; priority: number }>;
-    const offers: BuyOffer[] = rows.map(o => ({
+    const offers: BuyOffer[] = rows.filter(o => o.listing_type !== 'dark_matter').map(o => ({
       ...o,
       buyer_id: o.is_mine && profile ? profile.id : '',
       buyer: { username: o.is_mine ? 'Tú' : 'Anónimo', rank_position: o.priority },
@@ -722,7 +722,7 @@ export function MarketPage() {
       .eq('buyer_id', profile.id)
       .order('created_at', { ascending: false });
 
-    setMyBuyOffers(data || []);
+    setMyBuyOffers((data || []).filter((o: BuyOffer) => o.listing_type !== 'dark_matter'));
   };
 
   const purchaseSupplyBox = async (boxCode: string) => {
@@ -2456,7 +2456,6 @@ export function MarketPage() {
                     >
                       <option value="resource" className="bg-space-800 text-white">{t.market.resource}</option>
                       <option value="ship" className="bg-space-800 text-white">{t.market.ship}</option>
-                      <option value="dark_matter" className="bg-space-800 text-white">{t.market.darkMatter}</option>
                     </select>
                   </div>
 

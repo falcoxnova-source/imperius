@@ -855,7 +855,7 @@ export function SettingsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="p-4 bg-space-700/50 rounded-lg text-center">
             <p className="text-sm text-gray-400">{t.settings.totalPoints}</p>
             <p className="font-orbitron text-xl text-cyber-blue">
@@ -865,12 +865,6 @@ export function SettingsPage() {
           <div className="p-4 bg-space-700/50 rounded-lg text-center">
             <p className="text-sm text-gray-400">{t.settings.rank}</p>
             <p className="font-orbitron text-xl text-cyber-yellow">#{profile?.rank_position || '-'}</p>
-          </div>
-          <div className="p-4 bg-space-700/50 rounded-lg text-center">
-            <p className="text-sm text-gray-400">{t.settings.darkMatter}</p>
-            <p className="font-orbitron text-xl text-purple-400">
-              {profile?.dark_matter.toLocaleString()}
-            </p>
           </div>
           <div className="p-4 bg-space-700/50 rounded-lg text-center">
             <p className="text-sm text-gray-400">{t.settings.memberSince}</p>

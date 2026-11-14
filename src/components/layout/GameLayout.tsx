@@ -39,24 +39,14 @@ export function GameLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-space-900">
+    <div className="min-h-screen bg-space-900 overflow-x-clip">
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-10 pointer-events-none z-0"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-[0.07] pointer-events-none z-0"
         style={{ backgroundImage: 'url("/Imagenes/Visuales/xd.webp")' }}
         aria-hidden="true"
       />
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_50%_-10%,rgba(214,170,85,0.08),transparent_60%)]" aria-hidden="true" />
       <NetworkStatus />
-      <div className="nebula-layer" aria-hidden="true" />
-      <div className="stars-layer" aria-hidden="true" />
-      <div className="stars-layer-2" aria-hidden="true" />
-      <div className="stars-layer-3" aria-hidden="true" />
-      <div className="shooting-stars" aria-hidden="true">
-        <div className="shooting-star shooting-star-1" />
-        <div className="shooting-star shooting-star-2" />
-        <div className="shooting-star shooting-star-3" />
-        <div className="shooting-star shooting-star-4" />
-        <div className="shooting-star shooting-star-5" />
-      </div>
       <div className="flex relative z-10 w-full max-w-full">
         <div
           className={`fixed inset-0 bg-black/60 z-40 lg:hidden transition-opacity duration-300 ${
@@ -67,7 +57,7 @@ export function GameLayout() {
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 flex flex-col min-h-screen lg:ml-64 min-w-0">
           <Header onMenuClick={() => setSidebarOpen(true)} />
-          <main className="flex-1 p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 overflow-auto">
+          <main className="flex-1 p-3 sm:p-5 md:p-6 space-y-4 sm:space-y-5 overflow-auto min-w-0">
             <VacationBanner />
             <AttackCooldownBanner />
             <ColonySaleLock>

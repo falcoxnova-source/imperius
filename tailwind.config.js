@@ -6,11 +6,11 @@ export default {
       colors: {
         // Colores del tema imperio romano (piedra, bronce y dorado)
         space: {
-          900: '#1b1109',
-          800: '#241a10',
-          700: '#2a1e13',
-          600: '#332619',
-          500: '#3d2e1d',
+          900: '#0c0806',
+          800: '#140e09',
+          700: '#1c140d',
+          600: '#2a1f14',
+          500: '#3a2b1b',
           400: '#4a3826',
         },
         cyber: {
@@ -30,7 +30,8 @@ export default {
         }
       },
       fontFamily: {
-        orbitron: ['Georgia', 'Times New Roman', 'serif'],
+        orbitron: ['Cinzel', 'Georgia', 'Times New Roman', 'serif'],
+        cinzel: ['Cinzel', 'Georgia', 'serif'],
         rajdhani: ['Rajdhani', 'sans-serif'],
       },
       backgroundImage: {

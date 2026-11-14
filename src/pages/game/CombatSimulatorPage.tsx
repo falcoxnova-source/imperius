@@ -469,7 +469,7 @@ export function CombatSimulatorPage() {
   // Naves de combate y civiles separadas
   const combatShips = useMemo(() => shipTypes.filter(s => s.category === 'combat'), [shipTypes]);
   const civilShips = useMemo(() => shipTypes.filter(s => s.category === 'civil'), [shipTypes]);
-  const specialShips = useMemo(() => shipTypes.filter(s => s.category === 'special'), [shipTypes]);
+  const specialShips = useMemo(() => shipTypes.filter(s => s.category === 'special' && s.code !== 'falco_x_clasica'), [shipTypes]);
   const allShips = useMemo(() => [...combatShips, ...civilShips, ...specialShips], [combatShips, civilShips, specialShips]);
   // [SIMFIX1] Misiles fuera: no entran al combate real.
   const combatDefenseTypes = useMemo(

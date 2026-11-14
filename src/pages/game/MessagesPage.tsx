@@ -1785,12 +1785,6 @@ function ExpeditionReportView({ body }: { body: string }) {
         </div>
       )}
 
-      {report.dark_matter && report.dark_matter > 0 && (
-        <div className="bg-space-800 rounded-lg p-4">
-          <h4 className="text-sm font-semibold text-purple-400 mb-2">{t.resources.darkMatter}</h4>
-          <p className="font-orbitron text-purple-400 text-xl">+{formatNumber(report.dark_matter)}</p>
-        </div>
-      )}
     </div>
   );
 }
@@ -1916,9 +1910,6 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
   const metal = extractAmount(body, /(\d[\d.,]*)\s*Metal/i);
   const crystal = extractAmount(body, /(\d[\d.,]*)\s*Cristal/i);
   const deuterium = extractAmount(body, /(\d[\d.,]*)\s*Deuteri/i);
-  const darkMatter =
-    extractAmount(body, /(\d[\d.,]*)\s*(?:unidades\s+de\s+)?Materia Oscura/i) ??
-    extractAmount(body, /recolectar\s+(\d[\d.,]*)\s*unidades/i);
   const fxu = extractAmount(body, /(\d[\d.,]*)\s*(?:Tokens\s+)?FXU/i);
   const lossPct = extractAmount(body, /(\d[\d.,]*)\s*%/);
 
@@ -1950,7 +1941,7 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
           : '📦 El cargamento ya está en tu cuenta. ¡Sigue explorando tierras desconocidas!';
 
   const hasFindings =
-    metal || crystal || deuterium || darkMatter || fxu || shipCount;
+    metal || crystal || deuterium || fxu || shipCount;
 
   return (
     <div className="space-y-4">
@@ -1969,10 +1960,6 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
           {deuterium !== null && (
             <FindingCard icon={<Flame className="w-5 h-5" />} label="Comida"
               value={`+${formatNumber(deuterium)}`} color="text-green-400" />
-          )}
-          {darkMatter !== null && (
-            <FindingCard icon={<Zap className="w-5 h-5" />} label="Materia Oscura"
-              value={`+${formatNumber(darkMatter)}`} color="text-purple-400" />
           )}
           {fxu !== null && (
             <FindingCard icon={<Coins className="w-5 h-5" />} label="Tokens FXU"

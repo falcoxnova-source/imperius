@@ -1650,7 +1650,7 @@ export function FleetPage() {
             <div className="mt-6">
               <label className="block text-sm text-gray-400 mb-2">{t.fleet.missionType}</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2">
-                {(['attack', 'transport', 'deploy', 'colonize', 'espionage', 'recycle', 'expedition', 'harvest'] as MissionType[]).map((m) => (
+                {(['attack', 'transport', 'deploy', 'colonize', 'espionage', 'recycle', 'expedition'] as MissionType[]).map((m) => (
                   <button
                     key={m}
                     onClick={() => {

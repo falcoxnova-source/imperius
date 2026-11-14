@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Clock, Gift, MapPin, Sparkles, Ticket, Trophy, Users } from 'lucide-react';
+import { ChevronRight, Clock, Gift, Sparkles, Ticket, Trophy, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { CASINO_COORDS } from '../../lib/casino';
 import { ActiveRaffleResponse, fetchActiveRaffle, formatCountdown } from '../../components/game/RaffleBanner';
 
 const LOTTERY_IMG = 'https://photos.pinksale.finance/file/pinksale-logo-upload/1775067036507-327d40aa0444bcab4ac5ca7406f0eb5e.png';
@@ -188,8 +187,6 @@ const GAMES = [
   { icon: '🎡', name: 'Ruleta', color: 'from-rose-500/30 to-red-900/40', ring: 'ring-rose-400/40' },
 ];
 
-const coordsLabel = `[${CASINO_COORDS.galaxy}:${CASINO_COORDS.system}:${CASINO_COORDS.position}]`;
-
 // [CASINOGATE4] El Casino ya no requiere Nave Insignia: se entra desde el menu y se juega directamente.
 export function CasinoPage() {
   const [rouletteAllowed, setRouletteAllowed] = useState(false);
@@ -211,16 +208,12 @@ export function CasinoPage() {
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-300 via-fuchsia-500 to-purple-700 p-[3px] shadow-xl shadow-fuchsia-500/40 animate-pulse" style={{ animationDuration: '3s' }}>
               <div className="w-full h-full rounded-full bg-[#120320] flex items-center justify-center text-5xl">🎰</div>
             </div>
-            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-black shadow">{coordsLabel}</span>
           </div>
           <div className="text-center sm:text-left flex-1">
             <h1 className="font-orbitron text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-fuchsia-300 to-purple-300 tracking-wider">
               CASINO GALÁCTICO
             </h1>
-            <p className="text-sm text-fuchsia-200/80 mt-1">El planeta en el corazón del universo. Apuesta tus TUNG en las mesas más brillantes de la galaxia.</p>
-            <p className="text-xs text-slate-400 mt-2 flex items-center justify-center sm:justify-start gap-1">
-              <MapPin className="w-3.5 h-3.5 text-amber-300" /> Galaxia {CASINO_COORDS.galaxy} · Sistema {CASINO_COORDS.system} · Posición {CASINO_COORDS.position}
-            </p>
+            <p className="text-sm text-fuchsia-200/80 mt-1">Apuesta tus TUNG en las mesas más brillantes de la galaxia.</p>
           </div>
         </div>
       </div>
