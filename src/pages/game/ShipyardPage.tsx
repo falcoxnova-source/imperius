@@ -38,6 +38,7 @@ import { ShipyardQueuePanel, CostItem } from '../../components/game';
 import { BlueprintPurchaseConfirm } from '../../components/game/BlueprintPurchaseConfirm';
 import { GiftItemModal } from '../../components/game/GiftItemModal';
 import { calculateShipyardTime, calculateShipSpeedWithBonus } from '../../lib/formulas';
+import { formatMarch, marchPace } from '../../lib/marchSpeed';
 import { formatNumber, formatTime } from '../../lib/utils';
 import { useI18n, translateEntityName, translateShipName, getShipImage, translatePlanetName } from '../../lib/i18n';
 import type { ShipType } from '../../types/game';
@@ -750,7 +751,7 @@ function ShipCard({
   onBuild,
   onShowInfo,
 }: ShipCardProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const hasBlueprintForQuantity = blueprintQuantity >= buildQuantity;
   const isLocked = !!(missingReqs && missingReqs.length > 0) && !hasBlueprintForQuantity;
   // Cuando tiene planos suficientes -> requisitos quedan anulados (solo Hangar Nv1).
@@ -844,15 +845,16 @@ function ShipCard({
             </span>
           </div>
           <div className="flex items-center justify-between px-3 py-1.5 rounded-md bg-black/25 border-l-[3px] border-emerald-500/70">
-            <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-200/60"><Gauge className="w-3.5 h-3.5 text-emerald-400" />{t.shipyard.speed}</span>
-            <span className="font-serif font-bold text-amber-50 text-sm truncate">
+            <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-amber-200/60"><Gauge className="w-3.5 h-3.5 text-emerald-400" />{language === 'en' ? 'March' : 'Marcha'}</span>
+            <span className="font-serif font-bold text-amber-50 text-xs sm:text-sm truncate text-right" title={`${marchPace(shipSpeedWithBonus, language).icon} ${marchPace(shipSpeedWithBonus, language).label}`}>
+              <span className={`mr-1 ${marchPace(shipSpeedWithBonus, language).color}`}>{marchPace(shipSpeedWithBonus, language).icon}</span>
               {shipSpeedWithBonus > shipType.base_speed ? (
                 <>
-                  <span className="text-amber-200/40 line-through text-xs mr-1">{formatNumber(shipType.base_speed)}</span>
-                  <span className="text-emerald-400">{formatNumber(shipSpeedWithBonus)}</span>
+                  <span className="text-amber-200/40 line-through text-xs mr-1">{formatMarch(shipType.base_speed, language).split(' ')[0]}</span>
+                  <span className="text-emerald-400">{formatMarch(shipSpeedWithBonus, language)}</span>
                 </>
               ) : (
-                formatNumber(shipType.base_speed)
+                formatMarch(shipType.base_speed, language)
               )}
             </span>
           </div>
@@ -1055,7 +1057,7 @@ function ShipInfoModal({
   isVip,
   onClose,
 }: ShipInfoModalProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const buildTimePerUnit = calculateShipyardTime(
     shipType.metal_cost,
     shipType.crystal_cost,
@@ -1215,16 +1217,19 @@ function ShipInfoModal({
                 <div className="flex items-center gap-2">
                   <Gauge className="w-5 h-5 text-cyber-orange" />
                   <div>
-                    <p className="text-xs text-gray-400">{t.shipyard.baseSpeed}</p>
+                    <p className="text-xs text-gray-400">{language === 'en' ? 'March speed' : 'Velocidad de marcha'}</p>
                     <p className="text-white font-semibold">
                       {shipSpeedWithBonus > shipType.base_speed ? (
                         <>
-                          <span className="text-gray-400 line-through text-sm">{formatNumber(shipType.base_speed)}</span>{' '}
-                          <span className="text-cyber-green">{formatNumber(shipSpeedWithBonus)}</span>
+                          <span className="text-gray-400 line-through text-sm">{formatMarch(shipType.base_speed, language)}</span>{' '}
+                          <span className="text-cyber-green">{formatMarch(shipSpeedWithBonus, language)}</span>
                         </>
                       ) : (
-                        formatNumber(shipType.base_speed)
+                        formatMarch(shipType.base_speed, language)
                       )}
+                    </p>
+                    <p className={`text-xs mt-0.5 ${marchPace(shipSpeedWithBonus, language).color}`}>
+                      {marchPace(shipSpeedWithBonus, language).icon} {marchPace(shipSpeedWithBonus, language).label}
                     </p>
                   </div>
                 </div>

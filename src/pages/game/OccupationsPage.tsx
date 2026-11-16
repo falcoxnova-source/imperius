@@ -16,6 +16,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useGameStore } from '../../store/gameStore';
 import { useI18n, translateShipName, translateDefenseName, translatePlanetName } from '../../lib/i18n';
 import { formatNumber, formatTime } from '../../lib/utils';
+import { formatMarch, marchPace } from '../../lib/marchSpeed';
 import { OCCUPATION_CHANGED_EVENT } from '../../components/ui/OccupationLock';
 
 interface ShipInfo {
@@ -762,12 +763,12 @@ export function OccupationsPage() {
                       [tx('Escudo', 'Shield'), info.ship.shield_power],
                       [tx('Ataque', 'Attack'), info.ship.weapon_power],
                       [tx('Carga', 'Cargo'), info.ship.cargo_capacity],
-                      [tx('Velocidad', 'Speed'), info.ship.base_speed],
+                      [tx('Marcha', 'March'), `${marchPace(info.ship.base_speed, language).icon} ${formatMarch(info.ship.base_speed, language)}`],
                       [tx('Consumo', 'Fuel'), info.ship.fuel_consumption],
                     ] as const).map(([l, v]) => (
                       <div key={l} className="bg-space-700/50 rounded p-2">
                         <p className="text-[11px] text-gray-400">{l}</p>
-                        <p className="text-sm text-white font-orbitron">{formatNumber(v)}</p>
+                        <p className="text-sm text-white font-orbitron truncate">{typeof v === 'number' ? formatNumber(v) : v}</p>
                       </div>
                     ))}
                   </div>

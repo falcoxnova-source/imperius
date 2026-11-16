@@ -24,6 +24,7 @@ import {
 } from '../../store/occupationStore';
 import { useI18n, translateBuildingName, translateShipName, translateDefenseName } from '../../lib/i18n';
 import { formatCoordinates, formatNumber, formatTime, getPlanetImage } from '../../lib/utils';
+import { formatMarch, marchPace } from '../../lib/marchSpeed';
 import { MediaDisplay } from '../ui/MediaDisplay';
 
 // Rutas que se muestran con el planeta ocupado ('' = visión general)
@@ -71,7 +72,7 @@ interface BuildCardProps {
   label: string;
   owned: number;
   inQueue: number;
-  stats: { label: string; value: number }[];
+  stats: { label: string; value: number | string }[];
   qty: number;
   res: Res;
   busy: boolean;
@@ -116,7 +117,7 @@ function BuildCard({ opt, label, owned, inQueue, stats, qty, res, busy, disabled
             {stats.map((s) => (
               <div key={s.label} className="bg-space-700/50 rounded-lg p-1 sm:p-2">
                 <p className="text-gray-500 text-[9px] sm:text-xs">{s.label}</p>
-                <p className="text-white font-semibold truncate">{formatNumber(s.value)}</p>
+                <p className="text-white font-semibold truncate">{typeof s.value === 'number' ? formatNumber(s.value) : s.value}</p>
               </div>
             ))}
           </div>
@@ -517,7 +518,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
         const key = `${kind}-${opt.id}`;
         const qty = qtys[key] ?? 1;
         let owned = 0;
-        let stats: { label: string; value: number }[] = [];
+        let stats: { label: string; value: number | string }[] = [];
         if (kind === 'ship') {
           owned = detail.garrison.find((g) => g.ship_type_id === opt.id)?.quantity ?? 0;
           const st = shipTypes.find((s) => s.id === opt.id);
@@ -526,7 +527,7 @@ export function OccupiedPlanetView({ segment }: { segment: string }) {
               { label: t.shipyard.attack, value: st.weapon_power },
               { label: t.shipyard.shield, value: st.shield_power },
               { label: t.shipyard.cargo, value: st.cargo_capacity },
-              { label: t.shipyard.speed, value: st.base_speed },
+              { label: language === 'en' ? 'March' : 'Marcha', value: `${marchPace(st.base_speed, language).icon} ${formatMarch(st.base_speed, language)}` },
             ];
           }
         } else {
