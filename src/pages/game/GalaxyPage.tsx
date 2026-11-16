@@ -4,15 +4,12 @@ import {
   Map as MapIcon,
   ChevronLeft,
   ChevronRight,
-  Globe,
   Moon,
   User,
   Search,
   Eye,
   Rocket,
   CheckCircle,
-  Compass,
-  Sparkles,
   Recycle,
   Target,
   X,
@@ -23,14 +20,14 @@ import {
   Swords,
   AlertTriangle,
   Warehouse,
-  Orbit,
   Radio,
   Mail,
   Flag,
   Package,
 } from 'lucide-react';
 import { createPortal } from 'react-dom';
-import { SolarSystemView } from '../../components/game/SolarSystemView';
+import { TerrainMapView, KIND_STYLE, PROVINCE_NAMES } from '../../components/game/TerrainMapView';
+import type { MapParcel, ParcelKind } from '../../components/game/TerrainMapView';
 import { PeaceShieldAttackWarning } from '../../components/game/PeaceShieldWidget';
 import { supabase } from '../../lib/supabase';
 import { rpcWithRetry } from '../../lib/rpcWithRetry';
@@ -158,7 +155,6 @@ export function GalaxyPage() {
     const saved = localStorage.getItem('spyProbeCount');
     return saved ? Math.max(1, Math.min(50, parseInt(saved) || 1)) : 1;
   });
-  const [hoveredDebris, setHoveredDebris] = useState<number | null>(null);
   const [moonMenu, setMoonMenu] = useState<{ position: number; x: number; y: number; up: boolean } | null>(null);
   const [missileModal, setMissileModal] = useState<{ galaxy: number; system: number; position: number } | null>(null);
   const [missileCount, setMissileCount] = useState(1);
@@ -175,7 +171,6 @@ export function GalaxyPage() {
   const [deutError, setDeutError] = useState<string | null>(null);
   const [allyDepotPlanets, setAllyDepotPlanets] = useState<Set<string>>(new Set());
   const [userAlliances, setUserAlliances] = useState<Record<string, { tag: string; name: string }>>({});
-  const [showSolarView, setShowSolarView] = useState(false); // Default: vista lista/tabla. Usuario puede activar vista orbital.
   const deutCostTimer = useRef<ReturnType<typeof setTimeout>>();
   const isInitialLoad = useRef(true);
 
@@ -803,85 +798,357 @@ export function GalaxyPage() {
     }
   };
 
-  // Prepare planet data for the solar system view
-  const solarViewPlanets = useMemo(() => {
-    return slots.map((slot) => ({
-      position: slot.position,
-      name: slot.planet?.name || (slot.fortress ? '🏰 Fortaleza' : slot.treasurePlanet ? '💎 Ciudad del Tesoro' : undefined),
-      isOwn: slot.planet?.user_id === currentPlanet?.user_id,
-      isCurrentPlanet: slot.planet?.id === currentPlanet?.id,
-      isCurrentMoon: !!slot.moon && slot.moon.id === currentPlanet?.id,
-      isDestroyed: slot.planet?.is_destroyed === true || slot.planet?.planet_status === 'abandoned' || slot.planet?.planet_status === 'regenerating',
-      hasMoon: !!slot.moon,
-      hasDebris: !!(slot.debris && (slot.debris.metal > 0 || slot.debris.crystal > 0)),
-      debris: slot.debris,
-      isEmpty: !slot.planet && !slot.fortress && !slot.treasurePlanet,
-      isFortress: !!slot.fortress,
-      fortressData: slot.fortress,
-      isTreasurePlanet: !!slot.treasurePlanet,
-      treasurePlanetData: slot.treasurePlanet,
-      isExpedition: slot.position === 16,
-      isCasino: galaxy === CASINO_COORDS.galaxy && system === CASINO_COORDS.system && slot.position === CASINO_COORDS.position && !slot.planet,
-      isBattleship: galaxy === BATTLESHIP_COORDS.galaxy && system === BATTLESHIP_COORDS.system && slot.position === BATTLESHIP_COORDS.position && !slot.planet,
-      isSports: galaxy === SPORTS_COORDS.galaxy && system === SPORTS_COORDS.system && slot.position === SPORTS_COORDS.position && !slot.planet,
-      username: slot.planet?.profile?.username,
-      occupiedBy: slot.occupation ? (slot.occupation.is_mine ? 'Tú' : slot.occupation.occupier_name || '?') : undefined,
-      isMyOccupied: !!slot.occupation?.is_my_planet,
-    }));
-  }, [slots, currentPlanet?.user_id, currentPlanet?.id, galaxy, system]);
+  // [MAPA1] Mapa terrestre: cada posicion es una parcela de tierra
+  const isSpecialSlot = (slot: GalaxySlot, c: { galaxy: number; system: number; position: number }) =>
+    galaxy === c.galaxy && system === c.system && slot.position === c.position && !slot.planet;
 
-  const handleSolarPlanetClick = (position: number) => {
-    const slot = slots.find(s => s.position === position);
-    if (!slot) return;
-    
-    if (position === 16) {
-      handleExpedition(galaxy, system);
-    } else if (slot.planet && slot.planet.user_id === currentPlanet?.user_id) {
-      handlePlanetClick(slot);
+  const mapParcels = useMemo<MapParcel[]>(() => {
+    return slots.filter((slot) => slot.position <= 15).map((slot) => {
+      const p = slot.planet;
+      let kind: ParcelKind = 'empty';
+      if (isSpecialSlot(slot, SPORTS_COORDS)) kind = 'sports';
+      else if (isSpecialSlot(slot, BATTLESHIP_COORDS)) kind = 'battleship';
+      else if (isSpecialSlot(slot, CASINO_COORDS)) kind = 'casino';
+      else if (slot.fortress) kind = 'fortress';
+      else if (slot.treasurePlanet) kind = 'treasure';
+      else if (p) {
+        const ruins = p.is_destroyed === true || p.planet_status === 'abandoned' || p.planet_status === 'regenerating';
+        kind = ruins ? 'ruins' : p.user_id === currentPlanet?.user_id ? 'own' : slot.protection?.same_alliance ? 'ally' : 'enemy';
+      }
+      return {
+        position: slot.position,
+        kind,
+        name: p ? translatePlanetName(p.name) : undefined,
+        owner: p && kind !== 'ruins' ? p.profile?.username : undefined,
+        tag: p?.user_id ? userAlliances[p.user_id]?.tag : undefined,
+        isCurrent: !!p && p.id === currentPlanet?.id,
+        hasMoon: !!slot.moon,
+        hasDebris: !!slot.debris && (slot.debris.metal > 0 || slot.debris.crystal > 0),
+        occupied: !!slot.occupation,
+        vacation: kind !== 'own' && p?.profile?.vacation_mode === true,
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slots, userAlliances, currentPlanet?.user_id, currentPlanet?.id, galaxy, system]);
+
+  const [selectedPos, setSelectedPos] = useState<number | null>(null);
+  useEffect(() => {
+    setSelectedPos(
+      currentPlanet && currentPlanet.galaxy === galaxy && currentPlanet.solar_system === system
+        ? currentPlanet.position
+        : null
+    );
+  }, [galaxy, system, currentPlanet?.id]);
+
+  const openMoonMenu = (position: number, rect: DOMRect) => {
+    const up = rect.bottom + 230 > window.innerHeight;
+    setSelectedPos(position);
+    setMoonMenu(prev => prev?.position === position ? null : {
+      position,
+      x: rect.left + rect.width / 2,
+      y: up ? rect.top : rect.bottom,
+      up,
+    });
+  };
+
+  const renderParcelDetail = () => {
+    const es = language === 'es';
+    const card = 'rounded-2xl border-2 border-[#8a6a3c] bg-gradient-to-b from-[#f6ecd0] to-[#e7d4a6] text-[#3b2510] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.7)] overflow-hidden';
+    const btn = 'flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-white shadow-[0_2px_0_rgba(0,0,0,0.35)] transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0';
+    const off = 'bg-stone-500';
+
+    if (selectedPos == null) {
+      return (
+        <div className={`${card} p-6 text-center`}>
+          <MapIcon className="w-10 h-10 mx-auto mb-2 text-[#8a6a3c]" />
+          <p className="font-serif font-bold text-lg">Selecciona una parcela</p>
+          <p className="text-sm text-[#6b4f2a] mt-1">Haz clic en una parcela del mapa para ver quién la gobierna y qué puedes hacer.</p>
+        </div>
+      );
     }
-  };
 
-  const handleSolarDebrisClick = (position: number) => {
-    handleRecycle(galaxy, system, position);
-  };
+    const slot = slots.find(s => s.position === selectedPos);
+    if (!slot) return null;
+    const coords = formatCoordinates(galaxy, system, slot.position);
+    const parcel = mapParcels.find(p => p.position === slot.position);
+    const style = KIND_STYLE[parcel?.kind || 'empty'];
 
-  const handleSolarColonizeClick = (position: number) => {
-    handleColonize(galaxy, system, position);
-  };
+    const header = (icon: string, title: string, subtitle?: string) => (
+      <div className="flex items-center gap-3 px-4 py-3 border-b-2 border-[#8a6a3c]/50" style={{ background: `linear-gradient(90deg, ${style.fill}cc, transparent)` }}>
+        <div className="w-12 h-12 shrink-0 rounded-xl flex items-center justify-center text-2xl bg-[#fff8e1] border-2 shadow-inner" style={{ borderColor: style.stroke }}>
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="font-serif font-bold text-lg leading-tight truncate">{title}</p>
+          <p className="text-xs text-[#6b4f2a]">Parcela {slot.position} · {coords}{subtitle ? ` · ${subtitle}` : ''}</p>
+        </div>
+      </div>
+    );
 
-  // Nuevos handlers para el menú de acciones
-  const handleSolarAttackClick = (position: number, isMoon?: boolean) => {
-    // Si es la fortaleza (sistema 250, pos 8), redirigir a la página de fortalezas
-    if (system === 250 && position === 8) {
-      navigate('/game/fortress');
-      return;
+    const debrisBox = slot.debris && (slot.debris.metal > 0 || slot.debris.crystal > 0) && (
+      <div className="flex items-center gap-3 rounded-lg bg-orange-900/10 border border-orange-800/30 px-3 py-2">
+        <Recycle className="w-5 h-5 text-orange-700 shrink-0" />
+        <div className="flex-1 text-xs">
+          <p className="font-bold text-orange-900">Restos de batalla</p>
+          <p>{t.resources.metal}: {slot.debris.metal.toLocaleString()} · {t.resources.crystal}: {slot.debris.crystal.toLocaleString()}</p>
+        </div>
+        <button onClick={() => handleRecycle(galaxy, system, slot.position)} className={`${btn} bg-orange-700 hover:bg-orange-600`} title={t.galaxy.recycleDebris}>
+          <Recycle className="w-4 h-4" /> Recolectar
+        </button>
+      </div>
+    );
+
+    const special = (icon: string, title: string, desc: string, action: string, onClick: () => void, color: string) => (
+      <div className={card}>
+        {header(icon, title)}
+        <div className="p-4 space-y-3">
+          <p className="text-sm">{desc}</p>
+          <button onClick={onClick} className={`${btn} w-full py-2.5 text-sm ${color}`}>{action}</button>
+        </div>
+      </div>
+    );
+
+    if (isSpecialSlot(slot, SPORTS_COORDS)) {
+      return special('🏟️', 'Coliseo Imperial', 'Apuestas de fútbol en TUNG: gana local, empate o visitante.', '⚽ Apostar', () => navigate('/game/sports'), 'bg-gradient-to-r from-amber-600 to-yellow-700');
     }
-    // Si es el Planeta del Tesoro (sistema 250, pos 9), redirigir a su página
-    if (system === 250 && position === 9) {
-      navigate('/game/treasure-planet');
-      return;
+    if (isSpecialSlot(slot, BATTLESHIP_COORDS)) {
+      return special('⚔️', 'Batalla de Tropas', 'Duelos PvP 1 vs 1 apostando TUNG.', '⚔️ Jugar', () => navigate('/game/battleship', { state: { hyperspace: true } }), 'bg-gradient-to-r from-sky-600 to-indigo-600');
     }
-    const missionPosition = isMoon ? position : position;
-    navigate(`/game/fleet?galaxy=${galaxy}&system=${system}&position=${missionPosition}&mission=attack${isMoon ? '&target=moon' : ''}`);
-  };
-
-  const handleSolarSpyClick = (position: number, isMoon?: boolean) => {
-    handleSpy(galaxy, system, position, isMoon ? 'moon' : 'planet');
-  };
-
-  const handleSolarTransportClick = (position: number, isMoon?: boolean) => {
-    handleTransport(galaxy, system, position, !!isMoon);
-  };
-
-  const handleSolarDeployClick = (position: number, isMoon?: boolean) => {
-    handleDeploy(galaxy, system, position, !!isMoon);
-  };
-
-  const handleSolarOverviewClick = (position: number) => {
-    const slot = slots.find(s => s.position === position);
-    if (slot?.planet) {
-      handlePlanetClick(slot);
+    if (isSpecialSlot(slot, CASINO_COORDS)) {
+      return special('🎰', 'Casino', 'Lotería, Rifa y mesas de juego abiertas para todos.', '🎰 Entrar al Casino', () => navigate('/game/casino'), 'bg-gradient-to-r from-fuchsia-600 to-amber-500');
     }
+
+    if (slot.fortress || slot.treasurePlanet) {
+      const info = (slot.fortress || slot.treasurePlanet)!;
+      const isFortress = !!slot.fortress;
+      return (
+        <div className={card}>
+          {header(isFortress ? '🏰' : '💎', isFortress ? 'Fortaleza' : 'Ciudad del Tesoro')}
+          <div className="p-4 space-y-3">
+            <div className="text-sm space-y-1">
+              <p><span className="text-[#6b4f2a]">Dueño:</span>{' '}
+                <b>{info.owner_alliance_name ? `[${info.owner_alliance_tag}] ${info.owner_alliance_name}` : 'Sin dueño'}</b>
+              </p>
+              {info.total_ships > 0 && <p><span className="text-[#6b4f2a]">Guarnición:</span> <b>🛡️ {info.total_ships.toLocaleString()} tropas</b></p>}
+            </div>
+            {debrisBox}
+            <button
+              onClick={() => navigate(isFortress ? '/game/fortress' : '/game/treasure-planet')}
+              className={`${btn} w-full py-2.5 text-sm ${isFortress ? 'bg-amber-700 hover:bg-amber-600' : 'bg-yellow-600 hover:bg-yellow-500'}`}
+            >
+              <Swords className="w-4 h-4" /> {isFortress ? 'Atacar Fortaleza' : 'Atacar Ciudad del Tesoro'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (!slot.planet) {
+      return (
+        <div className={card}>
+          {header('🌾', 'Parcela libre')}
+          <div className="p-4 space-y-3">
+            <p className="text-sm">Tierra sin dueño, lista para fundar una nueva ciudad.</p>
+            {debrisBox}
+            <button onClick={() => handleColonize(galaxy, system, slot.position)} className={`${btn} w-full py-2.5 text-sm bg-green-700 hover:bg-green-600`} title={t.galaxy.colonize}>
+              <Flag className="w-4 h-4" /> {t.galaxy.colonize}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const planet = slot.planet;
+    const isOwn = planet.user_id === currentPlanet?.user_id;
+    const isVacation = !isOwn && planet.profile?.vacation_mode === true;
+    const isRuins = planet.is_destroyed === true || planet.planet_status === 'abandoned' || planet.planet_status === 'regenerating';
+    const occ = slot.occupation;
+    const canEnter = isOwn && !occ?.is_my_planet;
+    const isCurrentPlanet = planet.id === currentPlanet?.id;
+    const isProtected = !!slot.protection && !slot.protection.can_attack;
+    const cannotSpy = slot.protection?.can_spy === false;
+    const protReason = slot.protection?.protection_reason || slot.protection?.bashing_reason || t.galaxy.protectedPlayer;
+    const alliance = planet.user_id ? userAlliances[planet.user_id] : undefined;
+    const effect = planet.profile?.active_planet_effect;
+    const effectLabel = effect === 'planet_fire' ? '🔥 Aureola' : effect === 'planet_ice' ? '❄️ Hielo' : effect === 'planet_golden' ? '🟡 Anillos' : effect === 'planet_dark' ? '🟣 Oscuridad' : effect === 'planet_nebula' ? '🌈 Nebulosa' : effect ? '✨' : null;
+
+    const spyButton = (title: string) => (
+      <button
+        onClick={() => { if (!cannotSpy || isOwn) handleSpy(galaxy, system, slot.position); }}
+        disabled={spyingPosition === slot.position || (cannotSpy && !isOwn)}
+        className={`${btn} ${spySuccess === slot.position ? 'bg-green-700' : cannotSpy && !isOwn ? off : 'bg-[#2f4a6b] hover:bg-[#3b5d86]'}`}
+        title={cannotSpy && !isOwn ? protReason : title}
+      >
+        {spyingPosition === slot.position ? (
+          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        ) : spySuccess === slot.position ? (
+          <CheckCircle className="w-4 h-4" />
+        ) : (
+          <Eye className="w-4 h-4" />
+        )}
+        {t.galaxy.spy}
+      </button>
+    );
+
+    return (
+      <div className={card}>
+        {header(isRuins ? '🏚️' : isOwn ? '🏰' : '🏛️', isRuins ? `${translatePlanetName(planet.name)} (Ruinas)` : translatePlanetName(planet.name), isCurrentPlanet ? 'Ciudad actual' : undefined)}
+        <div className="p-4 space-y-3">
+          {(occ || effectLabel) && (
+            <div className="flex flex-wrap gap-1.5">
+              {occ && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-red-700 text-white">
+                  <Flag className="w-3 h-3" /> {es ? 'Ocupada por' : 'Occupied by'} {occ.is_mine ? (es ? 'ti' : 'you') : occ.occupier_name || '?'}
+                </span>
+              )}
+              {effectLabel && <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#3b2510]/10 border border-[#3b2510]/20">{effectLabel}</span>}
+            </div>
+          )}
+
+          {isRuins ? (
+            <p className="text-sm italic text-[#6b4f2a]">💀 Ciudad en ruinas, inhabitable.</p>
+          ) : planet.profile && (
+            <div className="rounded-lg bg-white/40 border border-[#8a6a3c]/30 px-3 py-2 text-sm space-y-1">
+              <p className="flex items-center gap-1.5 flex-wrap">
+                <User className="w-4 h-4 text-[#6b4f2a]" />
+                {planet.profile.active_title && <span className="text-amber-700 font-semibold">{planet.profile.active_title} ·</span>}
+                <b className={isOwn ? 'text-green-800' : ''}>{planet.profile.username}</b>
+                {planet.profile.active_badge && <span title="Insignia equipada">{planet.profile.active_badge}</span>}
+                {isVacation && <span className="text-xs font-bold text-amber-700">(Vacaciones)</span>}
+              </p>
+              {alliance && (
+                <p className="text-xs"><span className="text-[#6b4f2a]">{t.galaxy.alliance}:</span> <b className="text-purple-800">[{alliance.tag}]</b> {alliance.name}</p>
+              )}
+              {!isOwn && slot.protection && (
+                isProtected ? (
+                  <div className="flex items-start gap-1.5 text-xs text-amber-800 pt-1">
+                    <ShieldAlert className="w-4 h-4 shrink-0" />
+                    <div>
+                      <p className="font-bold">{slot.protection.same_alliance ? 'Miembro de tu alianza' : t.galaxy.protectedPlayer}</p>
+                      {slot.protection.protection_reason && <p>{slot.protection.protection_reason}</p>}
+                      {slot.protection.bashing_reason && <p className="text-red-700">{slot.protection.bashing_reason}</p>}
+                      {slot.protection.owner_points !== undefined && <p className="text-[#6b4f2a]">{slot.protection.owner_points?.toLocaleString()} {t.galaxy.points}</p>}
+                    </div>
+                  </div>
+                ) : !isVacation && (
+                  <p className="flex items-center gap-1.5 text-xs text-red-800 font-semibold pt-1"><Swords className="w-3.5 h-3.5" /> {t.galaxy.canAttack}</p>
+                )
+              )}
+            </div>
+          )}
+
+          {slot.moon && (
+            <div className="flex items-center gap-3 rounded-lg bg-indigo-900/10 border border-indigo-800/30 px-3 py-2">
+              <Moon className="w-5 h-5 text-indigo-700 shrink-0" />
+              <div className="flex-1 text-xs min-w-0">
+                <p className="font-bold text-indigo-900">Castra de Diana</p>
+                <p className="truncate">{slot.moon.name}</p>
+              </div>
+              <button
+                onClick={(e) => openMoonMenu(slot.position, e.currentTarget.getBoundingClientRect())}
+                className={`${btn} bg-indigo-700 hover:bg-indigo-600`}
+              >
+                Acciones
+              </button>
+            </div>
+          )}
+
+          {debrisBox}
+
+          <div className="grid grid-cols-2 gap-2">
+            {canEnter && !isCurrentPlanet && (
+              <>
+                <button onClick={() => handleTransport(galaxy, system, slot.position)} className={`${btn} bg-cyan-700 hover:bg-cyan-600`}>
+                  <Package className="w-4 h-4" /> Transportar
+                </button>
+                <button onClick={() => handleDeploy(galaxy, system, slot.position)} className={`${btn} bg-teal-700 hover:bg-teal-600`}>
+                  <Warehouse className="w-4 h-4" /> Desplegar
+                </button>
+              </>
+            )}
+            {canEnter && (
+              <button onClick={() => handlePlanetClick(slot)} className={`${btn} col-span-2 py-2.5 text-sm bg-gradient-to-r from-amber-600 to-yellow-700`} title={t.galaxy.goToOverview}>
+                🏛️ {isCurrentPlanet ? 'Visión general' : 'Entrar a la ciudad'}
+              </button>
+            )}
+
+            {occ?.is_mine && occ.occupation_id && (
+              <button
+                onClick={() => navigate(`/game/occupations?occ=${occ.occupation_id}`)}
+                className={`${btn} col-span-2 bg-red-700 hover:bg-red-600`}
+                title={es ? 'Gestionar ocupación: producir y transportar recursos' : 'Manage occupation: build and transport resources'}
+              >
+                <Flag className="w-4 h-4" /> {es ? 'Gestionar ocupación' : 'Manage occupation'}
+              </button>
+            )}
+
+            {isOwn && occ?.is_my_planet && (
+              <>
+                {spyButton(es ? 'Espiar la guarnición del ocupante' : 'Spy the occupier garrison')}
+                <button
+                  onClick={() => handleAttack(galaxy, system, slot.position)}
+                  className={`${btn} bg-red-700 hover:bg-red-600 animate-pulse`}
+                  title={es ? 'Recuperar: destruye el ejército del ocupante' : 'Recover: destroy the occupier fleet'}
+                >
+                  <Swords className="w-4 h-4" /> {es ? 'Recuperar' : 'Recover'}
+                </button>
+              </>
+            )}
+
+            {!isOwn && !isVacation && !isRuins && !occ?.is_mine && (
+              <>
+                {spyButton(t.galaxy.spy)}
+                <button
+                  onClick={() => !isProtected && handleAttack(galaxy, system, slot.position)}
+                  disabled={isProtected}
+                  className={`${btn} ${isProtected ? off : 'bg-red-700 hover:bg-red-600'}`}
+                  title={isProtected ? protReason : t.galaxy.attack}
+                >
+                  <Swords className="w-4 h-4" /> {t.galaxy.attack}
+                </button>
+                <button
+                  onClick={() => !isProtected && handleMissileClick(galaxy, system, slot.position)}
+                  disabled={isProtected}
+                  className={`${btn} ${isProtected ? off : 'bg-orange-700 hover:bg-orange-600'}`}
+                  title={isProtected ? protReason : t.galaxy.launchMissile}
+                >
+                  <Target className="w-4 h-4" /> Misiles
+                </button>
+                {allyDepotPlanets.has(planet.id) && (
+                  <button onClick={() => handleDeploy(galaxy, system, slot.position)} className={`${btn} bg-teal-700 hover:bg-teal-600`} title={t.galaxy.deployToAlly}>
+                    <Warehouse className="w-4 h-4" /> Desplegar
+                  </button>
+                )}
+                {userMoonsPhalanx.length > 0 && (() => {
+                  const inRange = getPhalanxMoonsInRange(galaxy, system).length > 0;
+                  return (
+                    <button
+                      onClick={() => handlePhalanxClick(galaxy, system, slot.position)}
+                      className={`${btn} ${inRange ? 'bg-purple-700 hover:bg-purple-600' : 'bg-purple-900/50'}`}
+                      title={inRange ? `📡 ${t.galaxy.phalanxScan} (${t.galaxy.phalanxCost})` : `📡 ${t.galaxy.phalanxOutOfRange}`}
+                    >
+                      <Radio className="w-4 h-4" /> Falange
+                    </button>
+                  );
+                })()}
+              </>
+            )}
+
+            {!isOwn && !isRuins && planet.profile?.username && (
+              <button
+                onClick={() => navigate(`/game/messages?to=${encodeURIComponent(planet.profile!.username)}`)}
+                className={`${btn} bg-[#5b4a32] hover:bg-[#6e5a3d]`}
+                title={t.messages.sendMessage}
+              >
+                <Mail className="w-4 h-4" /> Mensaje
+              </button>
+            )}
+          </div>
+
+          {isVacation && <p className="text-xs font-semibold text-amber-800">{es ? 'Jugador en modo vacaciones' : 'Player on vacation mode'}</p>}
+        </div>
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -1055,9 +1322,9 @@ export function GalaxyPage() {
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2 px-4 py-2 bg-space-800 rounded-lg min-w-[120px] justify-center">
-              <span className="text-gray-400">{t.galaxy.galaxyNumber}</span>
-              <span className="font-orbitron text-cyber-blue">{galaxy}</span>
+            <div className="flex items-center gap-2 px-4 py-2 bg-space-800 rounded-lg min-w-[170px] justify-center" title={`Provincia ${galaxy}`}>
+              <span className="text-gray-400">Provincia</span>
+              <span className="font-orbitron text-cyber-blue">{PROVINCE_NAMES[galaxy - 1] ?? galaxy}</span>
             </div>
             <button
               onClick={() => navigateGalaxy(1)}
@@ -1077,6 +1344,7 @@ export function GalaxyPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
+              <span className="text-gray-400">Territorio</span>
               <input
                 type="number"
                 value={system}
@@ -1107,20 +1375,6 @@ export function GalaxyPage() {
             {t.galaxy.search}
           </button>
 
-          {/* Toggle vista solar */}
-          <button
-            onClick={() => setShowSolarView(!showSolarView)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-              showSolarView 
-                ? 'bg-cyber-yellow/20 border border-cyber-yellow/50 text-cyber-yellow' 
-                : 'bg-space-700 hover:bg-space-600 text-gray-400'
-            }`}
-            title={showSolarView ? 'Ocultar vista orbital' : 'Mostrar vista orbital'}
-          >
-            <Orbit className="w-4 h-4" />
-            <span className="text-sm">Vista Orbital</span>
-          </button>
-
           {/* Spy probe count selector */}
           <div className="flex items-center gap-1.5 text-xs">
             <Eye className="w-3.5 h-3.5 text-cyber-green" />
@@ -1146,26 +1400,6 @@ export function GalaxyPage() {
           </div>
         </div>
       </div>
-
-      {/* Vista de Sistema Solar Animado */}
-      {showSolarView && !loading && slots.length > 0 && (
-        <SolarSystemView
-          planets={solarViewPlanets}
-          currentSystem={system}
-          currentGalaxy={galaxy}
-          onPlanetClick={handleSolarPlanetClick}
-          onDebrisClick={handleSolarDebrisClick}
-          onColonizeClick={handleSolarColonizeClick}
-          onAttackClick={handleSolarAttackClick}
-          onSpyClick={handleSolarSpyClick}
-          onTransportClick={handleSolarTransportClick}
-          onDeployClick={handleSolarDeployClick}
-          onOverviewClick={handleSolarOverviewClick}
-          onCasinoClick={galaxy === CASINO_COORDS.galaxy && system === CASINO_COORDS.system ? () => navigate('/game/casino') : undefined}
-          onBattleshipClick={galaxy === BATTLESHIP_COORDS.galaxy && system === BATTLESHIP_COORDS.system ? () => navigate('/game/battleship', { state: { hyperspace: true } }) : undefined}
-          onSportsClick={galaxy === SPORTS_COORDS.galaxy && system === SPORTS_COORDS.system ? () => navigate('/game/sports') : undefined}
-        />
-      )}
 
       {deutCost && (
         <div className="flex items-center gap-2 px-4 py-2.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-sm animate-fade-in">
@@ -1208,695 +1442,20 @@ export function GalaxyPage() {
         </div>
       )}
 
-      {/* Tabla tradicional - solo mostrar si vista solar está desactivada */}
-      {!showSolarView && (
-      <div className="card-glass overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[700px]">
-            <thead>
-              <tr className="bg-space-700/50">
-                <th className="px-3 py-3 text-center text-sm font-semibold text-gray-400 w-12">{t.galaxy.position}</th>
-                <th className="px-3 py-3 text-left text-sm font-semibold text-gray-400">{t.galaxy.planet}</th>
-                <th className="px-3 py-3 text-center text-sm font-semibold text-gray-400 w-12">{t.galaxy.moon}</th>
-                <th className="px-3 py-3 text-center text-sm font-semibold text-gray-400 w-16 hidden sm:table-cell">{t.galaxy.debris}</th>
-                <th className="px-3 py-3 text-left text-sm font-semibold text-gray-400">{t.galaxy.player}</th>
-                <th className="px-3 py-3 text-left text-sm font-semibold text-gray-400 hidden md:table-cell">{t.galaxy.alliance}</th>
-                <th className="px-3 py-3 text-center text-sm font-semibold text-gray-400">{t.galaxy.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12">
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="w-6 h-6 border-2 border-cyber-blue/30 border-t-cyber-blue rounded-full animate-spin" />
-                      <span className="text-gray-400">{t.galaxy.loadingSystem}</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                slots.map((slot) => {
-                  // [SPORTS1] Estadio Galactico (apuestas de futbol)
-                  if (galaxy === SPORTS_COORDS.galaxy && system === SPORTS_COORDS.system && slot.position === SPORTS_COORDS.position && !slot.planet) {
-                    return (
-                      <tr key={slot.position} className="border-t border-amber-500/30 bg-gradient-to-r from-amber-900/25 via-space-800 to-yellow-900/25">
-                        <td className="px-3 py-3 text-center">
-                          <span className="font-serif font-bold text-amber-300">{slot.position}</span>
-                        </td>
-                        <td className="px-3 py-3" colSpan={5}>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-300/40 via-amber-500/40 to-yellow-900/40 ring-2 ring-amber-400/60 flex items-center justify-center text-xl animate-pulse" style={{ animationDuration: '2.5s' }}>
-                              🏟️
-                            </div>
-                            <div>
-                              <p className="font-serif font-bold text-amber-200 tracking-wide">Coliseo Imperial</p>
-                              <p className="text-xs text-gray-400">Apuestas de fútbol en TUNG: gana local, empate o visitante.</p>
-                              <p className="text-xs text-gray-500">{formatCoordinates(galaxy, system, slot.position)}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3 text-center">
-                          <button
-                            onClick={() => navigate('/game/sports')}
-                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-600 to-yellow-700 text-white rounded-lg hover:opacity-90 transition-all font-serif font-semibold text-sm mx-auto"
-                          >
-                            ⚽ Apostar
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  // [BATTLESHIP1] Planeta de Batalla Naval
-                  if (galaxy === BATTLESHIP_COORDS.galaxy && system === BATTLESHIP_COORDS.system && slot.position === BATTLESHIP_COORDS.position && !slot.planet) {
-                    return (
-                      <tr key={slot.position} className="border-t border-sky-500/30 bg-gradient-to-r from-sky-900/20 via-space-800 to-indigo-900/20">
-                        <td className="px-3 py-3 text-center">
-                          <span className="font-orbitron text-sky-300">{slot.position}</span>
-                        </td>
-                        <td className="px-3 py-3" colSpan={5}>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-300/40 via-sky-500/40 to-indigo-800/40 ring-2 ring-sky-400/60 flex items-center justify-center text-xl animate-pulse" style={{ animationDuration: '2.5s' }}>
-                              🚀
-                            </div>
-                            <div>
-                              <p className="text-sky-200 font-semibold">Batalla de Tropas Galáctica</p>
-                              <p className="text-xs text-gray-400">Duelos PvP 1 vs 1 apostando TUNG.</p>
-                              <p className="text-xs text-gray-500">{formatCoordinates(galaxy, system, slot.position)}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3 text-center">
-                          <button
-                            onClick={() => navigate('/game/battleship', { state: { hyperspace: true } })}
-                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-lg hover:opacity-90 transition-all font-semibold text-sm mx-auto"
-                          >
-                            🚀 Jugar
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  // [CASINO4] Casino Galactico como planeta normal en su posicion
-                  if (galaxy === CASINO_COORDS.galaxy && system === CASINO_COORDS.system && slot.position === CASINO_COORDS.position && !slot.planet) {
-                    return (
-                      <tr key={slot.position} className="border-t border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-900/20 via-space-800 to-amber-900/20">
-                        <td className="px-3 py-3 text-center">
-                          <span className="font-orbitron text-fuchsia-300">{slot.position}</span>
-                        </td>
-                        <td className="px-3 py-3" colSpan={5}>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-300/40 via-fuchsia-500/40 to-purple-700/40 ring-2 ring-fuchsia-400/60 flex items-center justify-center text-xl animate-pulse" style={{ animationDuration: '2.5s' }}>
-                              🎰
-                            </div>
-                            <div>
-                              <p className="text-fuchsia-200 font-semibold">Casino Galáctico</p>
-                              <p className="text-xs text-gray-400">Lotería, Rifa y mesas de juego abiertas para todos.</p>
-                              <p className="text-xs text-gray-500">{formatCoordinates(galaxy, system, slot.position)}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3 text-center">
-                          <button
-                            onClick={() => navigate('/game/casino')}
-                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-fuchsia-600 to-amber-500 text-white rounded-lg hover:opacity-90 transition-all font-semibold text-sm mx-auto"
-                          >
-                            🎰 Casino
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  if (slot.position === 16) {
-                    return (
-                      <tr key={16} className="border-t border-space-700 bg-gradient-to-r from-space-800 to-cyber-blue/5">
-                        <td className="px-3 py-3 text-center">
-                          <span className="font-orbitron text-cyber-yellow">16</span>
-                        </td>
-                        <td className="px-3 py-3" colSpan={5}>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyber-blue/30 to-cyber-yellow/30 flex items-center justify-center animate-pulse">
-                              <Sparkles className="w-6 h-6 text-cyber-yellow" />
-                            </div>
-                            <div>
-                              <p className="text-cyber-yellow font-semibold">{t.galaxy.deepSpace}</p>
-                              <p className="text-xs text-gray-400">{t.galaxy.deepSpaceDesc}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3 text-center">
-                          <button
-                            onClick={() => handleExpedition(galaxy, system)}
-                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyber-blue to-cyber-yellow/70 text-white rounded-lg hover:opacity-90 transition-all font-semibold text-sm mx-auto"
-                          >
-                            <Compass className="w-4 h-4" />
-                            {t.galaxy.expedition}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  const isOwn = slot.planet?.user_id === currentPlanet?.user_id;
-                  const isVacation = !isOwn && slot.planet?.profile?.vacation_mode === true;
-                  const isDestroyed = slot.planet?.is_destroyed === true;
-                  const isRuins = isDestroyed || slot.planet?.planet_status === 'abandoned' || slot.planet?.planet_status === 'regenerating';
-                  const coords = formatCoordinates(galaxy, system, slot.position);
-                  const occ = slot.occupation;
-                  const canEnter = isOwn && !occ?.is_my_planet;
-
-                  const effectCode = slot.planet?.profile?.active_planet_effect;
-                  const effectGlow = effectCode === 'planet_fire' ? 'border-l-2 border-l-orange-500/60 bg-gradient-to-r from-orange-500/5 to-transparent' :
-                    effectCode === 'planet_ice' ? 'border-l-2 border-l-cyan-400/60 bg-gradient-to-r from-cyan-400/5 to-transparent' :
-                    effectCode === 'planet_golden' ? 'border-l-2 border-l-yellow-400/60 bg-gradient-to-r from-yellow-400/5 to-transparent' :
-                    effectCode === 'planet_dark' ? 'border-l-2 border-l-purple-500/60 bg-gradient-to-r from-purple-500/5 to-transparent' :
-                    effectCode === 'planet_nebula' ? 'border-l-2 border-l-pink-400/60 bg-gradient-to-r from-pink-400/5 to-transparent' : '';
-
-                  return (
-                    <tr
-                      key={slot.position}
-                      className={`border-t border-space-700 hover:bg-space-700/30 transition-colors ${effectGlow} ${
-                        occ ? 'bg-red-950/25 border-l-2 border-l-red-500/70' : isOwn ? 'bg-cyber-green/5' : ''
-                      } ${
-                        isRuins ? 'opacity-50 grayscale' : ''
-                      }`}
-                    >
-                      <td className="px-3 py-2 text-center">
-                        <span className="font-orbitron text-cyber-blue">{slot.position}</span>
-                      </td>
-                      <td className="px-3 py-2">
-                        {slot.planet ? (
-                          <div
-                            className={`flex items-center gap-2 ${canEnter ? 'cursor-pointer hover:opacity-80' : ''}`}
-                            onClick={canEnter ? () => handlePlanetClick(slot) : undefined}
-                            title={canEnter ? t.galaxy.goToOverview : occ ? (language === 'es' ? `Ocupado por ${occ.occupier_name || '?'}` : `Occupied by ${occ.occupier_name || '?'}`) : undefined}
-                          >
-                            <div className={`relative ${occ?.is_my_planet ? 'opacity-50 grayscale' : ''}`}>
-                              {/* Resplandor del efecto de planeta (aura tipo sol) */}
-                              {slot.planet.profile?.active_planet_effect && !isRuins && (
-                                <div className={`absolute -inset-1.5 rounded-full blur-md animate-pulse pointer-events-none ${
-                                  slot.planet.profile.active_planet_effect === 'planet_fire' ? 'bg-orange-500/60' :
-                                  slot.planet.profile.active_planet_effect === 'planet_ice' ? 'bg-cyan-400/60' :
-                                  slot.planet.profile.active_planet_effect === 'planet_golden' ? 'bg-yellow-400/70' :
-                                  slot.planet.profile.active_planet_effect === 'planet_dark' ? 'bg-purple-500/60' :
-                                  slot.planet.profile.active_planet_effect === 'planet_nebula' ? 'bg-pink-500/60' :
-                                  'bg-amber-400/50'
-                                }`} style={{ animationDuration: '2.2s' }} />
-                              )}
-                              <div
-                                className={`w-9 h-9 rounded-full flex items-center justify-center relative z-10 ${
-                                  isRuins ? 'bg-red-900/20 ring-1 ring-red-600/40' :
-                                  isOwn ? 'bg-cyber-green/20' : 'bg-cyber-blue/20'
-                                } ${
-                                  slot.planet.profile?.active_planet_effect === 'planet_fire' ? 'ring-2 ring-orange-500/60 shadow-lg shadow-orange-500/30' :
-                                  slot.planet.profile?.active_planet_effect === 'planet_ice' ? 'ring-2 ring-cyan-400/60 shadow-lg shadow-cyan-400/30' :
-                                  slot.planet.profile?.active_planet_effect === 'planet_golden' ? 'ring-2 ring-yellow-400/60 shadow-lg shadow-yellow-400/30' :
-                                  slot.planet.profile?.active_planet_effect === 'planet_dark' ? 'ring-2 ring-purple-500/60 shadow-lg shadow-purple-500/30 animate-pulse' :
-                                  slot.planet.profile?.active_planet_effect === 'planet_nebula' ? 'ring-2 ring-pink-400/50 shadow-lg shadow-pink-400/30 animate-pulse' :
-                                  ''
-                                }`}
-                              >
-                                {isRuins ? (
-                                  <span className="text-lg">💀</span>
-                                ) : (
-                                  <MapIcon className={`w-6 h-6 ${isOwn ? 'text-cyber-green' : 'text-cyber-blue'}`} />
-                                )}
-                              </div>
-                              {/* Planet effect badge */}
-                              {slot.planet.profile?.active_planet_effect && (
-                                <span className={`absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${
-                                  slot.planet.profile.active_planet_effect === 'planet_fire' ? 'bg-orange-500/30 ring-1 ring-orange-400/50' :
-                                  slot.planet.profile.active_planet_effect === 'planet_ice' ? 'bg-cyan-500/30 ring-1 ring-cyan-400/50' :
-                                  slot.planet.profile.active_planet_effect === 'planet_golden' ? 'bg-yellow-500/30 ring-1 ring-yellow-400/50' :
-                                  slot.planet.profile.active_planet_effect === 'planet_dark' ? 'bg-purple-500/30 ring-1 ring-purple-400/50' :
-                                  slot.planet.profile.active_planet_effect === 'planet_nebula' ? 'bg-pink-500/30 ring-1 ring-pink-400/50' :
-                                  'bg-amber-500/30 ring-1 ring-amber-400/50'
-                                }`}>
-                                  {slot.planet.profile.active_planet_effect === 'planet_fire' ? '🔥' :
-                                   slot.planet.profile.active_planet_effect === 'planet_ice' ? '❄️' :
-                                   slot.planet.profile.active_planet_effect === 'planet_golden' ? '🟡' :
-                                   slot.planet.profile.active_planet_effect === 'planet_dark' ? '🟣' :
-                                   slot.planet.profile.active_planet_effect === 'planet_nebula' ? '🌈' : '✨'}
-                                </span>
-                              )}
-                              {occ && (
-                                <span className="absolute -bottom-1 -right-1 z-20 w-5 h-5 rounded-full flex items-center justify-center bg-red-600 ring-2 ring-red-300/60 shadow-lg shadow-red-500/40">
-                                  <Flag className="w-3 h-3 text-white" />
-                                </span>
-                              )}
-                            </div>
-                            <div>
-                              <p className={`text-sm font-medium ${isRuins ? 'text-gray-500 italic' : occ?.is_my_planet ? 'text-gray-400' : canEnter ? 'text-cyber-green hover:underline' : 'text-white'}`}>
-                                {isRuins ? `💀 ${translatePlanetName(slot.planet.name)} (Inhabitable)` : translatePlanetName(slot.planet.name)}
-                                {occ && (
-                                  <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-600/25 text-red-300 border border-red-500/40">
-                                    ⚑ {language === 'es' ? 'OCUPADO' : 'OCCUPIED'}
-                                  </span>
-                                )}
-                                {slot.debris && (slot.debris.metal > 0 || slot.debris.crystal > 0) && (
-                                  <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse" title={`Escombros: ${slot.debris.metal.toLocaleString()} M | ${slot.debris.crystal.toLocaleString()} C`}>
-                                    💥 {((slot.debris.metal + slot.debris.crystal) / 1000).toFixed(0)}k
-                                  </span>
-                                )}
-                                {slot.planet.profile?.active_planet_effect && (
-                                  <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                                    slot.planet.profile.active_planet_effect === 'planet_fire' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
-                                    slot.planet.profile.active_planet_effect === 'planet_ice' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' :
-                                    slot.planet.profile.active_planet_effect === 'planet_golden' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                                    slot.planet.profile.active_planet_effect === 'planet_dark' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                                    slot.planet.profile.active_planet_effect === 'planet_nebula' ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30' :
-                                    'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                                  }`}>
-                                    {slot.planet.profile.active_planet_effect === 'planet_fire' ? '🔥 Aureola' :
-                                     slot.planet.profile.active_planet_effect === 'planet_ice' ? '❄️ Hielo' :
-                                     slot.planet.profile.active_planet_effect === 'planet_golden' ? '🟡 Anillos' :
-                                     slot.planet.profile.active_planet_effect === 'planet_dark' ? '🟣 Oscuridad' :
-                                     slot.planet.profile.active_planet_effect === 'planet_nebula' ? '🌈 Nebulosa' : '✨'}
-                                  </span>
-                                )}
-                              </p>
-                              <p className="text-xs text-gray-500">{coords}</p>
-                            </div>
-                          </div>
-                        ) : slot.fortress ? (
-                          /* Fortress display */
-                          <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center ring-2 ring-amber-500/50">
-                              <span className="text-base">🏰</span>
-                            </div>
-                            <div>
-                              <span className="text-amber-400 text-sm font-semibold">Fortaleza</span>
-                              {slot.fortress.owner_alliance_name ? (
-                                <span className="ml-2 text-xs text-amber-300">
-                                  [{slot.fortress.owner_alliance_tag}] {slot.fortress.owner_alliance_name}
-                                </span>
-                              ) : (
-                                <span className="ml-2 text-xs text-slate-400">Sin dueño</span>
-                              )}
-                              {slot.fortress.total_ships > 0 && (
-                                <span className="ml-2 text-xs text-slate-400">
-                                  🛡️ {slot.fortress.total_ships.toLocaleString()} tropas
-                                </span>
-                              )}
-                              <p className="text-xs text-gray-500">{coords}</p>
-                            </div>
-                          </div>
-                        ) : slot.treasurePlanet ? (
-                          /* Treasure Planet display (isolated from Fortress, own golden style) */
-                          <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 rounded-full bg-yellow-400/20 flex items-center justify-center ring-2 ring-yellow-400/70" style={{ boxShadow: '0 0 10px rgba(250,204,21,0.6)' }}>
-                              <span className="text-base">💎</span>
-                            </div>
-                            <div>
-                              <span className="text-yellow-300 text-sm font-semibold">Ciudad del Tesoro</span>
-                              {slot.treasurePlanet.owner_alliance_name ? (
-                                <span className="ml-2 text-xs text-yellow-200">
-                                  [{slot.treasurePlanet.owner_alliance_tag}] {slot.treasurePlanet.owner_alliance_name}
-                                </span>
-                              ) : (
-                                <span className="ml-2 text-xs text-slate-400">Sin dueño</span>
-                              )}
-                              {slot.treasurePlanet.total_ships > 0 && (
-                                <span className="ml-2 text-xs text-slate-400">
-                                  🛡️ {slot.treasurePlanet.total_ships.toLocaleString()} tropas
-                                </span>
-                              )}
-                              <p className="text-xs text-gray-500">{coords}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 rounded-full bg-space-700/50 flex items-center justify-center">
-                              <MapIcon className="w-5 h-5 text-gray-600" />
-                            </div>
-                            <div>
-                              <span className="text-gray-500 text-sm">{t.galaxy.emptyPosition}</span>
-                              {slot.debris && (slot.debris.metal > 0 || slot.debris.crystal > 0) && (
-                                <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse inline-block" title={`Escombros: ${slot.debris.metal.toLocaleString()} M | ${slot.debris.crystal.toLocaleString()} C`}>
-                                  💥 {((slot.debris.metal + slot.debris.crystal) / 1000).toFixed(0)}k
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 text-center">
-                        {slot.moon ? (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              const r = e.currentTarget.getBoundingClientRect();
-                              const up = r.bottom + 230 > window.innerHeight;
-                              setMoonMenu(prev => prev?.position === slot.position ? null : {
-                                position: slot.position,
-                                x: r.left + r.width / 2,
-                                y: up ? r.top : r.bottom,
-                                up,
-                              });
-                            }}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center mx-auto cursor-pointer transition-colors ring-1 ${
-                              moonMenu?.position === slot.position
-                                ? 'bg-cyber-blue/25 ring-cyber-blue/70'
-                                : 'bg-gray-500/20 ring-gray-400/30 hover:bg-gray-400/30 hover:ring-cyber-blue/60'
-                            }`}
-                            title={`${t.galaxy.moon}: ${slot.moon.name} — ${language === 'es' ? 'clic para espiar, atacar o transportar' : 'click to spy, attack or transport'}`}
-                          >
-                            <Moon className="w-5 h-5 text-gray-300" />
-                          </button>
-                        ) : (
-                          <span className="text-gray-600">-</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 text-center relative">
-                        {slot.debris ? (
-                          <div
-                            className="relative inline-block"
-                            onMouseEnter={() => setHoveredDebris(slot.position)}
-                            onMouseLeave={() => setHoveredDebris(null)}
-                          >
-                            <div
-                              className="w-8 h-8 rounded-full bg-cyber-orange/20 flex items-center justify-center mx-auto cursor-pointer hover:bg-cyber-orange/30 transition-colors animate-pulse"
-                              onClick={() => handleRecycle(galaxy, system, slot.position)}
-                              title={t.galaxy.sendRecyclers}
-                            >
-                              <Recycle className="w-5 h-5 text-cyber-orange" />
-                            </div>
-                            {hoveredDebris === slot.position && (
-                              <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-space-800 border border-cyber-orange/30 rounded-lg shadow-xl whitespace-nowrap">
-                                <div className="text-xs font-semibold text-cyber-orange mb-1">{t.galaxy.debrisField}</div>
-                                <div className="text-xs text-gray-300">{t.resources.metal}: {slot.debris.metal.toLocaleString()}</div>
-                                <div className="text-xs text-cyan-400">{t.resources.crystal}: {slot.debris.crystal.toLocaleString()}</div>
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-space-800"></div>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-gray-600">-</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2">
-                        {isRuins ? (
-                          <span className="text-xs text-red-400/70 italic">💀 Ruinas</span>
-                        ) : slot.planet?.profile ? (
-                          <div className={`flex items-center gap-2 ${occ ? 'flex-wrap gap-y-0.5' : ''}`}>
-                            <User className="w-4 h-4 text-gray-400" />
-                            <span className={`text-sm ${isOwn ? 'text-cyber-green' : 'text-white'}`}>
-                              {slot.planet.profile.active_title && (
-                                <span className="text-cyber-yellow">{slot.planet.profile.active_title}</span>
-                              )}
-                              {slot.planet.profile.active_title && <span className="text-gray-500 mx-1">·</span>}
-                              {slot.planet.profile.username}
-                              {slot.planet.profile.active_badge && (
-                                <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-red-900/40 to-red-800/20 ring-2 ring-red-500/50 shadow-lg shadow-red-500/30 animate-pulse text-sm ml-1" style={{ animationDuration: '2s' }} title="Insignia equipada">{slot.planet.profile.active_badge}</span>
-                              )}
-                              {isVacation && <span className="ml-1 text-xs text-yellow-400">(V)</span>}
-                            </span>
-                            {!isOwn && slot.protection && !slot.protection.can_attack && (
-                              <div className="relative group">
-                                <ShieldAlert className="w-4 h-4 text-amber-400 cursor-help" />
-                                <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-space-800 border border-amber-500/30 rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                  <div className="text-xs font-semibold text-amber-400 mb-1">{slot.protection.same_alliance ? 'Miembro de tu alianza' : t.galaxy.protectedPlayer}</div>
-                                  {slot.protection.protection_reason && (
-                                    <div className="text-xs text-gray-300">{slot.protection.protection_reason}</div>
-                                  )}
-                                  {slot.protection.bashing_reason && (
-                                    <div className="text-xs text-red-400 mt-0.5">{slot.protection.bashing_reason}</div>
-                                  )}
-                                  {slot.protection.owner_points !== undefined && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      {slot.protection.owner_username}: {slot.protection.owner_points?.toLocaleString()} {t.galaxy.points}
-                                    </div>
-                                  )}
-                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-space-800"></div>
-                                </div>
-                              </div>
-                            )}
-                            {!isOwn && slot.protection && slot.protection.can_attack && !isVacation && (
-                              <Swords className="w-3.5 h-3.5 text-red-400/60" title={t.galaxy.canAttack} />
-                            )}
-                            {occ && (
-                              <span className="basis-full flex items-center gap-1 text-[11px] font-semibold text-red-300">
-                                <Flag className="w-3 h-3" />
-                                {language === 'es' ? 'Ocupado por' : 'Occupied by'}{' '}
-                                <span className={occ.is_mine ? 'text-cyber-green' : 'text-red-200'}>
-                                  {occ.is_mine ? (language === 'es' ? 'ti' : 'you') : occ.occupier_name || '?'}
-                                </span>
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-gray-600">-</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 hidden md:table-cell">
-                        {slot.planet?.user_id && userAlliances[slot.planet.user_id] ? (
-                          <span
-                            className="text-sm font-semibold text-cyber-purple cursor-help"
-                            title={userAlliances[slot.planet.user_id].name}
-                          >
-                            [{userAlliances[slot.planet.user_id].tag}]
-                          </span>
-                        ) : (
-                          <span className="text-gray-600">-</span>
-                        )}
-                      </td>
-                      <td className="px-2 sm:px-3 py-2">
-                        <div className="flex items-center justify-center gap-0.5 sm:gap-1">
-                          {/* [OCUPA2] Ocupante: gestionar la colonia ocupada */}
-                          {slot.planet && occ?.is_mine && occ.occupation_id && (
-                            <button
-                              onClick={() => navigate(`/game/occupations?occ=${occ.occupation_id}`)}
-                              className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-red-700 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
-                              title={language === 'es' ? 'Gestionar ocupación: producir y transportar recursos' : 'Manage occupation: build and transport resources'}
-                            >
-                              <Flag className="w-4 h-4" />
-                              <span className="hidden sm:inline">{language === 'es' ? 'Gestionar' : 'Manage'}</span>
-                            </button>
-                          )}
-                          {/* [OCUPA2] Dueño: recuperar atacando la guarnición del ocupante */}
-                          {slot.planet && isOwn && occ?.is_my_planet && (
-                            <>
-                              <button
-                                onClick={() => handleSpy(galaxy, system, slot.position)}
-                                disabled={spyingPosition === slot.position}
-                                className={`p-2 rounded-lg transition-colors ${
-                                  spySuccess === slot.position
-                                    ? 'bg-cyber-green/20 text-cyber-green'
-                                    : 'bg-space-700 hover:bg-space-600 text-gray-400'
-                                }`}
-                                title={language === 'es' ? 'Espiar la guarnición del ocupante' : 'Spy the occupier garrison'}
-                              >
-                                {spyingPosition === slot.position ? (
-                                  <div className="w-4 h-4 border-2 border-gray-400/30 border-t-gray-400 rounded-full animate-spin" />
-                                ) : spySuccess === slot.position ? (
-                                  <CheckCircle className="w-4 h-4" />
-                                ) : (
-                                  <Eye className="w-4 h-4" />
-                                )}
-                              </button>
-                              <button
-                                onClick={() => handleAttack(galaxy, system, slot.position)}
-                                className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold animate-pulse transition-colors"
-                                title={language === 'es' ? 'Recuperar: destruye el ejército del ocupante' : 'Recover: destroy the occupier fleet'}
-                              >
-                                <Swords className="w-4 h-4" />
-                                <span className="hidden sm:inline">{language === 'es' ? 'Recuperar' : 'Recover'}</span>
-                              </button>
-                            </>
-                          )}
-                          {slot.planet && !isOwn && !isVacation && !isRuins && !occ?.is_mine && (() => {
-                            const isProtected = slot.protection && !slot.protection.can_attack;
-                            const cannotSpy = slot.protection?.can_spy === false;
-                            return (
-                            <>
-                              <button
-                                onClick={() => { if (!cannotSpy) handleSpy(galaxy, system, slot.position); }}
-                                disabled={spyingPosition === slot.position || cannotSpy}
-                                className={`p-2 rounded-lg transition-colors ${
-                                  cannotSpy
-                                    ? 'bg-space-700/50 text-gray-600 cursor-not-allowed'
-                                    : spySuccess === slot.position
-                                    ? 'bg-cyber-green/20 text-cyber-green'
-                                    : 'bg-space-700 hover:bg-space-600 text-gray-400'
-                                }`}
-                                title={cannotSpy ? (slot.protection?.protection_reason || t.galaxy.spy) : t.galaxy.spy}
-                              >
-                                {spyingPosition === slot.position ? (
-                                  <div className="w-4 h-4 border-2 border-gray-400/30 border-t-gray-400 rounded-full animate-spin" />
-                                ) : spySuccess === slot.position ? (
-                                  <CheckCircle className="w-4 h-4" />
-                                ) : (
-                                  <Eye className="w-4 h-4" />
-                                )}
-                              </button>
-                              <button
-                                onClick={() => !isProtected && handleMissileClick(galaxy, system, slot.position)}
-                                disabled={!!isProtected}
-                                className={`p-2 rounded-lg transition-colors ${
-                                  isProtected
-                                    ? 'bg-space-700/50 text-gray-600 cursor-not-allowed'
-                                    : 'bg-space-700 hover:bg-cyber-orange/20 hover:text-cyber-orange'
-                                }`}
-                                title={isProtected ? (slot.protection?.protection_reason || slot.protection?.bashing_reason || t.galaxy.protectedPlayer) : t.galaxy.launchMissile}
-                              >
-                                <Target className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => !isProtected && handleAttack(galaxy, system, slot.position)}
-                                disabled={!!isProtected}
-                                className={`p-2 rounded-lg transition-colors ${
-                                  isProtected
-                                    ? 'bg-space-700/50 text-gray-600 cursor-not-allowed'
-                                    : 'bg-space-700 hover:bg-cyber-red/20 hover:text-cyber-red'
-                                }`}
-                                title={isProtected ? (slot.protection?.protection_reason || slot.protection?.bashing_reason || t.galaxy.protectedPlayer) : t.galaxy.attack}
-                              >
-                                <Rocket className="w-4 h-4" />
-                              </button>
-                              {slot.planet && allyDepotPlanets.has(slot.planet.id) && (
-                                <button
-                                  onClick={() => handleDeploy(galaxy, system, slot.position)}
-                                  className="p-2 rounded-lg transition-colors bg-space-700 hover:bg-teal-500/20 hover:text-teal-400 text-teal-400/70"
-                                  title={t.galaxy.deployToAlly}
-                                >
-                                  <Warehouse className="w-4 h-4" />
-                                </button>
-                              )}
-                              {/* Sensor Phalanx scan button */}
-                              {userMoonsPhalanx.length > 0 && (() => {
-                                const moonsInRange = getPhalanxMoonsInRange(galaxy, system);
-                                const inRange = moonsInRange.length > 0;
-                                return (
-                                  <button
-                                    onClick={() => handlePhalanxClick(galaxy, system, slot.position)}
-                                    className={`p-2 rounded-lg transition-colors ${
-                                      inRange
-                                        ? 'bg-space-700 hover:bg-purple-500/20 hover:text-purple-400 text-purple-400'
-                                        : 'bg-space-700/50 text-purple-400/30 hover:bg-purple-500/10 hover:text-purple-400/50'
-                                    }`}
-                                    title={inRange
-                                      ? `📡 ${t.galaxy.phalanxScan} (${t.galaxy.phalanxCost})`
-                                      : `📡 ${t.galaxy.phalanxOutOfRange}`
-                                    }
-                                  >
-                                    <Radio className="w-4 h-4" />
-                                  </button>
-                                );
-                              })()}
-                            </>
-                            );
-                          })()}
-                          {slot.planet && !isOwn && !isRuins && slot.planet.profile?.username && (
-                            <button
-                              onClick={() => navigate(`/game/messages?to=${encodeURIComponent(slot.planet!.profile!.username)}`)}
-                              className="p-2 rounded-lg transition-colors bg-space-700 hover:bg-cyber-blue/20 hover:text-cyber-blue text-gray-400"
-                              title={t.messages.sendMessage}
-                            >
-                              <Mail className="w-4 h-4" />
-                            </button>
-                          )}
-                          {!slot.planet && !slot.fortress && !slot.treasurePlanet && (
-                            <button
-                              onClick={() => handleColonize(galaxy, system, slot.position)}
-                              className="p-2 bg-space-700 rounded-lg hover:bg-cyber-green/20 hover:text-cyber-green transition-colors"
-                              title={t.galaxy.colonize}
-                            >
-                              <Globe className="w-4 h-4" />
-                            </button>
-                          )}
-                          {slot.fortress && (
-                            <button
-                              onClick={() => navigate('/game/fortress')}
-                              className="p-2 bg-amber-600 rounded-lg hover:bg-amber-500 text-white transition-colors"
-                              title="Atacar Fortaleza"
-                            >
-                              ⚔️
-                            </button>
-                          )}
-                          {slot.treasurePlanet && (
-                            <button
-                              onClick={() => navigate('/game/treasure-planet')}
-                              className="p-2 bg-yellow-500 rounded-lg hover:bg-yellow-400 text-black transition-colors"
-                              title="Atacar Ciudad del Tesoro"
-                            >
-                              ⚔️
-                            </button>
-                          )}
-                          {slot.debris && (
-                            <button
-                              onClick={() => handleRecycle(galaxy, system, slot.position)}
-                              className="p-2 bg-space-700 rounded-lg hover:bg-cyber-orange/20 hover:text-cyber-orange transition-colors"
-                              title={t.galaxy.recycleDebris}
-                            >
-                              <Recycle className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+      {/* [MAPA1] Mapa terrestre de parcelas + ficha de la parcela seleccionada */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px] items-start">
+        <TerrainMapView
+          galaxy={galaxy}
+          system={system}
+          parcels={mapParcels}
+          selected={selectedPos}
+          loading={loading}
+          onSelect={setSelectedPos}
+          onMoonClick={openMoonMenu}
+          onExpedition={() => handleExpedition(galaxy, system)}
+        />
+        <div className="xl:sticky xl:top-4">{renderParcelDetail()}</div>
       </div>
-      )}
-
-      {/* Leyenda - solo mostrar si vista solar está desactivada */}
-      {!showSolarView && (
-      <div className="card-glass p-4">
-        <h3 className="font-orbitron text-sm text-white mb-3">{t.galaxy.legend}</h3>
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-cyber-green" />
-            <span className="text-gray-400">{t.galaxy.yourPlanet}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-cyber-blue" />
-            <span className="text-gray-400">{t.galaxy.occupiedPlanet}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-space-600" />
-            <span className="text-gray-400">{t.galaxy.emptyPosition}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Moon className="w-4 h-4 text-gray-300" />
-            <span className="text-gray-400">{t.galaxy.moon}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Recycle className="w-4 h-4 text-cyber-orange" />
-            <span className="text-gray-400">{t.galaxy.debrisField}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-cyber-yellow" />
-            <span className="text-gray-400">{t.galaxy.deepSpace}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-amber-400" />
-            <span className="text-gray-400">{t.galaxy.protectedPlayer}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Swords className="w-4 h-4 text-red-400/60" />
-            <span className="text-gray-400">{t.galaxy.canAttack}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Warehouse className="w-4 h-4 text-teal-400" />
-            <span className="text-gray-400">{t.galaxy.allyHasDepot}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg">💀</span>
-            <span className="text-gray-400">Ruinas (Inhabitable)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4 text-purple-400" />
-            <span className="text-gray-400">{t.galaxy.phalanxTitle}</span>
-          </div>
-        </div>
-      </div>
-      )}
 
       {missileModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">

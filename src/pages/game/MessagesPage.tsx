@@ -45,7 +45,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useGameStore } from '../../store/gameStore';
 import { formatRelativeDate, formatNumber } from '../../lib/utils';
 import type { Message, Profile } from '../../types/game';
-import { useI18n, translatePlanetName } from '../../lib/i18n';
+import { useI18n, translatePlanetName, translateShipName, translateDefenseName } from '../../lib/i18n';
 
 type MessageFilter = 'all' | 'unread' | 'player' | 'system' | 'battle' | 'espionage' | 'expedition' | 'alliance';
 type MessageView = 'inbox' | 'sent' | 'public';
@@ -1341,6 +1341,8 @@ function BattleForcePanel({ title, accent, icon, groups, lossMetal, lossCrystal 
   lossMetal: number;
   lossCrystal: number;
 }) {
+  const { t } = useI18n();
+  const unitName = (u: BattleUnit) => u.code ? translateDefenseName(t, u.code, translateShipName(t, u.code, u.name)) : u.name;
   const accentText = accent === 'blue' ? 'text-cyber-blue' : 'text-cyber-orange';
   const accentBar = accent === 'blue' ? 'bg-cyber-blue' : 'bg-cyber-orange';
   const visible = groups.filter((g) => g.units && g.units.length > 0);
@@ -1370,7 +1372,7 @@ function BattleForcePanel({ title, accent, icon, groups, lossMetal, lossCrystal 
                   return (
                     <div key={i}>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-300 truncate mr-2">{u.name}</span>
+                        <span className="text-gray-300 truncate mr-2">{unitName(u)}</span>
                         <span className="font-orbitron whitespace-nowrap">
                           <span className={remaining === 0 ? 'text-cyber-red' : 'text-white'}>{formatNumber(remaining)}</span>
                           <span className="text-gray-600">/{formatNumber(u.initial)}</span>
