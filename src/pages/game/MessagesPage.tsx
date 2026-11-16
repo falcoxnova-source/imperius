@@ -215,6 +215,7 @@ export function MessagesPage() {
         .eq('is_read', false);
 
       setMessages((prev) => prev.map((m) => ({ ...m, is_read: true })));
+      window.dispatchEvent(new Event('messages-changed'));
     } catch (error) {
       console.error('Error marking all as read:', error);
     }
@@ -229,13 +230,15 @@ export function MessagesPage() {
       const msgType = mode === 'sent'
         ? 'player'
         : (filter !== 'all' && filter !== 'unread' ? filter : null);
-      await supabase.rpc('secure_delete_all_my_messages', {
+      const { error } = await supabase.rpc('secure_delete_all_my_messages', {
         p_mode: mode,
         p_message_type: msgType,
       });
+      if (error) throw error;
 
       setMessages([]);
       setSelectedMessage(null);
+      window.dispatchEvent(new Event('messages-changed'));
     } catch (error) {
       console.error('Error deleting messages:', error);
     }
@@ -247,6 +250,7 @@ export function MessagesPage() {
       setMessages((prev) =>
         prev.map((m) => (m.id === messageId ? { ...m, is_read: true } : m))
       );
+      window.dispatchEvent(new Event('messages-changed'));
     } catch (error) {
       console.error('Error marking message as read:', error);
     }
@@ -254,11 +258,13 @@ export function MessagesPage() {
 
   const deleteMessage = async (messageId: string) => {
     try {
-      await supabase.rpc('secure_delete_message', { p_message_id: messageId });
+      const { error } = await supabase.rpc('secure_delete_message', { p_message_id: messageId });
+      if (error) throw error;
       setMessages((prev) => prev.filter((m) => m.id !== messageId));
       if (selectedMessage?.id === messageId) {
         setSelectedMessage(null);
       }
+      window.dispatchEvent(new Event('messages-changed'));
     } catch (error) {
       console.error('Error deleting message:', error);
     }
@@ -1901,21 +1907,33 @@ const TONE = {
 };
 
 // Informe de expedicion enviado como texto (formato actual del servidor).
-function PlainTextExpeditionReport({ body }: { body: string }) {
-  const lower = body.toLowerCase();
+// Acepta tanto los textos romanos actuales como los antiguos (espaciales).
+function PlainTextExpeditionReport({ body: rawBody }: { body: string }) {
+  const { t } = useI18n();
+  const shipTypes = useGameStore((s) => s.shipTypes);
 
-  const isDisaster = /agujero negro|desastre|se perdieron para siempre/.test(lower);
-  const isDamaged = /emboscad|tormenta de iones|anomalia gravitacional|perdiste aproximadamente|perdidas estimadas|fueron destruidas/.test(lower);
+  // Los nombres de tropa llegan con el nombre interno de la BD: se muestran con el nombre romano
+  // (los mas largos primero para que "Mega Reciclador" no se confunda con "Reciclador")
+  let body = rawBody;
+  for (const st of [...shipTypes].sort((a, b) => (b.name?.length || 0) - (a.name?.length || 0))) {
+    const roman = translateShipName(t, st.code, st.name);
+    if (st.name && roman !== st.name) body = body.split(st.name).join(roman);
+  }
+
+  const lower = body.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  const isDisaster = /agujero negro|arenas movedizas|desastre|se perdieron para siempre/.test(lower);
+  const isDamaged = /emboscad|tormenta|derrumbe|anomalia gravitacional|perdiste aproximadamente|perdidas estimadas|fueron destruidas|cayeron en combate/.test(lower);
   const isJackpot = /tesoro legendario|jackpot|increible/.test(lower);
   const isEmpty = /no encontraron nada|vacio y desolado/.test(lower);
 
-  const metal = extractAmount(body, /(\d[\d.,]*)\s*Metal/i);
-  const crystal = extractAmount(body, /(\d[\d.,]*)\s*Cristal/i);
-  const deuterium = extractAmount(body, /(\d[\d.,]*)\s*Deuteri/i);
-  const fxu = extractAmount(body, /(\d[\d.,]*)\s*(?:Tokens\s+)?FXU/i);
+  const metal = extractAmount(body, /(\d[\d.,]*)\s*(?:Metal|Hierro)/i);
+  const crystal = extractAmount(body, /(\d[\d.,]*)\s*(?:Cristal|Piedra)/i);
+  const deuterium = extractAmount(body, /(\d[\d.,]*)\s*(?:Deuteri|Comida)/i);
+  const fxu = extractAmount(body, /(\d[\d.,]*)\s*(?:Tokens\s+)?(?:FXU|TUNG)/i);
   const lossPct = extractAmount(body, /(\d[\d.,]*)\s*%/);
 
-  const shipMatch = body.match(/encontro\s+(\d[\d.,]*)\s+(.+?)\s+a la deriva/i);
+  const shipMatch = body.match(/encontr[oó]\s+(\d[\d.,]*)\s+(.+?)\s+(?:a la deriva|abandonad)/i);
   const shipCount = shipMatch ? Number(shipMatch[1].replace(/[.,]/g, '')) : null;
   const shipName = shipMatch ? shipMatch[2].trim() : null;
 
@@ -1925,7 +1943,7 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
     : isEmpty ? TONE.gray
     : TONE.green;
 
-  const emoji = isDisaster ? '💀' : isDamaged ? '⚠️' : isJackpot ? '🏆' : isEmpty ? '🌌' : '🧭';
+  const emoji = isDisaster ? '💀' : isDamaged ? '⚠️' : isJackpot ? '🏆' : isEmpty ? '🏜️' : '🧭';
   const title = isDisaster ? 'EJÉRCITO PERDIDO'
     : isDamaged ? 'EXPEDICIÓN DAÑADA'
     : isJackpot ? '¡TESORO LEGENDARIO!'
@@ -1939,7 +1957,7 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
       : isJackpot
         ? '🎉 Un hallazgo entre un millón. ¡Tu ejército ha hecho historia en tierras desconocidas!'
         : isEmpty
-          ? '🔭 Las tierras desconocidas no siempre recompensan. Insiste: el próximo viaje puede ser el bueno.'
+          ? '🗺️ Las tierras desconocidas no siempre recompensan. Insiste: el próximo viaje puede ser el bueno.'
           : '📦 El cargamento ya está en tu cuenta. ¡Sigue explorando tierras desconocidas!';
 
   const hasFindings =
@@ -1947,7 +1965,7 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
 
   return (
     <div className="space-y-4">
-      <ReportBanner emoji={emoji} title={title} subtitle="🚀 Informe de Expedición" tone={tone} />
+      <ReportBanner emoji={emoji} title={title} subtitle="🏛️ Informe de Expedición" tone={tone} />
 
       {hasFindings && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1964,11 +1982,11 @@ function PlainTextExpeditionReport({ body }: { body: string }) {
               value={`+${formatNumber(deuterium)}`} color="text-green-400" />
           )}
           {fxu !== null && (
-            <FindingCard icon={<Coins className="w-5 h-5" />} label="Tokens FXU"
+            <FindingCard icon={<Coins className="w-5 h-5" />} label="Tokens TUNG"
               value={`+${formatNumber(fxu)}`} color="text-yellow-400" />
           )}
           {shipCount !== null && shipName && (
-            <FindingCard icon={<Rocket className="w-5 h-5" />} label={shipName}
+            <FindingCard icon={<Swords className="w-5 h-5" />} label={shipName}
               value={`+${formatNumber(shipCount)}`} color="text-cyber-blue" />
           )}
         </div>

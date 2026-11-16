@@ -9,6 +9,7 @@ import { useGameStore } from '../../store/gameStore';
 import { formatNumber } from '../../lib/utils';
 import { useHeroAccess } from '../../lib/casino';
 import { useI18n } from '../../lib/i18n';
+import { HeroGloryTab, VictoryCelebration, getGloryRank } from '../../components/game/HeroGlory';
 
 interface SlotItem { id: string; name: string; rarity: string; item_level: number; attack_bonus: number; defense_bonus: number; shield_bonus: number; speed_bonus: number; loot_bonus: number; }
 
@@ -176,7 +177,7 @@ function HeroShipPageInner() {
   const [message, setMessage] = useState<string | null>(null);
   const [respecing, setRespecing] = useState(false);
   const [repairLoading, setRepairLoading] = useState(false);
-  const [tab, setTab] = useState<'stats' | 'expeditions' | 'inventory' | 'equip' | 'duel' | 'ranking'>('stats');
+  const [tab, setTab] = useState<'stats' | 'expeditions' | 'inventory' | 'equip' | 'duel' | 'ranking' | 'glory'>('stats');
   const [expeditions, setExpeditions] = useState<Expedition[]>([]);
   const [active, setActive] = useState<ActiveExpedition | null>(null);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -378,6 +379,7 @@ function HeroShipPageInner() {
 
   const xpPct = Math.min(100, Math.round((ship.xp / ship.xp_to_next) * 100));
   const hpPct = ship ? Math.min(100, Math.round((displayedHp / ship.hp_max) * 100)) : 0;
+  const glory = getGloryRank(ship.level).rank;
 
   const pendingTotal = Object.values(pending).reduce((a, b) => a + b, 0);
   const goToAttributes = () => {
@@ -396,6 +398,7 @@ function HeroShipPageInner() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,rgba(255,190,90,0.22)_0%,rgba(0,0,0,0)_55%),linear-gradient(180deg,rgba(8,6,4,0.15)_0%,rgba(8,6,4,0)_40%,rgba(8,6,4,0.85)_100%)] pointer-events-none" />
             <div className="hidden lg:block absolute inset-y-0 right-0 w-24 bg-gradient-to-r from-transparent to-[#0e0a06] pointer-events-none" />
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-[60%] h-8 rounded-[50%] bg-black/70 blur-md pointer-events-none" />
+            <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 w-[70%] aspect-square rounded-full glory-aura pointer-events-none" style={{ ['--glory-aura' as string]: glory.aura }} />
             <FallbackImg srcs={HERO_IMG} alt="Héroe Imperial"
               className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[96%] w-auto max-w-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)] select-none" />
             {heroSkin && (
@@ -430,7 +433,7 @@ function HeroShipPageInner() {
                 </div>
                 <div className="mt-1.5 flex items-center justify-center gap-2">
                   <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#8a6a32]" />
-                  <span className="font-cinzel text-xs sm:text-sm uppercase tracking-[0.18em] text-[#e2b865]">{language === 'en' ? 'General of Rome' : 'General de Roma'}</span>
+                  <span className={`font-cinzel text-xs sm:text-sm uppercase tracking-[0.18em] ${glory.text}`}>{language === 'en' ? `${glory.name} of Rome` : `${glory.name} de Roma`}</span>
                   <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#8a6a32]" />
                 </div>
               </div>
@@ -543,7 +546,8 @@ function HeroShipPageInner() {
            { id: 'expeditions', label: 'Expediciones', icon: Map },
            { id: 'inventory', label: 'Inventario', icon: Package },
               { id: 'duel', label: 'Duelo', icon: Swords },
-              { id: 'ranking', label: 'Ranking', icon: Trophy }] as const).map(t => {
+              { id: 'ranking', label: 'Ranking', icon: Trophy },
+              { id: 'glory', label: 'Gloria', icon: Crown }] as const).map(t => {
           const Icon = t.icon;
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
@@ -934,6 +938,7 @@ function HeroShipPageInner() {
 
       {tab === 'duel' && <HeroDuelSection />}
       {tab === 'ranking' && <HeroRankingSection />}
+      {tab === 'glory' && profile && <HeroGloryTab ship={ship} userId={profile.id} />}
     </div>
   );
 }
@@ -1296,11 +1301,12 @@ function HeroDuelSection() {
     const isWinner = duelResult.winner_id === profile.id;
     const winAmount = duelResult.winner_amount || 0;
     return (
-      <div className="card-glass p-6 text-center space-y-4">
-        <div className={'font-cinzel text-3xl font-black tracking-[0.12em] ' + (isWinner ? 'text-[#f6e2a8]' : 'text-red-400')}>{isWinner ? 'VICTORIA' : 'DERROTA'}</div>
-        <div className={'text-5xl ' + (isWinner ? 'text-yellow-300' : 'text-red-300')}>{isWinner ? String.fromCodePoint(127942) : String.fromCodePoint(128128)}</div>
-        {isWinner && <div className="text-lg font-bold text-[#6fd86a]">+{winAmount.toLocaleString()} TUNG</div>}
-        <button onClick={() => { setDuelResult(null); loadAll(); }} className="hero-btn red sm px-8">Volver</button>
+      <div className="card-glass relative overflow-hidden p-6 text-center space-y-4">
+        {isWinner && <VictoryCelebration />}
+        <div className={'relative font-cinzel text-3xl font-black tracking-[0.12em] ' + (isWinner ? 'text-[#f6e2a8] glory-pop' : 'text-red-400')}>{isWinner ? 'VICTORIA' : 'DERROTA'}</div>
+        <div className={'relative text-5xl ' + (isWinner ? 'text-yellow-300 glory-pop' : 'text-red-300')}>{isWinner ? String.fromCodePoint(127942) : String.fromCodePoint(128128)}</div>
+        {isWinner && <div className="relative text-lg font-bold text-[#6fd86a]">+{winAmount.toLocaleString()} TUNG</div>}
+        <button onClick={() => { setDuelResult(null); loadAll(); }} className="relative hero-btn red sm px-8">Volver</button>
       </div>
     );
   }

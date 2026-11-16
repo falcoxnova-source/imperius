@@ -401,6 +401,8 @@ export interface Translations {
     espionageProbe: string;
     bomber: string;
     solarSatellite: string;
+    fervorDivineNote: string;
+    fervorDivineBadge: string;
     destroyer: string;
     deathstar: string;
     battlecruiser: string;

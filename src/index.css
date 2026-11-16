@@ -1208,3 +1208,52 @@ body {
     }
   }
 }
+
+/* ===== Gloria del Héroe (solo visual) ===== */
+.glory-aura {
+  background: radial-gradient(circle, var(--glory-aura, rgba(214,170,85,0.3)) 0%, transparent 70%);
+  animation: glory-pulse 3s ease-in-out infinite;
+}
+.glory-shine {
+  background-image: linear-gradient(100deg, currentColor 35%, #fff8dc 50%, currentColor 65%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glory-shine 4s linear infinite;
+}
+.glory-rays {
+  background: repeating-conic-gradient(from 0deg, rgba(246,201,69,0.18) 0deg 8deg, transparent 8deg 22deg);
+  border-radius: 9999px;
+  -webkit-mask-image: radial-gradient(circle, black 15%, transparent 65%);
+  mask-image: radial-gradient(circle, black 15%, transparent 65%);
+  animation: glory-spin 14s linear infinite;
+}
+.glory-leaf {
+  position: absolute;
+  top: -12px;
+  width: 9px;
+  height: 16px;
+  border-radius: 9999px 0;
+  background: linear-gradient(135deg, #f6e2a8, #c9952f);
+  box-shadow: 0 0 6px rgba(246,201,69,0.6);
+  opacity: 0;
+  animation-name: glory-fall;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+.glory-pop {
+  animation: glory-pop 0.7s cubic-bezier(.2,1.6,.4,1) both;
+}
+@keyframes glory-pulse { 0%,100% { transform: scale(0.92); opacity: .75; } 50% { transform: scale(1.08); opacity: 1; } }
+@keyframes glory-shine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+@keyframes glory-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes glory-fall {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(420px) rotate(540deg); }
+}
+@keyframes glory-pop { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .glory-aura, .glory-shine, .glory-rays, .glory-leaf, .glory-pop { animation: none !important; }
+}

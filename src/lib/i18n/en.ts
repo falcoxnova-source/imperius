@@ -403,6 +403,8 @@ export const en: Translations = {
     espionageProbe: 'Espionage Probe',
     bomber: 'Bomber',
     solarSatellite: 'Solar Satellite',
+    fervorDivineNote: 'Gift of the gods: gives the same Fervor in every land, wherever your city is.',
+    fervorDivineBadge: 'Same in every land',
     destroyer: 'Destroyer',
     deathstar: 'Deathstar',
     battlecruiser: 'Battlecruiser',

@@ -858,6 +858,13 @@ function ShipCard({
           </div>
         </div>
 
+        {shipType.code === 'solar_satellite' && (
+          <div className="flex items-start gap-2 px-3 py-2 rounded-md bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-100/90 leading-snug">
+            <span className="text-base leading-none">🏛️</span>
+            <span>{t.shipyard.fervorDivineNote}</span>
+          </div>
+        )}
+
         {/* Requisitos */}
         {allRequirements.length > 0 && (
           <div className={`text-xs space-y-1 mb-3 p-2 rounded-lg border ${reqsBypassed ? 'bg-emerald-500/10 border-emerald-600/30' : 'bg-black/20 border-amber-800/30'}`}>
@@ -1127,6 +1134,9 @@ function ShipInfoModal({
                 </button>
               </div>
               <p className="text-gray-400 text-sm mt-1">{shipType.description}</p>
+              {shipType.code === 'solar_satellite' && (
+                <p className="text-amber-200/90 text-sm mt-2">🏛️ {t.shipyard.fervorDivineNote}</p>
+              )}
               <div className="flex items-center gap-4 mt-3">
                 <span className="text-cyber-orange font-orbitron">
                   {t.common.quantity}: {formatNumber(currentQuantity)}

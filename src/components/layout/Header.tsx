@@ -92,7 +92,7 @@ export function Header({ onMenuClick }: HeaderProps) {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'messages',
           filter: `recipient_id=eq.${profile.id}`,
@@ -103,8 +103,13 @@ export function Header({ onMenuClick }: HeaderProps) {
       )
       .subscribe();
 
+    // MessagesPage avisa al borrar o marcar como leidos (no depende de realtime)
+    const onMessagesChanged = () => loadNotifications();
+    window.addEventListener('messages-changed', onMessagesChanged);
+
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener('messages-changed', onMessagesChanged);
     };
   }, [profile, loadNotifications]);
 

@@ -533,6 +533,14 @@ export function ResourcesPage() {
                           <row.icon className={`w-3.5 h-3.5 ${row.iconColor}`} />
                         )}
                         <span className="text-white truncate">{row.label}</span>
+                        {row.key === 'solar_satellite_percent' && (
+                          <span
+                            className="text-[9px] text-amber-300 bg-amber-500/10 border border-amber-400/30 px-1 rounded whitespace-nowrap"
+                            title={`${t.shipyard.fervorDivineNote} (${solarSatEnergy} / ${t.shipyard.solarSatellite})`}
+                          >
+                            🏛️ {t.shipyard.fervorDivineBadge}
+                          </span>
+                        )}
                         {row.type === 'producer' && (
                           <span className="text-[9px] text-yellow-400 bg-yellow-500/10 px-1 rounded">⚡</span>
                         )}

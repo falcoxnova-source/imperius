@@ -1428,7 +1428,7 @@ export function FleetPage() {
                               <GameMedia
                                 src={shipImage}
                                 alt={translateShipName(t, shipType.code, shipType.name)}
-                                className={`w-full h-full transition-transform duration-300 ${shipImage.startsWith('/Imagenes/Barraca/') ? 'object-contain p-3 group-hover:scale-105 [-webkit-mask-image:radial-gradient(ellipse_62%_58%_at_50%_50%,black_52%,transparent_98%)] [mask-image:radial-gradient(ellipse_62%_58%_at_50%_50%,black_52%,transparent_98%)]' : 'object-cover group-hover:scale-110'}`}
+                                className={`w-full h-full object-cover transition-transform duration-300 ${shipImage.startsWith('/Imagenes/Barraca/') ? 'group-hover:scale-105' : 'group-hover:scale-110'}`}
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
@@ -1556,7 +1556,7 @@ export function FleetPage() {
                         : 'bg-space-700 text-gray-400 hover:bg-space-600'
                     }`}
                   >
-                    🌍 Ciudad
+                    🏛️ Ciudad
                   </button>
                   <button
                     onClick={() => setTargetType('moon')}
@@ -1573,7 +1573,7 @@ export function FleetPage() {
                 {/* Selector rápido de planetas y lunas propios */}
                 {planets.length > 1 && (
                   <div className="mt-4">
-                    <label className="block text-sm text-gray-400 mb-2">📍 {t.fleet.quickSelect || 'Selección rápida - Mis colonias y Castras de Diana'}</label>
+                    <label className="block text-sm text-gray-400 mb-2">📍 {t.fleet.quickSelect || 'Selección rápida - Mis ciudades y Castras de Diana'}</label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
                       {planets
                         .filter(p => p.id !== currentPlanet?.id && !p.is_destroyed)
@@ -1607,7 +1607,7 @@ export function FleetPage() {
                                   : 'bg-space-700/50 hover:bg-space-600 border border-transparent'
                               }`}
                             >
-                              <span className="text-lg">{isMoon ? '🌙' : '🌍'}</span>
+                              <span className="text-lg">{isMoon ? '🌙' : '🏛️'}</span>
                               <div className="flex-1 min-w-0">
                                 <p className={`text-xs font-medium truncate ${
                                   isSelected 
@@ -1617,7 +1617,7 @@ export function FleetPage() {
                                   {translatePlanetName(p.name)} {isMoon ? '(Castra de Diana)' : ''}
                                 </p>
                                 <p className="text-[10px] text-gray-500">
-                                  [{p.galaxy}:{p.solar_system}:{p.position}] {isMoon ? '🌙' : '🌍'}
+                                  [{p.galaxy}:{p.solar_system}:{p.position}] {isMoon ? '🌙' : '🏛️'}
                                 </p>
                               </div>
                             </button>
@@ -1764,7 +1764,7 @@ export function FleetPage() {
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-400">{t.fleet.consumption}</p>
-                <p className="font-orbitron text-cyber-green">{formatNumber(fuelConsumption)} D</p>
+                <p className="font-orbitron text-cyber-green">{formatNumber(fuelConsumption)} {t.fleet.fuel}</p>
               </div>
             </div>
 
