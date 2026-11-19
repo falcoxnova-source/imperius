@@ -45,12 +45,25 @@ import { useAuthStore } from '../../store/authStore';
 import { useGameStore } from '../../store/gameStore';
 import { formatRelativeDate, formatNumber } from '../../lib/utils';
 import type { Message, Profile } from '../../types/game';
-import { useI18n, translatePlanetName, translateShipName, translateDefenseName } from '../../lib/i18n';
+import { useI18n, translatePlanetName, translateShipName, translateDefenseName, translateBuildingName, translateResearchName } from '../../lib/i18n';
 
 type MessageFilter = 'all' | 'unread' | 'player' | 'system' | 'battle' | 'espionage' | 'expedition' | 'alliance';
 type MessageView = 'inbox' | 'sent' | 'public';
 
 const MESSAGES_PER_PAGE = 10;
+
+// Reporte de espionaje: el nombre por defecto de las colonias en la BD ("Colonia")
+// se muestra como "Ciudad", igual que "Planeta Principal" -> "Ciudad Principal".
+function espionageCityName(name: string | undefined): string {
+  if (!name) return 'Ciudad';
+  return name === 'Colonia' ? 'Ciudad' : translatePlanetName(name);
+}
+
+function displaySubject(message: { subject: string; message_type?: string }): string {
+  if (message.message_type !== 'espionage') return message.subject;
+  const m = message.subject.match(/^(.*? - )(.+)$/);
+  return m ? m[1] + espionageCityName(m[2]) : message.subject;
+}
 
 interface EspionageReport {
   planet_name: string;
@@ -485,7 +498,7 @@ export function MessagesPage() {
                             view === 'inbox' && !message.is_read ? 'text-white' : 'text-gray-400'
                           }`}
                         >
-                          {message.subject}
+                          {displaySubject(message)}
                         </p>
                       </div>
                     </div>
@@ -556,7 +569,7 @@ export function MessagesPage() {
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="font-orbitron text-xl text-white mb-2">
-                    {selectedMessage.subject}
+                    {displaySubject(selectedMessage)}
                   </h2>
                   <div className="flex items-center gap-4 text-sm text-gray-400">
                     <span>
@@ -643,9 +656,25 @@ export function MessagesPage() {
 }
 
 function EspionageReportView({ body }: { body: string }) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const navigate = useNavigate();
+  const { buildingTypes, technologyTypes, shipTypes, defenseTypes } = useGameStore();
   let report: EspionageReport | null = null;
+
+  // El informe trae el nombre interno de la BD: se muestra con el nombre romano del juego
+  const romanName = (name: string): string => {
+    const b = buildingTypes.find((x) => x.name === name);
+    if (b) return translateBuildingName(t, b.code, name);
+    const r = technologyTypes.find((x) => x.name === name);
+    if (r) return translateResearchName(t, r.code, name);
+    const s = shipTypes.find((x) => x.name === name);
+    if (s) return translateShipName(t, s.code, name);
+    const d = defenseTypes.find((x) => x.name === name);
+    if (d) return translateDefenseName(t, d.code, name);
+    return name;
+  };
+  const spyTechName = t.research.espionageTech;
+  const scoutName = language === 'en' ? 'probe' : 'Speculator';
 
   try {
     report = JSON.parse(body);
@@ -662,14 +691,6 @@ function EspionageReportView({ body }: { body: string }) {
     if (m) navigate(`/game/galaxy?galaxy=${m[1]}&system=${m[2]}`);
   };
 
-  // Abre el simulador de combate con los datos de este informe ya cargados
-  // en el lado del defensor (naves, defensas, tecnologias y recursos).
-  // Si se entra al simulador directamente, los campos siguen vacios.
-  const reportData = report;
-  const goToSimulator = () => {
-    navigate('/game/combat-simulator', { state: { espionage: reportData } });
-  };
-
   // Nivel de visibilidad del informe (1..5). Depende de tu Tecnologia de Espionaje
   // frente a la del oponente: 1 = solo recursos, 2 = +flota, 3 = +defensas,
   // 4 = +edificios, 5 = +tecnologias.
@@ -683,7 +704,7 @@ function EspionageReportView({ body }: { body: string }) {
     !shipsVisible && 'el ejército',
     !defensesVisible && 'las defensas',
     !buildingsVisible && 'los edificios',
-    !techsVisible && 'las tecnologias',
+    !techsVisible && 'sus conocimientos de la Academia',
   ].filter(Boolean) as string[];
 
   const missingText =
@@ -698,7 +719,7 @@ function EspionageReportView({ body }: { body: string }) {
         {label}
       </h4>
       <p className="text-xs text-red-300/90">
-        Datos cifrados. Tu Tecnologia de Espionaje no alcanza para descifrar esta seccion.
+        Datos cifrados. Tu {spyTechName} no alcanza para descifrar esta seccion.
       </p>
     </div>
   );
@@ -708,7 +729,7 @@ function EspionageReportView({ body }: { body: string }) {
       <div className="flex items-center gap-2 text-cyber-blue">
         <Eye className="w-5 h-5" />
         <span className="font-orbitron">
-          {report.target_type === 'moon' && '🌙 '}{report.planet_name}{report.target_type === 'moon' && ' (Castra de Diana)'}{' '}
+          {report.target_type === 'moon' && '🌙 '}{espionageCityName(report.planet_name)}{report.target_type === 'moon' && ' (Castra de Diana)'}{' '}
           <button
             type="button"
             onClick={goToGalaxy}
@@ -719,17 +740,6 @@ function EspionageReportView({ body }: { body: string }) {
           </button>
         </span>
       </div>
-
-      {shipsVisible && (
-        <button
-          type="button"
-          onClick={goToSimulator}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-red-600/80 to-orange-600/80 hover:from-red-500 hover:to-orange-500 border border-red-500/40 text-white text-sm font-orbitron transition-colors"
-        >
-          <Swords className="w-4 h-4" />
-          Simular batalla con estos datos
-        </button>
-      )}
 
       {missingSections.length > 0 && (
         <div
@@ -748,10 +758,9 @@ function EspionageReportView({ body }: { body: string }) {
             Informe incompleto
           </h4>
           <p className="text-xs text-gray-200 leading-relaxed">
-            No se pudo recopilar toda la informacion: tus sondas no lograron descifrar{' '}
+            No se pudo recopilar toda la información: tus {scoutName}es no lograron descubrir{' '}
             <span className="font-semibold text-white">{missingText}</span> porque el oponente tiene
-            la <span className="font-semibold text-white">Tecnologia de Espionaje</span> a un nivel
-            mas avanzado que el tuyo.
+            más nivel de <span className="font-semibold text-white">{spyTechName}</span> que tú.
           </p>
           {!shipsVisible && (
             <p className="text-xs text-red-200 font-semibold mt-2 leading-relaxed">
@@ -760,7 +769,7 @@ function EspionageReportView({ body }: { body: string }) {
             </p>
           )}
           <p className="text-[11px] text-gray-400 mt-2">
-            Sube tu Tecnologia de Espionaje o envia mas sondas (cada 5 sondas = +1 nivel efectivo)
+            Sube tu nivel de {spyTechName} en la Academia o envía más {scoutName}es (cada 5 {scoutName}es = +1 nivel efectivo)
             para obtener un informe completo.
           </p>
         </div>
@@ -792,7 +801,7 @@ function EspionageReportView({ body }: { body: string }) {
           <div className="grid grid-cols-2 gap-2">
             {report.ships.map((ship, i) => (
               <div key={i} className="flex justify-between text-sm">
-                <span className="text-gray-400">{ship.name}</span>
+                <span className="text-gray-400">{romanName(ship.name)}</span>
                 <span className="text-white">{formatNumber(ship.quantity)}</span>
               </div>
             ))}
@@ -815,7 +824,7 @@ function EspionageReportView({ body }: { body: string }) {
                 <div className="grid grid-cols-2 gap-1">
                   {(allyFleet.ships || []).map((ship, j) => (
                     <div key={j} className="flex justify-between text-sm">
-                      <span className="text-gray-400">{ship.name}</span>
+                      <span className="text-gray-400">{romanName(ship.name)}</span>
                       <span className="text-blue-300">{formatNumber(ship.quantity)}</span>
                     </div>
                   ))}
@@ -834,7 +843,7 @@ function EspionageReportView({ body }: { body: string }) {
           <div className="grid grid-cols-2 gap-2">
             {report.defenses.map((def, i) => (
               <div key={i} className="flex justify-between text-sm">
-                <span className="text-gray-400">{def.name}</span>
+                <span className="text-gray-400">{romanName(def.name)}</span>
                 <span className="text-white">{formatNumber(def.quantity)}</span>
               </div>
             ))}
@@ -850,7 +859,7 @@ function EspionageReportView({ body }: { body: string }) {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1">
             {report.buildings.map((building, i) => (
               <div key={i} className="flex items-center gap-2 text-sm py-1">
-                <span className="text-gray-400">{building.name}</span>
+                <span className="text-gray-400">{romanName(building.name)}</span>
                 <span className="text-cyber-yellow font-mono font-semibold">({building.level})</span>
               </div>
             ))}
@@ -866,7 +875,7 @@ function EspionageReportView({ body }: { body: string }) {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1">
             {report.technologies.map((tech, i) => (
               <div key={i} className="flex items-center gap-2 text-sm py-1">
-                <span className="text-gray-400">{tech.name}</span>
+                <span className="text-gray-400">{romanName(tech.name)}</span>
                 <span className="text-cyber-blue font-mono font-semibold">({tech.level})</span>
               </div>
             ))}
