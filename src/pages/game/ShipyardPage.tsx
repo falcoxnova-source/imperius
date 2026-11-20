@@ -43,6 +43,32 @@ import { formatNumber, formatTime } from '../../lib/utils';
 import { useI18n, translateEntityName, translateShipName, getShipImage, translatePlanetName } from '../../lib/i18n';
 import type { ShipType } from '../../types/game';
 
+// Descripciones de tropas al estilo romano (solo texto visible; la BD no se toca).
+// Mantienen los mismos datos que la descripcion original.
+const SHIP_DESCRIPTION_THEME: Record<string, string> = {
+  small_cargo: 'Caravana de mulas para transportar recursos. Capacidad de 5.000 unidades.',
+  large_cargo: 'Gran caravana de carros para transporte pesado. Capacidad de 25.000 unidades.',
+  colony_ship: 'Colonos que fundan nuevas ciudades en tierras deshabitadas.',
+  recycler: 'Recoge los recursos que quedan en los campos de batalla.',
+  espionage_probe: 'Explorador veloz que obtiene información de las ciudades enemigas.',
+  solar_satellite: 'Altar sagrado que da Fervor a la ciudad. Vulnerable a los ataques.',
+  light_fighter: 'Jinete de combate básico. Rápido pero frágil.',
+  heavy_fighter: 'Versión mejorada del Jinete Ligero, con mejor armadura.',
+  cruiser: 'Caballería versátil con Golpe Múltiple contra los Jinetes Ligeros.',
+  battleship: 'Infantería pesada con gran poder de ataque.',
+  battlecruiser: 'Guardia de élite equilibrada entre ataque y defensa.',
+  bomber: 'Máquina de asedio especializada en destruir las defensas de las ciudades.',
+  destroyer: 'Ariete con Golpe Múltiple contra los Legionarios Pesados.',
+  deathstar: 'La tropa más poderosa. Puede destruir Castras de Diana.',
+  falco_x_clasica: 'Tropa de élite. Más poderosa que el Centurión y más accesible que el Tribuno. Domina cualquier campo de batalla con su devastador ataque.',
+  nova: 'Tropa de mando con defensas increíblemente fuertes. Es extremadamente difícil de derribar. Requiere escolta de al menos 10 Eques y 5 Pretorianos para enviarla a cualquier misión.',
+  large_frigate: 'La embarcación más grande de todas. El 90% de su estructura son enormes bodegas para recursos. Imprescindible para los grandes imperios mineros.',
+  destruccion_masiva: 'Tropa de destrucción masiva. Su ataque significa la victoria. Solo los imperios más poderosos pueden reclutarla. Requiere escolta de al menos 10 Eques y 5 Pretorianos para enviarla a cualquier misión.',
+  mega_recycler: 'Carroñero avanzado de recolección masiva. Diseñado para recuperar grandes campos de batalla con eficiencia extrema.',
+  dark_matter_collector: 'Augur capaz de viajar a tus Castras de Diana para extraer y transportar Materia Oscura.',
+  occupation_ship: 'Tropa especial para ocupar ciudades enemigas. Solo se adquiere con TUNG en el Mercado del sistema. Viaja en una misión de Ataque: si ganas la batalla y sobrevive junto a otra tropa, la ciudad queda ocupada y tu ejército se convierte en su guarnición.',
+};
+
 /**
  * Iconos para cada categoria de naves
  */
@@ -1069,34 +1095,22 @@ function ShipInfoModal({
   const rapidFireData = shipType.rapid_fire as Record<string, number> | null;
   const rapidFireEntries = rapidFireData ? Object.entries(rapidFireData) : [];
 
-  const shipCodeNames: Record<string, string> = {
-    small_cargo: t.shipyard.smallCargo,
-    large_cargo: t.shipyard.largeCargo,
-    colony_ship: t.shipyard.colonyShip,
-    recycler: t.shipyard.recycler,
-    espionage_probe: t.shipyard.espionageProbe,
-    solar_satellite: t.shipyard.solarSatellite,
-    light_fighter: t.shipyard.lightFighter,
-    heavy_fighter: t.shipyard.heavyFighter,
-    cruiser: t.shipyard.cruiser,
-    battleship: t.shipyard.battleship,
-    battlecruiser: t.shipyard.battlecruiser,
-    bomber: t.shipyard.bomber,
-    destroyer: t.shipyard.destroyer,
-    deathstar: t.shipyard.deathstar,
-    star_destroyer: t.shipyard.starDestroyer,
-    black_moon: t.shipyard.blackMoon,
-    falco_x_clasica: t.shipyard.falcoXClasica,
-    nova: t.shipyard.nova,
-    large_frigate: t.shipyard.largeFrigate,
-    destruccion_masiva: t.shipyard.destruccionMasiva,
-    rocket_launcher: t.defense.rocketLauncher,
-    light_laser: t.defense.lightLaser,
-    heavy_laser: t.defense.heavyLaser,
-    gauss_cannon: t.defense.gaussCannon,
-    ion_cannon: t.defense.ionCannon,
-    plasma_turret: t.defense.plasmaTurret,
+  const en = language === 'en';
+  const L = {
+    type: en ? 'Type' : 'Tipo',
+    time: en ? 'Time' : 'Tiempo',
+    combatStats: en ? 'Combat stats' : 'Estadísticas de combate',
+    hull: en ? 'Hull' : 'Resistencia',
+    march: en ? 'March' : 'Marcha',
+    timePerUnit: en ? 'Training time per unit' : 'Entrenamiento por unidad',
+    buildCosts: en ? 'Recruitment cost' : 'Costo de reclutamiento',
+    rapidFire: en ? 'Rapid fire' : 'Golpe Múltiple',
+    rapidFireDescription: en
+      ? 'Attacks these units several times per round.'
+      : 'Ataca varias veces por ronda a estas unidades.',
+    productionTable: en ? 'Recruitment table' : 'Tabla de reclutamiento',
   };
+  const description = en ? shipType.description : (SHIP_DESCRIPTION_THEME[shipType.code] ?? shipType.description);
 
   const categoryName =
     shipType.category === 'civil'
@@ -1135,7 +1149,7 @@ function ShipInfoModal({
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <p className="text-gray-400 text-sm mt-1">{shipType.description}</p>
+              <p className="text-gray-400 text-sm mt-1">{description}</p>
               {shipType.code === 'solar_satellite' && (
                 <p className="text-amber-200/90 text-sm mt-2">🏛️ {t.shipyard.fervorDivineNote}</p>
               )}
@@ -1144,7 +1158,7 @@ function ShipInfoModal({
                   {t.common.quantity}: {formatNumber(currentQuantity)}
                 </span>
                 <span className="text-gray-500 text-sm">
-                  {t.common.type}: {categoryName}
+                  {L.type}: {categoryName}
                 </span>
               </div>
             </div>
@@ -1155,7 +1169,7 @@ function ShipInfoModal({
         <div className="p-4 sm:p-6 overflow-y-auto max-h-[60vh]">
           {/* Stats de combate */}
           <div className="mb-6">
-            <h3 className="text-white font-semibold mb-3">{t.shipyard.combatStats}</h3>
+            <h3 className="text-white font-semibold mb-3">{L.combatStats}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
               <div className="bg-space-700/50 p-3 rounded-lg text-center">
                 <Target className="w-6 h-6 mx-auto mb-2 text-cyber-red" />
@@ -1187,7 +1201,7 @@ function ShipInfoModal({
               </div>
               <div className="bg-space-700/50 p-3 rounded-lg text-center">
                 <Crosshair className="w-6 h-6 mx-auto mb-2 text-cyber-pink" />
-                <p className="text-xs text-gray-400">{t.shipyard.hull}</p>
+                <p className="text-xs text-gray-400">{L.hull}</p>
                 <p className="text-lg font-orbitron text-white">
                   {combatBonuses.armor > 0 ? (
                     <>
@@ -1211,7 +1225,7 @@ function ShipInfoModal({
 
           {/* Velocidad y consumo */}
           <div className="mb-6">
-            <h3 className="text-white font-semibold mb-3">{t.shipyard.speedAndConsumption}</h3>
+            <h3 className="text-white font-semibold mb-3">{L.march}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div className="bg-space-700/50 p-3 rounded-lg">
                 <div className="flex items-center gap-2">
@@ -1238,7 +1252,7 @@ function ShipInfoModal({
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5 text-cyber-blue" />
                   <div>
-                    <p className="text-xs text-gray-400">{t.shipyard.timePerUnit}</p>
+                    <p className="text-xs text-gray-400">{L.timePerUnit}</p>
                     <p className="text-white font-semibold">{formatTime(buildTimePerUnit)}</p>
                   </div>
                 </div>
@@ -1248,7 +1262,7 @@ function ShipInfoModal({
 
           {/* Costos */}
           <div className="mb-6">
-            <h3 className="text-white font-semibold mb-3">{t.shipyard.buildCosts}</h3>
+            <h3 className="text-white font-semibold mb-3">{L.buildCosts}</h3>
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div className="bg-space-700/50 p-3 rounded-lg text-center">
                 <p className="text-xs text-gray-400 mb-1">{t.resources.metal}</p>
@@ -1270,16 +1284,16 @@ function ShipInfoModal({
             <div className="mb-6">
               <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
                 <Crosshair className="w-5 h-5 text-cyber-red" />
-                {t.shipyard.rapidFire}
+                {L.rapidFire}
               </h3>
-              <p className="text-xs text-gray-400 mb-3">{t.shipyard.rapidFireDescription}</p>
+              <p className="text-xs text-gray-400 mb-3">{L.rapidFireDescription}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {rapidFireEntries.map(([target, value]) => (
                   <div
                     key={target}
                     className="bg-space-700/50 p-2 rounded-lg flex items-center justify-between"
                   >
-                    <span className="text-sm text-gray-300">{shipCodeNames[target] || target}</span>
+                    <span className="text-sm text-gray-300">{translateEntityName(t, target, target)}</span>
                     <span className="text-cyber-red font-orbitron">x{value}</span>
                   </div>
                 ))}
@@ -1289,7 +1303,7 @@ function ShipInfoModal({
 
           {/* Tabla de produccion */}
           <div className="bg-space-700/30 p-4 rounded-lg">
-            <h3 className="text-white font-semibold mb-2">{t.shipyard.productionTable}</h3>
+            <h3 className="text-white font-semibold mb-2">{L.productionTable}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -1298,7 +1312,7 @@ function ShipInfoModal({
                     <th className="text-right py-2 px-2">{t.resources.metal}</th>
                     <th className="text-right py-2 px-2">{t.resources.crystal}</th>
                     <th className="text-right py-2 px-2">{t.resources.deuterium}</th>
-                    <th className="text-right py-2 px-2">{t.common.time}</th>
+                    <th className="text-right py-2 px-2">{L.time}</th>
                   </tr>
                 </thead>
                 <tbody>
