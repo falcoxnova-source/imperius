@@ -21,7 +21,7 @@ import {
   calculateStorageCapacity,
 } from '../../../lib/formulas';
 import { formatNumber, formatTime } from '../../../lib/utils';
-import { translateBuildingName, getBuildingImage } from '../../../lib/i18n';
+import { translateBuildingName, getBuildingImage, translateBuildingDescription, useI18n } from '../../../lib/i18n';
 import type { BuildingType } from '../../../types/game';
 
 interface BuildingInfoModalProps {
@@ -63,6 +63,10 @@ export function BuildingInfoModal({
   t,
 }: BuildingInfoModalProps) {
   const [showAllLevels, setShowAllLevels] = useState(false);
+  const { language } = useI18n();
+  const description = language === 'en'
+    ? buildingType.description
+    : translateBuildingDescription(buildingType.code, buildingType.description);
   const hasImage = !!getBuildingImage(buildingType.code, buildingType.image_url);
 
   const isProductionBuilding = ['metal_mine', 'crystal_mine', 'deuterium_synthesizer'].includes(
@@ -143,7 +147,7 @@ export function BuildingInfoModal({
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <p className="text-gray-400 text-sm mt-1">{buildingType.description}</p>
+              <p className="text-gray-400 text-sm mt-1">{description}</p>
               <div className="flex items-center gap-4 mt-3">
                 <span className="text-cyber-blue font-orbitron">{t.buildings.currentLevel}: {currentLevel}</span>
                 <span className="text-gray-500 text-sm">{t.buildings.maxLevel}: {buildingType.max_level}</span>

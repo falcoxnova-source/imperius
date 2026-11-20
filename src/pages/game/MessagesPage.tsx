@@ -46,6 +46,7 @@ import { useGameStore } from '../../store/gameStore';
 import { formatRelativeDate, formatNumber } from '../../lib/utils';
 import type { Message, Profile } from '../../types/game';
 import { useI18n, translatePlanetName, translateShipName, translateDefenseName, translateBuildingName, translateResearchName } from '../../lib/i18n';
+import { romanizeText, romanCityName } from '../../lib/romanText';
 
 type MessageFilter = 'all' | 'unread' | 'player' | 'system' | 'battle' | 'espionage' | 'expedition' | 'alliance';
 type MessageView = 'inbox' | 'sent' | 'public';
@@ -60,7 +61,9 @@ function espionageCityName(name: string | undefined): string {
 }
 
 function displaySubject(message: { subject: string; message_type?: string }): string {
-  if (message.message_type !== 'espionage') return message.subject;
+  // Los mensajes escritos por jugadores se muestran tal cual
+  if (message.message_type === 'player') return message.subject;
+  if (message.message_type !== 'espionage') return romanizeText(message.subject);
   const m = message.subject.match(/^(.*? - )(.+)$/);
   return m ? m[1] + espionageCityName(m[2]) : message.subject;
 }
@@ -1088,7 +1091,7 @@ function BattleReportView({ body }: { body: string }) {
           <div className="bg-space-900/50 rounded-lg px-2.5 py-2">
             <div className="text-gray-500">Objetivo</div>
             <div className="text-white font-orbitron truncate">
-              {report.planet_name || 'Ciudad'}
+              {romanCityName(report.planet_name)}
             </div>
           </div>
           <div className="bg-space-900/50 rounded-lg px-2.5 py-2">
@@ -1264,7 +1267,7 @@ function BattleReportView({ body }: { body: string }) {
               <p className="text-sm">
                 <span className="text-white">{formatNumber(report.debris?.metal || 0)}</span> {t.resources.metal},{' '}
                 <span className="text-cyan-400">{formatNumber(report.debris?.crystal || 0)}</span> {t.resources.crystal}
-                <span className="block text-[11px] text-gray-500 mt-0.5">Envia recicladores a [{report.coordinates}] para recogerlo</span>
+                <span className="block text-[11px] text-gray-500 mt-0.5">Envía Carroñeros a [{report.coordinates}] para recogerlo</span>
               </p>
             ) : (
               <p className="text-sm text-gray-500">Sin escombros</p>
@@ -1342,7 +1345,7 @@ function LossBar({ label, metal, crystal, total, max, color }: {
         <div className={`h-full ${color}`} style={{ width: `${(total / max) * 100}%` }} />
       </div>
       <div className="text-[11px] text-gray-500 mt-0.5">
-        {formatNumber(metal)} metal · {formatNumber(crystal)} cristal
+        {formatNumber(metal)} hierro · {formatNumber(crystal)} piedra
       </div>
     </div>
   );
@@ -1416,7 +1419,7 @@ function BattleForcePanel({ title, accent, icon, groups, lossMetal, lossCrystal 
         <div className="flex justify-between text-xs">
           <span className="text-gray-500">Recursos perdidos</span>
           <span className="text-cyber-red font-orbitron">
-            {formatNumber(lossMetal)} M / {formatNumber(lossCrystal)} C
+            {formatNumber(lossMetal)} Hierro / {formatNumber(lossCrystal)} Piedra
           </span>
         </div>
       </div>
@@ -1819,18 +1822,19 @@ function richClass(token: string): string {
   if (s.endsWith('%')) return 'text-red-400 font-semibold';
   if (s.includes('fxu') || s.includes('tung')) return 'text-yellow-400 font-semibold';
   if (s.includes('materia oscura')) return 'text-purple-400 font-semibold';
-  if (s.includes('cristal')) return 'text-cyan-400 font-semibold';
-  if (s.includes('deuteri')) return 'text-green-400 font-semibold';
-  if (s.includes('metal')) return 'text-gray-100 font-semibold';
+  if (s.includes('cristal') || s.includes('piedra')) return 'text-cyan-400 font-semibold';
+  if (s.includes('deuteri') || s.includes('comida')) return 'text-green-400 font-semibold';
+  if (s.includes('metal') || s.includes('hierro')) return 'text-gray-100 font-semibold';
   return '';
 }
 
 const RICH_PATTERN =
-  /(\d[\d.,]*\s*(?:Tokens FXU|FXU|TUNG|unidades de Materia Oscura|Materia Oscura|Metal|Cristal|Deuterio|Deuterium)|\d+(?:[.,]\d+)?\s*%|\[\d+:\d+:\d+\])/gi;
+  /(\d[\d.,]*\s*(?:Tokens FXU|FXU|TUNG|unidades de Materia Oscura|Materia Oscura|Metal|Cristal|Deuterio|Deuterium|Hierro|Piedra|Comida)|\d+(?:[.,]\d+)?\s*%|\[\d+:\d+:\d+\])/gi;
 
 // Resalta cifras, recursos y coordenadas dentro de un texto plano.
-function RichText({ text }: { text: string }) {
-  const parts = text.split(RICH_PATTERN);
+// Los textos del servidor se muestran al estilo imperio (raw = mostrar tal cual).
+function RichText({ text, raw = false }: { text: string; raw?: boolean }) {
+  const parts = (raw ? text : romanizeText(text)).split(RICH_PATTERN);
   return (
     <>
       {parts.map((part, i) => {
@@ -2092,7 +2096,7 @@ function FleetWarningView({ body }: { body: string }) {
           <h4 className="text-xs font-bold text-cyber-orange mb-2 flex items-center gap-2">
             <Shield className="w-4 h-4" /> Tu objetivo
           </h4>
-          <p className="text-white font-semibold truncate">{planet}</p>
+          <p className="text-white font-semibold truncate">{romanCityName(planet)}</p>
           <p className="text-cyan-300 font-mono text-sm mt-1">[{target}]</p>
         </div>
       </div>
@@ -2159,7 +2163,7 @@ function SystemNoticeView({ subject, body }: { subject: string; body: string }) 
         <div className={`p-3 rounded-xl bg-white/5 ${cfg.tone.text}`}>{cfg.icon}</div>
         <div className="min-w-0">
           <p className={`font-orbitron text-lg ${cfg.tone.text}`}>{cfg.title}</p>
-          <p className="text-xs text-gray-400 truncate">{subject}</p>
+          <p className="text-xs text-gray-400 truncate">{romanizeText(subject)}</p>
         </div>
       </div>
 
@@ -2218,7 +2222,7 @@ function BroadcastView({ body }: { body: string }) {
                 {String(i + 1).padStart(2, '0')}
               </span>
               <p className="text-sm text-gray-300 leading-relaxed">
-                <RichText text={line.replace(/^(?:\d+[\u{FE0F}\u{20E3}.)\-–]*|[•\-*])\s*/u, '')} />
+                <RichText raw text={line.replace(/^(?:\d+[\u{FE0F}\u{20E3}.)\-–]*|[•\-*])\s*/u, '')} />
               </p>
             </div>
           ))}
@@ -2229,7 +2233,7 @@ function BroadcastView({ body }: { body: string }) {
         <div className="bg-space-800/60 rounded-lg p-4 border border-space-600">
           {rest.map((line, i) => (
             <p key={i} className="text-sm text-gray-300 leading-relaxed">
-              <RichText text={line} />
+              <RichText raw text={line} />
             </p>
           ))}
         </div>
@@ -2273,7 +2277,7 @@ function AllianceNoticeView({ subject, body }: { subject: string; body: string }
               <span className="font-mono text-cyan-300">[{tag}]</span> {name}
             </p>
           ) : (
-            <p className="text-xs text-gray-400 truncate">{subject}</p>
+            <p className="text-xs text-gray-400 truncate">{romanizeText(subject)}</p>
           )}
         </div>
       </div>

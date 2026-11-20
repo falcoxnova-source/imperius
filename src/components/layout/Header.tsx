@@ -9,6 +9,7 @@ import { LanguageSelector } from '../ui/LanguageSelector';
 import { RankBadge } from '../ui/RankBadge';
 import { supabase, handleSupabaseError } from '../../lib/supabase';
 import { formatRelativeDate } from '../../lib/utils';
+import { romanizeText } from '../../lib/romanText';
 import { useI18n } from '../../lib/i18n';
 import { resolveAvatarUrl } from '../../lib/avatar';
 
@@ -265,7 +266,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className={`text-sm truncate ${notification.is_read ? 'text-gray-400' : 'text-white font-medium'}`}>
-                              {notification.subject}
+                              {notification.message_type === 'player' ? notification.subject : romanizeText(notification.subject)}
                             </p>
                             <p className="text-xs text-gray-500 mt-1">
                               {formatRelativeDate(notification.created_at)}

@@ -241,6 +241,36 @@ export function translateTechDescription(code: string, fallback: string): string
 }
 
 /**
+ * Descripciones del tema imperio para edificios (por codigo de BD).
+ * La BD no se toca: esto es solo texto visible en el frontend.
+ */
+const buildingDescriptionTheme: Record<string, string> = {
+  metal_mine: 'Extrae hierro de las entrañas de la tierra. El hierro es el recurso más básico y abundante del imperio.',
+  crystal_mine: 'Extrae piedra de las canteras. Esencial para levantar edificios y avanzar en la Academia.',
+  deuterium_synthesizer: 'Cultiva los campos para producir comida. Alimenta a tus ejércitos en marcha y a las forjas.',
+  solar_plant: 'Templo que reúne el Fervor del pueblo. La base del poder de tu ciudad.',
+  fusion_reactor: 'Forja sagrada que genera Fervor. Consume comida, pero es muy eficiente.',
+  metal_storage: 'Aumenta la capacidad de almacenamiento de hierro.',
+  crystal_storage: 'Aumenta la capacidad de almacenamiento de piedra.',
+  deuterium_tank: 'Aumenta la capacidad de almacenamiento de comida.',
+  robotics_factory: 'Taller de artesanos que acelera la construcción de edificios.',
+  nanite_factory: 'Gremio de maestros constructores que acelera drásticamente las construcciones.',
+  shipyard: 'Recluta y entrena tropas y defensas. Niveles más altos entrenan más rápido.',
+  research_lab: 'Permite estudiar nuevos conocimientos en la Academia. Esencial para el progreso.',
+  missile_silo: 'Almacena proyectiles de intercepción y proyectiles de largo alcance.',
+  terraformer: 'Aumenta el número de campos disponibles en la ciudad.',
+  lunar_base: 'El Praetorium es la instalación principal necesaria para construir en una Castra de Diana. Cada nivel proporciona campos adicionales.',
+  sensor_phalanx: 'La Specula permite detectar movimientos de ejércitos enemigos en un rango determinado.',
+  jump_gate: 'La Porta Triumphalis permite trasladar ejércitos al instante entre Castras de Diana que tengan este edificio.',
+  alliance_depot: 'Permite que ejércitos aliados se estacionen en tu ciudad para ataques coordinados (ACS). Cada nivel aumenta los espacios disponibles para ejércitos aliados.',
+  university: 'Lugar donde se forman los sabios de tu imperio. Cuanto mayor sea su nivel, más sabios colaboran en la Academia. Cada nivel reduce el tiempo de investigación en un 8%.',
+};
+
+export function translateBuildingDescription(code: string, fallback: string): string {
+  return buildingDescriptionTheme[code] ?? fallback;
+}
+
+/**
  * Nombres de planeta por defecto de la BD traducidos al tema imperio (UI-only).
  * Los nombres personalizados por el jugador se muestran tal cual.
  */
